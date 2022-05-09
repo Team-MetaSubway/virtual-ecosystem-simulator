@@ -40,6 +40,7 @@ namespace Polyperfect.Common
 
     public static void PlaySound(AudioClip clip, Vector3 pos)
     {
+            return;
       if (!instance)
       {
         Debug.LogError("No Audio Manager found in the scene.");
