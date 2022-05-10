@@ -13,6 +13,7 @@ Assets/ML-Agents/Timers/*
 [Ll]ogs/
 [Mm]emoryCaptures/
 [Uu]serSettings/
+UserSettings/*
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
