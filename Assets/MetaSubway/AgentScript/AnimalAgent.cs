@@ -24,12 +24,15 @@ public class AnimalAgent : Agent
     float mapWidth;
     float mapLength;
     float mapMaxHeight;
+    Transform transformOfParent;
 
     public override void Initialize()
     {
         animalState = GetComponent<Polyperfect.Common.Common_WanderScript>();
         behaviorParameters = GetComponent<BehaviorParameters>();
-        learningEnv = GetComponentInParent<LearningEnvController>();
+        learningEnv = transform.parent.GetComponent< LearningEnvController>();
+        transformOfParent = transform.parent.transform;
+        
 
         existential = 0.5f / MaxStep;
         mapWidth = learningEnv.mapWidth*0.8f; //맵의 최대 가로 길이(x축으로), 너무 구석에 스폰되는 것을 방지하기 위해 0.8 곱함.
@@ -42,11 +45,14 @@ public class AnimalAgent : Agent
         animalState.SetState(Polyperfect.Common.Common_WanderScript.WanderState.Idle);
 
         Vector3 pos = new Vector3(Random.value * mapWidth - mapWidth / 2, mapMaxHeight, Random.value * mapLength - mapLength / 2); //로컬 좌표 랜덤하게 생성.
-        Ray ray= new Ray(transform.TransformPoint(pos), Vector3.down); //월드 좌표로 변경해서 삽입.
+        Ray ray= new Ray(transformOfParent.TransformPoint(pos), Vector3.down); //월드 좌표로 변경해서 삽입.
         RaycastHit hitData;
         Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
         pos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
 
+        Debug.Log("ray is" + ray.origin + ray.direction + "\n");
+        Debug.Log("distance is " + hitData.distance + "\n");
+        Debug.Log("position: " + transformOfParent.TransformPoint(pos) + "\n");
         animalState.transform.localPosition = pos;
         animalState.realStart();
         killCnt = 0;
