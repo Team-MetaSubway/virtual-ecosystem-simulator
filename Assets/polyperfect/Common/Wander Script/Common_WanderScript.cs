@@ -120,15 +120,12 @@ namespace Polyperfect.Common
         private CharacterController characterController;
         private Vector3 origin;
 
-        private int totalIdleStateWeight;
-
         private Vector3 targetLocation = Vector3.zero;
 
         private float turnSpeed = 0f;
 
         public enum WanderState
         {
-            Idle,
             Wander,
             Chase,
             Evade,
@@ -154,13 +151,7 @@ namespace Polyperfect.Common
         float moveSpeed = 0f;
         float attackReach = 2f;
         bool forceUpdate = false;
-        float idleStateDuration;
-        Vector3 startPosition;
-        Vector3 wanderTarget;
-        IdleState currentIdleState;
-        float idleUpdateTime;
-
-
+        
         //성원 추가
         bool hasKilled = false;
         public bool HasKilled
@@ -361,11 +352,6 @@ namespace Polyperfect.Common
                 }
             }
 
-            foreach (IdleState state in idleStates)
-            {
-                totalIdleStateWeight += state.stateWeight;
-            }
-
             origin = transform.position;
             animator.applyRootMotion = false;
             characterController = GetComponent<CharacterController>();
@@ -428,17 +414,11 @@ namespace Polyperfect.Common
 
         public void setStart()
         {
-            startPosition = transform.position;
             if (Common_WanderManager.Instance != null && Common_WanderManager.Instance.PeaceTime)
             {
                 SetPeaceTime(true);
             }
             StartCoroutine(RandomStartingDelay());
-        }
-
-        private void Update()
-        {
-
         }
 
         bool started = false;
@@ -482,60 +462,29 @@ namespace Polyperfect.Common
 
             //여기서부터 targetPosition 시작
 
-            var position = transform.position;
-            var targetPosition = position;
             switch (CurrentState)
             {
-                case WanderState.Attack:
-                    //FaceDirection((attackTarget.transform.position - position).normalized);
-                    targetPosition = position;
-                    break;
+                case WanderState.Attack: break;
                 case WanderState.Chase:
                     if (!primaryPrey || primaryPrey.CurrentState == WanderState.Dead)
                     {
                         primaryPrey = null;
-                        SetState(WanderState.Idle);
-                        goto case WanderState.Idle;
+                        SetState(WanderState.Wander);
                     }
-                    targetPosition = primaryPrey.transform.position;
-
                     stamina -= Time.deltaTime;
-                    if (stamina <= 0f)
-                        UpdateAI();
+                    if (stamina <= 0f) UpdateAI();
                     break;
                 case WanderState.Evade:
-                    targetPosition = position + Vector3.ProjectOnPlane(position - primaryPursuer.transform.position, Vector3.up);
-                    
                     stamina -= Time.deltaTime;
-                    if (stamina <= 0f)
-                        UpdateAI();
+                    if (stamina <= 0f) UpdateAI();
                     break;
                 case WanderState.Wander:
                     stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
-                    targetPosition = wanderTarget;
-                    Debug.DrawLine(position, targetPosition, Color.yellow);
-                    
-                    var displacementFromTarget = Vector3.ProjectOnPlane(targetPosition - transform.position, Vector3.up);
-                    if (displacementFromTarget.magnitude < contingencyDistance)
-                    {
-                        SetState(WanderState.Idle);
-                        UpdateAI();
-                    }
-
-                    break;
-                case WanderState.Idle:
-                    stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
-                    if (Time.time >= idleUpdateTime)
-                    {
-                        SetState(WanderState.Wander);
-                        UpdateAI();
-                    }
                     break;
             }
 
             FaceDirection(direction.normalized);
             characterController.SimpleMove(moveSpeed * direction.normalized);
-              
         }
 
         void FaceDirection(Vector3 facePosition)
@@ -577,12 +526,6 @@ namespace Polyperfect.Common
 
         void UpdateAI()
         {
-            if (CurrentState == WanderState.Dead)
-            {
-                //Debug.LogError("Trying to update the AI of a dead animal, something probably went wrong somewhere.");
-                return;
-            }
-
             var position = transform.position;
             primaryPursuer = null;
             if (awareness > 0)
@@ -694,8 +637,7 @@ namespace Polyperfect.Common
                 SetState(WanderState.Chase);
             else if (defensiveOption)
                 SetState(WanderState.Evade);
-            else if (CurrentState != WanderState.Idle && CurrentState != WanderState.Wander)
-                SetState(WanderState.Idle);
+
             if (shouldAttack && updateTargetAI)
                 attackTarget.forceUpdate = true;
         }
@@ -709,38 +651,26 @@ namespace Polyperfect.Common
 
         public void SetState(WanderState state)
         {
-            var previousState = CurrentState;
-            //if (previousState == WanderState.Dead)
+            CurrentState = state;
+            switch (CurrentState)
             {
-                //Debug.LogError("Attempting to set a state to a dead animal.");
-                //return;
-            }
-            //if (state != previousState)
-            {
-                CurrentState = state;
-                switch (CurrentState)
-                {
-                    case WanderState.Idle:
-                        HandleBeginIdle();
-                        break;
-                    case WanderState.Chase:
-                        HandleBeginChase();
-                        break;
-                    case WanderState.Evade:
-                        HandleBeginEvade();
-                        break;
-                    case WanderState.Attack:
-                        HandleBeginAttack();
-                        break;
-                    case WanderState.Dead:
-                        HandleBeginDeath();
-                        break;
-                    case WanderState.Wander:
-                        HandleBeginWander();
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                case WanderState.Chase:
+                    HandleBeginChase();
+                    break;
+                case WanderState.Evade:
+                    HandleBeginEvade();
+                    break;
+                case WanderState.Attack:
+                    HandleBeginAttack();
+                    break;
+                case WanderState.Dead:
+                    HandleBeginDeath();
+                    break;
+                case WanderState.Wander:
+                    HandleBeginWander();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
 
@@ -837,31 +767,10 @@ namespace Polyperfect.Common
             ClearAnimatorBools();
             TrySetBool(moveState.animationBool, true);
         }
-        void HandleBeginIdle()
-        {
-            primaryPrey = null;
-            var targetWeight = Random.Range(0, totalIdleStateWeight);
-            var curWeight = 0;
-            foreach (var idleState in idleStates)
-            {
-                curWeight += idleState.stateWeight;
-                if (targetWeight > curWeight)
-                    continue;
-                idleUpdateTime = Time.time + Random.Range(idleState.minStateTime, idleState.maxStateTime);
-                ClearAnimatorBools();
-                TrySetBool(idleState.animationBool, true);
-                moveSpeed = 0f;
-                break;
-            }
-            idleEvent.Invoke();
-        }
+        
         void HandleBeginWander()
         {
             primaryPrey = null;
-            var rand = Random.insideUnitSphere * wanderZone;
-            var targetPos = startPosition + rand;
-
-            wanderTarget = targetPos;
             SetMoveSlow();
         }
 
