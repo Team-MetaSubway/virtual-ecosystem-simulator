@@ -50,11 +50,8 @@ public class AnimalAgent : Agent
         Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
         pos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
 
-        Debug.Log("ray is" + ray.origin + ray.direction + "\n");
-        Debug.Log("distance is " + hitData.distance + "\n");
-        Debug.Log("position: " + transformOfParent.TransformPoint(pos) + "\n");
         animalState.transform.localPosition = pos;
-        animalState.realStart();
+        animalState.setStart();
         killCnt = 0;
     }
     public override void OnActionReceived(ActionBuffers actions)

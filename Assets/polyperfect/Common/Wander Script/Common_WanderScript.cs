@@ -79,9 +79,6 @@ namespace Polyperfect.Common
         // [SerializeField, Tooltip("Stealthy animals can't be detected by other animals.")]
         private bool stealthy = false;
 
-        [SerializeField, Tooltip("If true, this animal will never leave it's zone, even if it's chasing or running away from another animal.")]
-        private bool constainedToWanderZone = false;
-
         [SerializeField, Tooltip("This animal will be peaceful towards species in this list.")]
         private string[] nonAgressiveTowards;
 
@@ -121,12 +118,10 @@ namespace Polyperfect.Common
         private Color scentColor = new Color(1f, 0f, 0f, 1f);
         private Animator animator;
         private CharacterController characterController;
-        private NavMeshAgent navMeshAgent;
         private Vector3 origin;
 
         private int totalIdleStateWeight;
 
-        private bool useNavMesh = false;
         private Vector3 targetLocation = Vector3.zero;
 
         private float turnSpeed = 0f;
@@ -173,13 +168,7 @@ namespace Polyperfect.Common
             get { return hasKilled; }
             set { hasKilled = value; }
         }
-        /*
-        Vector3 direction = new Vector3(0.0f, 0.0f, 0.0f);
-        public Vector3 Direction
-        {
-            set { direction = value; }
-        }
-        */
+       
         public void OnDrawGizmosSelected()
         {
             if (!showGizmos)
@@ -219,23 +208,13 @@ namespace Polyperfect.Common
             if (!Application.isPlaying)
                 return;
 
-            // Draw target position.
-            if (useNavMesh)
+            
+            if (targetLocation != Vector3.zero)
             {
-                if (navMeshAgent.remainingDistance > 1f)
-                {
-                    Gizmos.DrawSphere(navMeshAgent.destination + new Vector3(0f, 0.1f, 0f), 0.2f);
-                    Gizmos.DrawLine(transform.position, navMeshAgent.destination);
-                }
+                Gizmos.DrawSphere(targetLocation + new Vector3(0f, 0.1f, 0f), 0.2f);
+                Gizmos.DrawLine(transform.position, targetLocation);
             }
-            else
-            {
-                if (targetLocation != Vector3.zero)
-                {
-                    Gizmos.DrawSphere(targetLocation + new Vector3(0f, 0.1f, 0f), 0.2f);
-                    Gizmos.DrawLine(transform.position, targetLocation);
-                }
-            }
+           
         }
 
         private void Awake()
@@ -390,7 +369,7 @@ namespace Polyperfect.Common
             origin = transform.position;
             animator.applyRootMotion = false;
             characterController = GetComponent<CharacterController>();
-            navMeshAgent = GetComponent<NavMeshAgent>();
+            
 
             //Assign the stats to variables
             originalDominance = stats.dominance;
@@ -409,12 +388,6 @@ namespace Polyperfect.Common
 
             originalScent = scent;
             scent = originalScent;
-
-            if (navMeshAgent)
-            {
-                useNavMesh = true;
-                navMeshAgent.stoppingDistance = contingencyDistance;
-            }
 
             if (matchSurfaceRotation && transform.childCount > 0)
             {
@@ -450,17 +423,16 @@ namespace Polyperfect.Common
 
         private void Start()
         {
-            realStart();
+            setStart();
         }
 
-        public void realStart()
+        public void setStart()
         {
             startPosition = transform.position;
             if (Common_WanderManager.Instance != null && Common_WanderManager.Instance.PeaceTime)
             {
                 SetPeaceTime(true);
             }
-
             StartCoroutine(RandomStartingDelay());
         }
 
@@ -526,26 +498,14 @@ namespace Polyperfect.Common
                         goto case WanderState.Idle;
                     }
                     targetPosition = primaryPrey.transform.position;
-                    ValidatePosition(ref targetPosition);
-                    if (!IsValidLocation(targetPosition))
-                    {
-                        SetState(WanderState.Idle);
-                        targetPosition = position;
-                        UpdateAI();
-                        break;
-                    }
 
-                    //FaceDirection((targetPosition - position).normalized);
                     stamina -= Time.deltaTime;
                     if (stamina <= 0f)
                         UpdateAI();
                     break;
                 case WanderState.Evade:
                     targetPosition = position + Vector3.ProjectOnPlane(position - primaryPursuer.transform.position, Vector3.up);
-                    if (!IsValidLocation(targetPosition))
-                        targetPosition = startPosition;
-                    ValidatePosition(ref targetPosition);
-                    //FaceDirection((targetPosition - position).normalized);
+                    
                     stamina -= Time.deltaTime;
                     if (stamina <= 0f)
                         UpdateAI();
@@ -554,7 +514,7 @@ namespace Polyperfect.Common
                     stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
                     targetPosition = wanderTarget;
                     Debug.DrawLine(position, targetPosition, Color.yellow);
-                    //FaceDirection((targetPosition - position).normalized);
+                    
                     var displacementFromTarget = Vector3.ProjectOnPlane(targetPosition - transform.position, Vector3.up);
                     if (displacementFromTarget.magnitude < contingencyDistance)
                     {
@@ -573,18 +533,9 @@ namespace Polyperfect.Common
                     break;
             }
 
-            if (navMeshAgent)
-            {
-                navMeshAgent.destination = targetPosition;
-                navMeshAgent.speed = moveSpeed;
-                navMeshAgent.angularSpeed = turnSpeed;
-            }
-            else
-            {
-                FaceDirection(direction.normalized);
-                characterController.SimpleMove(moveSpeed * direction.normalized);
-                //characterController.SimpleMove(moveSpeed * UnityEngine.Vector3.ProjectOnPlane(targetPosition - position,Vector3.up).normalized); //어렵게 써 있지만, 결국 x,z 두 방향 normalized.
-            }
+            FaceDirection(direction.normalized);
+            characterController.SimpleMove(moveSpeed * direction.normalized);
+              
         }
 
         void FaceDirection(Vector3 facePosition)
@@ -691,8 +642,6 @@ namespace Polyperfect.Common
                             continue;
 
                         var preyPosition = potentialPrey.transform.position;
-                        if (!IsValidLocation(preyPosition))
-                            continue;
 
                         var distance = Vector3.Distance(position, preyPosition);
                         if (distance > closestDistance)
@@ -751,19 +700,10 @@ namespace Polyperfect.Common
                 attackTarget.forceUpdate = true;
         }
 
-        bool IsValidLocation(Vector3 targetPosition)
-        {
-            if (!constainedToWanderZone)
-                return true;
-            var distanceFromWander = Vector3.Distance(startPosition, targetPosition);
-            var isInWander = distanceFromWander < wanderZone;
-            return isInWander;
-        }
-
         float CalcAttackRange(Common_WanderScript other)
         {
-            var thisRange = navMeshAgent ? navMeshAgent.radius : characterController.radius;
-            var thatRange = other.navMeshAgent ? other.navMeshAgent.radius : other.characterController.radius;
+            var thisRange = characterController.radius;
+            var thatRange = other.characterController.radius;
             return attackReach + thisRange + thatRange;
         }
 
@@ -832,8 +772,6 @@ namespace Polyperfect.Common
                 TrySetBool(deathStates[Random.Range(0, deathStates.Length)].animationBool, true);
 
             deathEvent.Invoke();
-            if (navMeshAgent && navMeshAgent.isOnNavMesh)
-                navMeshAgent.destination = transform.position;
             enabled = false;
         }
 
@@ -922,28 +860,10 @@ namespace Polyperfect.Common
             primaryPrey = null;
             var rand = Random.insideUnitSphere * wanderZone;
             var targetPos = startPosition + rand;
-            ValidatePosition(ref targetPos);
 
             wanderTarget = targetPos;
             SetMoveSlow();
         }
-
-        void ValidatePosition(ref Vector3 targetPos)
-        {
-            if (navMeshAgent)
-            {
-                NavMeshHit hit;
-                if (!NavMesh.SamplePosition(targetPos, out hit, Mathf.Infinity, 1 << NavMesh.GetAreaFromName("Walkable")))
-                {
-                    Debug.LogError("Unable to sample nav mesh. Please ensure there's a Nav Mesh layer with the name Walkable");
-                    enabled = false;
-                    return;
-                }
-
-                targetPos = hit.position;
-            }
-        }
-
 
         IEnumerator RandomStartingDelay()
         {
