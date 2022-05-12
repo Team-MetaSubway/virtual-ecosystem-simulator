@@ -17,9 +17,7 @@ namespace Polyperfect.Common
     [RequireComponent(typeof(Animator)), RequireComponent(typeof(CharacterController))]
     public class Common_WanderScript : MonoBehaviour
     {
-        private const float contingencyDistance = 1f;
-
-
+        
         [SerializeField] public IdleState[] idleStates;
         [SerializeField] private MovementState[] movementStates;
         [SerializeField] private AIState[] attackingStates;
@@ -151,7 +149,7 @@ namespace Polyperfect.Common
         float moveSpeed = 0f;
         float attackReach = 2f;
         bool forceUpdate = false;
-        
+
         //성원 추가
         bool hasKilled = false;
         public bool HasKilled
@@ -159,7 +157,8 @@ namespace Polyperfect.Common
             get { return hasKilled; }
             set { hasKilled = value; }
         }
-       
+        
+
         public void OnDrawGizmosSelected()
         {
             if (!showGizmos)

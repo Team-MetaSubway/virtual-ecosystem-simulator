@@ -42,7 +42,7 @@ public class AnimalAgent : Agent
     public override void OnEpisodeBegin()
     {
         animalState.enabled = true;
-        animalState.SetState(Polyperfect.Common.Common_WanderScript.WanderState.Idle);
+        animalState.SetState(Polyperfect.Common.Common_WanderScript.WanderState.Wander);
 
         Vector3 pos = new Vector3(Random.value * mapWidth - mapWidth / 2, mapMaxHeight, Random.value * mapLength - mapLength / 2); //로컬 좌표 랜덤하게 생성.
         Ray ray= new Ray(transformOfParent.TransformPoint(pos), Vector3.down); //월드 좌표로 변경해서 삽입.

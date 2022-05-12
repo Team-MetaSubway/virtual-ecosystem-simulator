@@ -132,31 +132,31 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2056921165955855738, guid: 4dedad52cccbf4f4394c80b4f5ea0db3, type: 3}
       propertyPath: MaxStep
-      value: 100
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 2056921166490303485, guid: 4dedad52cccbf4f4394c80b4f5ea0db3, type: 3}
       propertyPath: MaxStep
-      value: 100
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 2056921166622851972, guid: 4dedad52cccbf4f4394c80b4f5ea0db3, type: 3}
       propertyPath: MaxStep
-      value: 100
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 2056921166643167688, guid: 4dedad52cccbf4f4394c80b4f5ea0db3, type: 3}
       propertyPath: MaxStep
-      value: 100
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 2056921166814496235, guid: 4dedad52cccbf4f4394c80b4f5ea0db3, type: 3}
       propertyPath: MaxStep
-      value: 100
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 2056921167275461830, guid: 4dedad52cccbf4f4394c80b4f5ea0db3, type: 3}
       propertyPath: MaxStep
-      value: 100
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 2056921167372719168, guid: 4dedad52cccbf4f4394c80b4f5ea0db3, type: 3}
       propertyPath: MaxStep
-      value: 100
+      value: 10000
       objectReference: {fileID: 0}
     - target: {fileID: 2056921167723875772, guid: 4dedad52cccbf4f4394c80b4f5ea0db3, type: 3}
       propertyPath: m_RootOrder
@@ -205,6 +205,10 @@ PrefabInstance:
     - target: {fileID: 2056921167723875775, guid: 4dedad52cccbf4f4394c80b4f5ea0db3, type: 3}
       propertyPath: m_Name
       value: TestingArea
+      objectReference: {fileID: 0}
+    - target: {fileID: 2061196820313856264, guid: 4dedad52cccbf4f4394c80b4f5ea0db3, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4dedad52cccbf4f4394c80b4f5ea0db3, type: 3}
