@@ -25,6 +25,8 @@ public class AnimalAgent : Agent
     float mapLength;
     float mapMaxHeight;
     Transform transformOfParent;
+    float staminaThreshold;
+    bool canRunning;
 
     public override void Initialize()
     {
@@ -38,6 +40,8 @@ public class AnimalAgent : Agent
         mapWidth = learningEnv.mapWidth*0.8f; //맵의 최대 가로 길이(x축으로), 너무 구석에 스폰되는 것을 방지하기 위해 0.8 곱함.
         mapLength = learningEnv.mapLength*0.8f; //맵의 최대 세로 길이(z축으로), 너무 구석에 스폰되는 것을 방지하기 위해 0.8 곱함.
         mapMaxHeight = learningEnv.mapMaxHeight; //맵의 최대 높이(y축으로)
+        staminaThreshold = animalState.StaminaThreshold;
+        canRunning = true;
     }
     public override void OnEpisodeBegin()
     {
@@ -68,11 +72,20 @@ public class AnimalAgent : Agent
     {
         sensor.AddObservation(animalState.Stamina);
     }
-    /*
+    
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     {
-        actionMask.SetActionEnabled(branch, actionIndex, isEnabled);
+       
+        if(canRunning==true&&animalState.Stamina<=0.0f)
+        {
+            actionMask.SetActionEnabled(0, 1, false);
+        }
+        else if(canRunning==false&&animalState.Stamina>staminaThreshold)
+        {
+            actionMask.SetActionEnabled(0, 1, true);
+        }
     }
+    /*
     usage: 
     actionMask.SetActionEnabled(0, 1, false);
     actionMask.SetActionEnabled(0, 2, false);
@@ -80,35 +93,28 @@ public class AnimalAgent : Agent
 
     private void evaluate()
     {
-        //if (learningEnv.IsTimeout)
+        if(animalState.CurrentState==Polyperfect.Common.Common_WanderScript.WanderState.Dead)
         {
-            // 끝났을 때 추가작업
-            //EpisodeInterrupted();
+            SetReward(-1f);
+            EndEpisode();
         }
-        //else
+        else if(animalState.HasKilled)
         {
-            if(animalState.CurrentState==Polyperfect.Common.Common_WanderScript.WanderState.Dead)
-            {
-                SetReward(0.0f);
-                EndEpisode();
-            }
-            else if(animalState.HasKilled)
-            {
-                AddReward(1.0f/3);
-                ++killCnt;
-                animalState.HasKilled = false;
-            }
+            AddReward(1.0f/3);
+            ++killCnt;
+            animalState.HasKilled = false;
+        }
 
-            if((Animal)behaviorParameters.TeamId==Animal.Bear)
-            {
-                if (killCnt >= 3) EndEpisode();
-                AddReward(-existential);
-            }
-            else if((Animal)behaviorParameters.TeamId == Animal.Beaver)
-            {
-                AddReward(existential);
-            }
+        if((Animal)behaviorParameters.TeamId==Animal.Bear)
+        {
+            if (killCnt >= 3) EndEpisode();
+            AddReward(-existential);
         }
+        else if((Animal)behaviorParameters.TeamId == Animal.Beaver)
+        {
+            AddReward(existential);
+        }
+        
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

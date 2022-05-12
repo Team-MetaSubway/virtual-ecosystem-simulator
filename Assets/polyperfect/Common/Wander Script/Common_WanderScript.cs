@@ -164,6 +164,10 @@ namespace Polyperfect.Common
         MovementState walkingState; //걷는 애니메이션 및 파라미터
 
         float staminaThreshold; //뛰려면 가지고 있어야하는 최소한의 스태미나
+        public float StaminaThreshold
+        {
+            get { return staminaThreshold; }
+        }
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -466,13 +470,15 @@ namespace Polyperfect.Common
         public void updateAnimalState(Vector3 direction, int inputState)
         {
             if (!started) return;
-            SetState((WanderState)inputState);
+            if (CurrentState == WanderState.Attack||CurrentState==WanderState.Dead) return;
+            if (CurrentState != (WanderState)inputState)
+            {
+                SetState((WanderState)inputState);
+            }
             switch (CurrentState)
             {
-                case WanderState.Attack: break;
                 case WanderState.Running:
                     stamina -= Time.deltaTime;
-                    if (stamina <= 0f) SetState(WanderState.Walking);
                     break;
                 case WanderState.Walking:
                     stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
@@ -521,25 +527,19 @@ namespace Polyperfect.Common
 
         public void SetState(WanderState state)
         {
+            CurrentState = state;
             switch (state)
             {
                 case WanderState.Running:
-                    if (stamina > staminaThreshold)
-                    {
-                        CurrentState = state;
-                        HandleBeginRunning();
-                    }
+                    HandleBeginRunning();
                     break;
                 case WanderState.Walking:
-                    CurrentState = state;
                     HandleBeginWalking();
                     break;
                 case WanderState.Attack:
-                    CurrentState = state;
                     HandleBeginAttack();
                     break;
                 case WanderState.Dead:
-                    CurrentState = state;
                     HandleBeginDeath();
                     break;
                 default:
@@ -654,9 +654,12 @@ namespace Polyperfect.Common
         
         private void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.layer != gameObject.layer) return; //맞닿은 object가 Animal이 아니라면 return. generality 가 떨어지므로 추후 수정해야할 코드.
+            //맞닿은 object가 Animal layer가 아니라면 return. 
+            //generality 가 떨어지므로 좋지 않음.추후 수정해야할 코드.
+            if (other.gameObject.layer != gameObject.layer) return; 
             if (started == false) return;
-            if (CurrentState == WanderState.Attack) return; //만약 이미 공격 중이라면 새로운 object 가 공격 사거리에 들어와도 무시한다.
+            if (other.gameObject.GetComponent<Common_WanderScript>().CurrentState == WanderState.Dead) return;
+            if (CurrentState == WanderState.Attack||CurrentState==WanderState.Dead) return; //만약 죽었거나 이미 공격 중이라면 새로운 object 가 공격 사거리에 들어와도 무시한다.
 
             Common_WanderScript targetObject = other.GetComponent<Common_WanderScript>();
              
