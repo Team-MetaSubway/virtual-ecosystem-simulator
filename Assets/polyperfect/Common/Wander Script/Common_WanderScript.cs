@@ -157,7 +157,11 @@ namespace Polyperfect.Common
             get { return hasKilled; }
             set { hasKilled = value; }
         }
-        
+
+        MovementState runningState; //달리는 애니메이션 및 파라미터
+        MovementState walkingState; //걷는 애니메이션 및 파라미터
+
+        //성원 추가 끝
 
         public void OnDrawGizmosSelected()
         {
@@ -378,6 +382,37 @@ namespace Polyperfect.Common
             {
                 transform.GetChild(0).gameObject.AddComponent<Common_SurfaceRotation>().SetRotationSpeed(surfaceRotationSpeed);
             }
+
+
+            //성원 추가
+            runningState = null;
+            var maxSpeed = 0f;
+            foreach (var state in movementStates)
+            {
+                var stateSpeed = state.moveSpeed;
+                if (stateSpeed > maxSpeed)
+                {
+                    runningState = state;
+                    maxSpeed = stateSpeed;
+                }
+            }
+
+            UnityEngine.Assertions.Assert.IsNotNull(runningState, string.Format("{0}'s wander script does not have any movement states.", gameObject.name));
+
+            walkingState = null;
+            var minSpeed = float.MaxValue;
+            foreach (var state in movementStates)
+            {
+                var stateSpeed = state.moveSpeed;
+                if (stateSpeed < minSpeed)
+                {
+                    walkingState = state;
+                    minSpeed = stateSpeed;
+                }
+            }
+
+            UnityEngine.Assertions.Assert.IsNotNull(walkingState, string.Format("{0}'s wander script does not have any movement states.", gameObject.name));
+            //성원 추가 끝
         }
 
         IEnumerable<AIState> AllStates
@@ -710,67 +745,41 @@ namespace Polyperfect.Common
             turnSpeed = 120f;
             ClearAnimatorBools();
             TrySetBool(attackingStates[attackState].animationBool, true);
-            attackingEvent.Invoke();
+            //attackingEvent.Invoke();
         }
 
         void HandleBeginEvade()
         {
             SetMoveFast();
-            movementEvent.Invoke();
+            //movementEvent.Invoke();
         }
 
         void HandleBeginChase()
         {
             SetMoveFast();
-            movementEvent.Invoke();
+            //movementEvent.Invoke();
         }
 
-        void SetMoveFast()
-        {
-            MovementState moveState = null;
-            var maxSpeed = 0f;
-            foreach (var state in movementStates)
-            {
-                var stateSpeed = state.moveSpeed;
-                if (stateSpeed > maxSpeed)
-                {
-                    moveState = state;
-                    maxSpeed = stateSpeed;
-                }
-            }
-
-            UnityEngine.Assertions.Assert.IsNotNull(moveState, string.Format("{0}'s wander script does not have any movement states.", gameObject.name));
-            turnSpeed = moveState.turnSpeed;
-            moveSpeed = maxSpeed;
-            ClearAnimatorBools();
-            TrySetBool(moveState.animationBool, true);
-        }
-
-        void SetMoveSlow()
-        {
-            MovementState moveState = null;
-            var minSpeed = float.MaxValue;
-            foreach (var state in movementStates)
-            {
-                var stateSpeed = state.moveSpeed;
-                if (stateSpeed < minSpeed)
-                {
-                    moveState = state;
-                    minSpeed = stateSpeed;
-                }
-            }
-
-            UnityEngine.Assertions.Assert.IsNotNull(moveState, string.Format("{0}'s wander script does not have any movement states.", gameObject.name));
-            turnSpeed = moveState.turnSpeed;
-            moveSpeed = minSpeed;
-            ClearAnimatorBools();
-            TrySetBool(moveState.animationBool, true);
-        }
-        
         void HandleBeginWander()
         {
             primaryPrey = null;
             SetMoveSlow();
+        }
+
+        void SetMoveFast()
+        {
+            turnSpeed = runningState.turnSpeed;
+            moveSpeed = runningState.moveSpeed;
+            ClearAnimatorBools();
+            TrySetBool(runningState.animationBool, true);
+        }
+
+        void SetMoveSlow()
+        {
+            turnSpeed = walkingState.turnSpeed;
+            moveSpeed = walkingState.moveSpeed;
+            ClearAnimatorBools();
+            TrySetBool(walkingState.animationBool, true);
         }
 
         IEnumerator RandomStartingDelay()
