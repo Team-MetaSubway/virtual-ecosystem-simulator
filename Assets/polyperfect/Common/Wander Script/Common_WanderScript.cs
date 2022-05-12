@@ -57,6 +57,10 @@ namespace Polyperfect.Common
 
         // [SerializeField, Tooltip("How many seconds this animal can run for before it gets tired.")]
         private float stamina = 10f;
+        public float Stamina
+        {
+            get { return stamina; }
+        }
 
         // [SerializeField, Tooltip("How much this damage this animal does to another animal.")]
         private float power = 10f;
@@ -79,13 +83,6 @@ namespace Polyperfect.Common
 
         [SerializeField, Tooltip("This animal will be peaceful towards species in this list.")]
         private string[] nonAgressiveTowards;
-
-        private static List<Common_WanderScript> allAnimals = new List<Common_WanderScript>();
-
-        public static List<Common_WanderScript> AllAnimals
-        {
-            get { return allAnimals; }
-        }
 
         //[Space(), Space(5)]
         [SerializeField, Tooltip("If true, this animal will rotate to match the terrain. Ensure you have set the layer of the terrain as 'Terrain'.")]
@@ -122,6 +119,12 @@ namespace Polyperfect.Common
 
         private float turnSpeed = 0f;
 
+        private static List<Common_WanderScript> allAnimals = new List<Polyperfect.Common.Common_WanderScript>();
+
+        public static List<Common_WanderScript> AllAnimals
+        {
+            get { return allAnimals; }
+        }
         public enum WanderState
         {
             Walking,
@@ -160,6 +163,7 @@ namespace Polyperfect.Common
         MovementState runningState; //달리는 애니메이션 및 파라미터
         MovementState walkingState; //걷는 애니메이션 및 파라미터
 
+        float staminaThreshold; //뛰려면 가지고 있어야하는 최소한의 스태미나
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -384,6 +388,8 @@ namespace Polyperfect.Common
 
 
             //성원 추가
+            staminaThreshold = stats.stamina * 0.2f;
+
             runningState = null;
             var maxSpeed = 0f;
             foreach (var state in movementStates)
@@ -457,9 +463,10 @@ namespace Polyperfect.Common
         bool started = false;
         readonly HashSet<string> animatorParameters = new HashSet<string>();
 
-        public void updateAnimalState(Vector3 direction)
+        public void updateAnimalState(Vector3 direction, int inputState)
         {
             if (!started) return;
+            SetState((WanderState)inputState);
             switch (CurrentState)
             {
                 case WanderState.Attack: break;
@@ -514,19 +521,25 @@ namespace Polyperfect.Common
 
         public void SetState(WanderState state)
         {
-            CurrentState = state;
-            switch (CurrentState)
+            switch (state)
             {
                 case WanderState.Running:
-                    HandleBeginRunning();
+                    if (stamina > staminaThreshold)
+                    {
+                        CurrentState = state;
+                        HandleBeginRunning();
+                    }
                     break;
                 case WanderState.Walking:
+                    CurrentState = state;
                     HandleBeginWalking();
                     break;
                 case WanderState.Attack:
+                    CurrentState = state;
                     HandleBeginAttack();
                     break;
                 case WanderState.Dead:
+                    CurrentState = state;
                     HandleBeginDeath();
                     break;
                 default:

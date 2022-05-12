@@ -4,7 +4,7 @@ using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
-
+using Unity.MLAgents.Sensors;
 
 public enum Animal
 {
@@ -30,7 +30,7 @@ public class AnimalAgent : Agent
     {
         animalState = GetComponent<Polyperfect.Common.Common_WanderScript>();
         behaviorParameters = GetComponent<BehaviorParameters>();
-        learningEnv = transform.parent.GetComponent< LearningEnvController>();
+        learningEnv = transform.parent.GetComponent<LearningEnvController>();
         transformOfParent = transform.parent.transform;
         
 
@@ -59,10 +59,24 @@ public class AnimalAgent : Agent
         animalState.updateAnimalState( 
             new Vector3(
                 actions.ContinuousActions[0], //x
-                actions.ContinuousActions[1], //y
-                actions.ContinuousActions[2])); //z
+                0,
+                actions.ContinuousActions[1]), actions.DiscreteActions[0]); //z
         evaluate();
     }
+
+    public override void CollectObservations(VectorSensor sensor)
+    {
+        sensor.AddObservation(animalState.Stamina);
+    }
+    /*
+    public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+    {
+        actionMask.SetActionEnabled(branch, actionIndex, isEnabled);
+    }
+    usage: 
+    actionMask.SetActionEnabled(0, 1, false);
+    actionMask.SetActionEnabled(0, 2, false);
+    */
 
     private void evaluate()
     {
@@ -100,17 +114,14 @@ public class AnimalAgent : Agent
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var continuousActionsOut = actionsOut.ContinuousActions;
-        continuousActionsOut[0] = 0.0f;
-        continuousActionsOut[1] = 0.0f;
-        continuousActionsOut[2] = 0.0f;
 
         if (Input.GetKey(KeyCode.W))
         {
-            continuousActionsOut[2] = 1.0f;
+            continuousActionsOut[1] = 1.0f;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            continuousActionsOut[2] = -1.0f;
+            continuousActionsOut[1] = -1.0f;
         }
         if (Input.GetKey(KeyCode.A))
         {
@@ -120,5 +131,8 @@ public class AnimalAgent : Agent
         {
             continuousActionsOut[0] = 1.0f;
         }
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        if (Input.GetKey(KeyCode.LeftShift)) discreteActionsOut[0] = (int)Polyperfect.Common.Common_WanderScript.WanderState.Running;
+        else discreteActionsOut[0] = (int)Polyperfect.Common.Common_WanderScript.WanderState.Walking;
     }
 }
