@@ -19,13 +19,14 @@ public class AnimalAgent : Agent
     Polyperfect.Common.Common_WanderScript animalState;
     BehaviorParameters behaviorParameters;
     LearningEnvController learningEnv;
-    int killCnt = 0;
     float existential;
     float mapWidth;
     float mapLength;
     float mapMaxHeight;
     Transform transformOfParent;
     float staminaThreshold;
+
+    int killCnt = 0;
     bool canRunning;
 
     public override void Initialize()
@@ -41,7 +42,6 @@ public class AnimalAgent : Agent
         mapLength = learningEnv.mapLength*0.8f; //맵의 최대 세로 길이(z축으로), 너무 구석에 스폰되는 것을 방지하기 위해 0.8 곱함.
         mapMaxHeight = learningEnv.mapMaxHeight; //맵의 최대 높이(y축으로)
         staminaThreshold = animalState.StaminaThreshold;
-        canRunning = true;
     }
     public override void OnEpisodeBegin()
     {
@@ -55,16 +55,38 @@ public class AnimalAgent : Agent
         pos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
 
         animalState.transform.localPosition = pos;
+        animalState.transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
+        canRunning = true;
         animalState.setStart();
         killCnt = 0;
     }
     public override void OnActionReceived(ActionBuffers actions)
     {
+
+        var dirToGo = Vector3.zero;
+        var rotateDir = Vector3.zero;
+
+        var forwardAxis = actions.DiscreteActions[0];
+        var rotateAxis = actions.DiscreteActions[1];
+
+        switch (forwardAxis)
+        {
+            case 1:
+                dirToGo = transform.forward; //뒤 무빙
+                break;
+        }
+        switch (rotateAxis)
+        {
+            case 1:
+                rotateDir = transform.up * -1f;//위에서 봤을때 시계 회전
+                break;
+            case 2:
+                rotateDir = transform.up * 1f; //위에서 봤을때 반시계 회전
+                break;
+        }
+        transform.Rotate(rotateDir, animalState.TurnSpeed*Time.deltaTime);
         animalState.updateAnimalState( 
-            new Vector3(
-                actions.ContinuousActions[0], //x
-                0,
-                actions.ContinuousActions[1]), actions.DiscreteActions[0]); //z
+            dirToGo, actions.DiscreteActions[2]); //z
         evaluate();
     }
 
@@ -78,11 +100,13 @@ public class AnimalAgent : Agent
        
         if(canRunning==true&&animalState.Stamina<=0.0f)
         {
-            actionMask.SetActionEnabled(0, 1, false);
+            canRunning = false;
+            actionMask.SetActionEnabled(2, 1, false);
         }
         else if(canRunning==false&&animalState.Stamina>staminaThreshold)
         {
-            actionMask.SetActionEnabled(0, 1, true);
+            canRunning = true;
+            actionMask.SetActionEnabled(2, 1, true);
         }
     }
     /*
@@ -119,26 +143,21 @@ public class AnimalAgent : Agent
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var continuousActionsOut = actionsOut.ContinuousActions;
+        var discreteActionsOut = actionsOut.DiscreteActions;
 
         if (Input.GetKey(KeyCode.W))
         {
-            continuousActionsOut[1] = 1.0f;
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            continuousActionsOut[1] = -1.0f;
-        }
-        if (Input.GetKey(KeyCode.A))
-        {
-            continuousActionsOut[0] = -1.0f;
+            discreteActionsOut[0] = 1; //+z, transform.forward
         }
         if (Input.GetKey(KeyCode.D))
         {
-            continuousActionsOut[0] = 1.0f;
+            discreteActionsOut[1] = 2; //clockwise, -y
         }
-        var discreteActionsOut = actionsOut.DiscreteActions;
-        if (Input.GetKey(KeyCode.LeftShift)) discreteActionsOut[0] = (int)Polyperfect.Common.Common_WanderScript.WanderState.Running;
-        else discreteActionsOut[0] = (int)Polyperfect.Common.Common_WanderScript.WanderState.Walking;
+        if (Input.GetKey(KeyCode.A))
+        {
+            discreteActionsOut[1] = 1; //ccw, +y
+        }
+        if (Input.GetKey(KeyCode.LeftShift)) discreteActionsOut[2] = (int)Polyperfect.Common.Common_WanderScript.WanderState.Running;
+        else discreteActionsOut[2] = (int)Polyperfect.Common.Common_WanderScript.WanderState.Walking;
     }
 }

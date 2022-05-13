@@ -118,6 +118,10 @@ namespace Polyperfect.Common
         private Vector3 targetLocation = Vector3.zero;
 
         private float turnSpeed = 0f;
+        public float TurnSpeed
+        {
+            get { return turnSpeed; }
+        }
 
         private static List<Common_WanderScript> allAnimals = new List<Polyperfect.Common.Common_WanderScript>();
 
@@ -127,8 +131,8 @@ namespace Polyperfect.Common
         }
         public enum WanderState
         {
-            Walking,
-            Running,
+            Walking, //반드시 0
+            Running, //반드시 1
             Attack,
             Dead
         }
@@ -441,12 +445,12 @@ namespace Polyperfect.Common
 
         void OnEnable()
         {
-            allAnimals.Add(this);
+            //allAnimals.Add(this);
         }
 
         void OnDisable()
         {
-            allAnimals.Remove(this);
+            //allAnimals.Remove(this);
             StopAllCoroutines();
         }
 
@@ -461,15 +465,17 @@ namespace Polyperfect.Common
             {
                 SetPeaceTime(true);
             }
-            StartCoroutine(RandomStartingDelay());
+            stamina = stats.stamina;
+            toughness = stats.toughness;
+            //StartCoroutine(RandomStartingDelay());
         }
 
-        bool started = false;
+       
         readonly HashSet<string> animatorParameters = new HashSet<string>();
 
         public void updateAnimalState(Vector3 direction, int inputState)
         {
-            if (!started) return;
+            //if (!started) return;
             if (CurrentState == WanderState.Attack||CurrentState==WanderState.Dead) return;
             if (CurrentState != (WanderState)inputState)
             {
@@ -484,8 +490,8 @@ namespace Polyperfect.Common
                     stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
                     break;
             }
-            FaceDirection(direction.normalized);
-            characterController.SimpleMove(moveSpeed * direction.normalized);
+            //FaceDirection(direction.normalized);
+            characterController.SimpleMove(moveSpeed * direction);
         }
 
         void FaceDirection(Vector3 facePosition)
@@ -617,7 +623,6 @@ namespace Polyperfect.Common
         IEnumerator RandomStartingDelay()
         {
             yield return new WaitForSeconds(Random.Range(0f, 2f));
-            started = true;
         }
 
         [ContextMenu("This will delete any states you have set, and replace them with the default ones, you can't undo!")]
@@ -657,7 +662,6 @@ namespace Polyperfect.Common
             //맞닿은 object가 Animal layer가 아니라면 return. 
             //generality 가 떨어지므로 좋지 않음.추후 수정해야할 코드.
             if (other.gameObject.layer != gameObject.layer) return; 
-            if (started == false) return;
             if (other.gameObject.GetComponent<Common_WanderScript>().CurrentState == WanderState.Dead) return;
             if (CurrentState == WanderState.Attack||CurrentState==WanderState.Dead) return; //만약 죽었거나 이미 공격 중이라면 새로운 object 가 공격 사거리에 들어와도 무시한다.
 
