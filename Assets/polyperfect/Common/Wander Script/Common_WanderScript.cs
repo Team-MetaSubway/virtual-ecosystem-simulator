@@ -17,9 +17,7 @@ namespace Polyperfect.Common
     [RequireComponent(typeof(Animator)), RequireComponent(typeof(CharacterController))]
     public class Common_WanderScript : MonoBehaviour
     {
-        private const float contingencyDistance = 1f;
-
-
+        
         [SerializeField] public IdleState[] idleStates;
         [SerializeField] private MovementState[] movementStates;
         [SerializeField] private AIState[] attackingStates;
@@ -59,6 +57,10 @@ namespace Polyperfect.Common
 
         // [SerializeField, Tooltip("How many seconds this animal can run for before it gets tired.")]
         private float stamina = 10f;
+        public float Stamina
+        {
+            get { return stamina; }
+        }
 
         // [SerializeField, Tooltip("How much this damage this animal does to another animal.")]
         private float power = 10f;
@@ -79,18 +81,8 @@ namespace Polyperfect.Common
         // [SerializeField, Tooltip("Stealthy animals can't be detected by other animals.")]
         private bool stealthy = false;
 
-        [SerializeField, Tooltip("If true, this animal will never leave it's zone, even if it's chasing or running away from another animal.")]
-        private bool constainedToWanderZone = false;
-
         [SerializeField, Tooltip("This animal will be peaceful towards species in this list.")]
         private string[] nonAgressiveTowards;
-
-        private static List<Common_WanderScript> allAnimals = new List<Common_WanderScript>();
-
-        public static List<Common_WanderScript> AllAnimals
-        {
-            get { return allAnimals; }
-        }
 
         //[Space(), Space(5)]
         [SerializeField, Tooltip("If true, this animal will rotate to match the terrain. Ensure you have set the layer of the terrain as 'Terrain'.")]
@@ -121,22 +113,26 @@ namespace Polyperfect.Common
         private Color scentColor = new Color(1f, 0f, 0f, 1f);
         private Animator animator;
         private CharacterController characterController;
-        private NavMeshAgent navMeshAgent;
         private Vector3 origin;
 
-        private int totalIdleStateWeight;
-
-        private bool useNavMesh = false;
         private Vector3 targetLocation = Vector3.zero;
 
         private float turnSpeed = 0f;
+        public float TurnSpeed
+        {
+            get { return turnSpeed; }
+        }
 
+        private static List<Common_WanderScript> allAnimals = new List<Polyperfect.Common.Common_WanderScript>();
+
+        public static List<Common_WanderScript> AllAnimals
+        {
+            get { return allAnimals; }
+        }
         public enum WanderState
         {
-            Idle,
-            Wander,
-            Chase,
-            Evade,
+            Walking, //반드시 0
+            Running, //반드시 1
             Attack,
             Dead
         }
@@ -159,12 +155,6 @@ namespace Polyperfect.Common
         float moveSpeed = 0f;
         float attackReach = 2f;
         bool forceUpdate = false;
-        float idleStateDuration;
-        Vector3 startPosition;
-        Vector3 wanderTarget;
-        IdleState currentIdleState;
-        float idleUpdateTime;
-
 
         //성원 추가
         bool hasKilled = false;
@@ -173,13 +163,17 @@ namespace Polyperfect.Common
             get { return hasKilled; }
             set { hasKilled = value; }
         }
-        /*
-        Vector3 direction = new Vector3(0.0f, 0.0f, 0.0f);
-        public Vector3 Direction
+
+        MovementState runningState; //달리는 애니메이션 및 파라미터
+        MovementState walkingState; //걷는 애니메이션 및 파라미터
+
+        float staminaThreshold; //뛰려면 가지고 있어야하는 최소한의 스태미나
+        public float StaminaThreshold
         {
-            set { direction = value; }
+            get { return staminaThreshold; }
         }
-        */
+        //성원 추가 끝
+
         public void OnDrawGizmosSelected()
         {
             if (!showGizmos)
@@ -219,23 +213,13 @@ namespace Polyperfect.Common
             if (!Application.isPlaying)
                 return;
 
-            // Draw target position.
-            if (useNavMesh)
+            
+            if (targetLocation != Vector3.zero)
             {
-                if (navMeshAgent.remainingDistance > 1f)
-                {
-                    Gizmos.DrawSphere(navMeshAgent.destination + new Vector3(0f, 0.1f, 0f), 0.2f);
-                    Gizmos.DrawLine(transform.position, navMeshAgent.destination);
-                }
+                Gizmos.DrawSphere(targetLocation + new Vector3(0f, 0.1f, 0f), 0.2f);
+                Gizmos.DrawLine(transform.position, targetLocation);
             }
-            else
-            {
-                if (targetLocation != Vector3.zero)
-                {
-                    Gizmos.DrawSphere(targetLocation + new Vector3(0f, 0.1f, 0f), 0.2f);
-                    Gizmos.DrawLine(transform.position, targetLocation);
-                }
-            }
+           
         }
 
         private void Awake()
@@ -382,15 +366,10 @@ namespace Polyperfect.Common
                 }
             }
 
-            foreach (IdleState state in idleStates)
-            {
-                totalIdleStateWeight += state.stateWeight;
-            }
-
             origin = transform.position;
             animator.applyRootMotion = false;
             characterController = GetComponent<CharacterController>();
-            navMeshAgent = GetComponent<NavMeshAgent>();
+            
 
             //Assign the stats to variables
             originalDominance = stats.dominance;
@@ -410,16 +389,43 @@ namespace Polyperfect.Common
             originalScent = scent;
             scent = originalScent;
 
-            if (navMeshAgent)
-            {
-                useNavMesh = true;
-                navMeshAgent.stoppingDistance = contingencyDistance;
-            }
-
             if (matchSurfaceRotation && transform.childCount > 0)
             {
                 transform.GetChild(0).gameObject.AddComponent<Common_SurfaceRotation>().SetRotationSpeed(surfaceRotationSpeed);
             }
+
+
+            //성원 추가
+            staminaThreshold = stats.stamina * 0.2f;
+
+            runningState = null;
+            var maxSpeed = 0f;
+            foreach (var state in movementStates)
+            {
+                var stateSpeed = state.moveSpeed;
+                if (stateSpeed > maxSpeed)
+                {
+                    runningState = state;
+                    maxSpeed = stateSpeed;
+                }
+            }
+
+            UnityEngine.Assertions.Assert.IsNotNull(runningState, string.Format("{0}'s wander script does not have any movement states.", gameObject.name));
+
+            walkingState = null;
+            var minSpeed = float.MaxValue;
+            foreach (var state in movementStates)
+            {
+                var stateSpeed = state.moveSpeed;
+                if (stateSpeed < minSpeed)
+                {
+                    walkingState = state;
+                    minSpeed = stateSpeed;
+                }
+            }
+
+            UnityEngine.Assertions.Assert.IsNotNull(walkingState, string.Format("{0}'s wander script does not have any movement states.", gameObject.name));
+            //성원 추가 끝
         }
 
         IEnumerable<AIState> AllStates
@@ -439,152 +445,53 @@ namespace Polyperfect.Common
 
         void OnEnable()
         {
-            allAnimals.Add(this);
+            //allAnimals.Add(this);
         }
 
         void OnDisable()
         {
-            allAnimals.Remove(this);
+            //allAnimals.Remove(this);
             StopAllCoroutines();
         }
 
-        private void Start()
-        {
-            realStart();
-        }
+        //private void Start()
+        //{
+        //    setStart();
+        //}
 
-        public void realStart()
+        public void setStart()
         {
-            startPosition = transform.position;
             if (Common_WanderManager.Instance != null && Common_WanderManager.Instance.PeaceTime)
             {
                 SetPeaceTime(true);
             }
-
-            StartCoroutine(RandomStartingDelay());
+            stamina = stats.stamina;
+            toughness = stats.toughness;
+            //StartCoroutine(RandomStartingDelay());
         }
 
-        private void Update()
-        {
-
-        }
-
-        bool started = false;
+       
         readonly HashSet<string> animatorParameters = new HashSet<string>();
 
-        public void updateAnimalState(Vector3 direction)
+        public void updateAnimalState(Vector3 direction, int inputState)
         {
-            if (!started)
-                return;
-            if (forceUpdate)
+            //if (!started) return;
+            if (CurrentState == WanderState.Attack||CurrentState==WanderState.Dead) return;
+            if (CurrentState != (WanderState)inputState)
             {
-                UpdateAI();
-                forceUpdate = false;
+                SetState((WanderState)inputState);
             }
-
-            if (CurrentState == WanderState.Attack)
-            {
-                if (!attackTarget || attackTarget.CurrentState == WanderState.Dead)
-                {
-                    var previous = attackTarget;
-                    UpdateAI();
-                    if (previous && previous == attackTarget)
-                        Debug.LogError(string.Format("Target was same {0}", previous.gameObject.name));
-                }
-
-                attackTimer += Time.deltaTime;
-            }
-
-            if (attackTimer > attackSpeed)
-            {
-                attackTimer -= attackSpeed;
-                if (attackTarget)
-                {
-                    if (attackTarget.TakeDamage(power))
-                    {
-                        hasKilled = true;
-                        UpdateAI();
-                    }
-                }
-            }
-
-            //여기서부터 targetPosition 시작
-
-            var position = transform.position;
-            var targetPosition = position;
             switch (CurrentState)
             {
-                case WanderState.Attack:
-                    //FaceDirection((attackTarget.transform.position - position).normalized);
-                    targetPosition = position;
-                    break;
-                case WanderState.Chase:
-                    if (!primaryPrey || primaryPrey.CurrentState == WanderState.Dead)
-                    {
-                        primaryPrey = null;
-                        SetState(WanderState.Idle);
-                        goto case WanderState.Idle;
-                    }
-                    targetPosition = primaryPrey.transform.position;
-                    ValidatePosition(ref targetPosition);
-                    if (!IsValidLocation(targetPosition))
-                    {
-                        SetState(WanderState.Idle);
-                        targetPosition = position;
-                        UpdateAI();
-                        break;
-                    }
-
-                    //FaceDirection((targetPosition - position).normalized);
+                case WanderState.Running:
                     stamina -= Time.deltaTime;
-                    if (stamina <= 0f)
-                        UpdateAI();
                     break;
-                case WanderState.Evade:
-                    targetPosition = position + Vector3.ProjectOnPlane(position - primaryPursuer.transform.position, Vector3.up);
-                    if (!IsValidLocation(targetPosition))
-                        targetPosition = startPosition;
-                    ValidatePosition(ref targetPosition);
-                    //FaceDirection((targetPosition - position).normalized);
-                    stamina -= Time.deltaTime;
-                    if (stamina <= 0f)
-                        UpdateAI();
-                    break;
-                case WanderState.Wander:
+                case WanderState.Walking:
                     stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
-                    targetPosition = wanderTarget;
-                    Debug.DrawLine(position, targetPosition, Color.yellow);
-                    //FaceDirection((targetPosition - position).normalized);
-                    var displacementFromTarget = Vector3.ProjectOnPlane(targetPosition - transform.position, Vector3.up);
-                    if (displacementFromTarget.magnitude < contingencyDistance)
-                    {
-                        SetState(WanderState.Idle);
-                        UpdateAI();
-                    }
-
-                    break;
-                case WanderState.Idle:
-                    stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
-                    if (Time.time >= idleUpdateTime)
-                    {
-                        SetState(WanderState.Wander);
-                        UpdateAI();
-                    }
                     break;
             }
-
-            if (navMeshAgent)
-            {
-                navMeshAgent.destination = targetPosition;
-                navMeshAgent.speed = moveSpeed;
-                navMeshAgent.angularSpeed = turnSpeed;
-            }
-            else
-            {
-                FaceDirection(direction.normalized);
-                characterController.SimpleMove(moveSpeed * direction.normalized);
-                //characterController.SimpleMove(moveSpeed * UnityEngine.Vector3.ProjectOnPlane(targetPosition - position,Vector3.up).normalized); //어렵게 써 있지만, 결국 x,z 두 방향 normalized.
-            }
+            //FaceDirection(direction.normalized);
+            characterController.SimpleMove(moveSpeed * direction);
         }
 
         void FaceDirection(Vector3 facePosition)
@@ -624,186 +531,27 @@ namespace Polyperfect.Common
             }
         }
 
-        void UpdateAI()
-        {
-            if (CurrentState == WanderState.Dead)
-            {
-                //Debug.LogError("Trying to update the AI of a dead animal, something probably went wrong somewhere.");
-                return;
-            }
-
-            var position = transform.position;
-            primaryPursuer = null;
-            if (awareness > 0)
-            {
-                var closestDistance = awareness;
-                if (allAnimals.Count > 0)
-                {
-                    foreach (var chaser in allAnimals)
-                    {
-                        if (chaser.primaryPrey != this && chaser.attackTarget != this)
-                            continue;
-
-                        if (chaser.CurrentState == WanderState.Dead)
-                            continue;
-                        var distance = Vector3.Distance(position, chaser.transform.position);
-                        if ((chaser.attackTarget != this && chaser.stealthy) || chaser.dominance <= this.dominance || distance > closestDistance)
-                            continue;
-
-                        closestDistance = distance;
-                        primaryPursuer = chaser;
-                    }
-                }
-            }
-
-            var wasSameTarget = false;
-            if (primaryPrey)
-            {
-                if (primaryPrey.CurrentState == WanderState.Dead)
-                    primaryPrey = null;
-                else
-                {
-                    var distanceToPrey = Vector3.Distance(position, primaryPrey.transform.position);
-                    if (distanceToPrey > scent)
-                        primaryPrey = null;
-                    else
-                        wasSameTarget = true;
-                }
-            }
-            if (!primaryPrey)
-            {
-                primaryPrey = null;
-                if (dominance > 0 && attackingStates.Length > 0)
-                {
-                    var aggFrac = aggression * .01f;
-                    aggFrac *= aggFrac;
-                    var closestDistance = scent;
-                    foreach (var potentialPrey in allAnimals)
-                    {
-                        if (potentialPrey.CurrentState == WanderState.Dead)
-                            Debug.LogError(string.Format("Dead animal found: {0}", potentialPrey.gameObject.name));
-                        if (potentialPrey == this || (potentialPrey.species == species && !territorial) ||
-                            potentialPrey.dominance > dominance || potentialPrey.stealthy)
-                            continue;
-                        if (nonAgressiveTowards.Contains(potentialPrey.species))
-                            continue;
-                        if (Random.Range(0f, 0.99999f) >= aggFrac)
-                            continue;
-
-                        var preyPosition = potentialPrey.transform.position;
-                        if (!IsValidLocation(preyPosition))
-                            continue;
-
-                        var distance = Vector3.Distance(position, preyPosition);
-                        if (distance > closestDistance)
-                            continue;
-                        if (logChanges)
-                            Debug.Log(string.Format("{0}: Found prey ({1}), chasing.", gameObject.name, potentialPrey.gameObject.name));
-
-                        closestDistance = distance;
-                        primaryPrey = potentialPrey;
-                    }
-                }
-            }
-
-            var aggressiveOption = false;
-            if (primaryPrey)
-            {
-                if ((wasSameTarget && stamina > 0) || stamina > MinimumStaminaForAggression)
-                    aggressiveOption = true;
-                else
-                    primaryPrey = null;
-            }
-
-            var defensiveOption = false;
-            if (primaryPursuer && !aggressiveOption)
-            {
-                if (stamina > MinimumStaminaForFlee)
-                    defensiveOption = true;
-            }
-
-            var updateTargetAI = false;
-            var isPreyInAttackRange = aggressiveOption && Vector3.Distance(position, primaryPrey.transform.position) < CalcAttackRange(primaryPrey);
-            var isPursuerInAttackRange = defensiveOption && Vector3.Distance(position, primaryPursuer.transform.position) < CalcAttackRange(primaryPursuer);
-            if (isPursuerInAttackRange)
-            {
-                attackTarget = primaryPursuer;
-            }
-            else if (isPreyInAttackRange)
-            {
-                attackTarget = primaryPrey;
-                if (!attackTarget.attackTarget == this)
-                    updateTargetAI = true;
-            }
-            else
-                attackTarget = null;
-            var shouldAttack = attackingStates.Length > 0 && (isPreyInAttackRange || isPursuerInAttackRange);
-
-            if (shouldAttack)
-                SetState(WanderState.Attack);
-            else if (aggressiveOption)
-                SetState(WanderState.Chase);
-            else if (defensiveOption)
-                SetState(WanderState.Evade);
-            else if (CurrentState != WanderState.Idle && CurrentState != WanderState.Wander)
-                SetState(WanderState.Idle);
-            if (shouldAttack && updateTargetAI)
-                attackTarget.forceUpdate = true;
-        }
-
-        bool IsValidLocation(Vector3 targetPosition)
-        {
-            if (!constainedToWanderZone)
-                return true;
-            var distanceFromWander = Vector3.Distance(startPosition, targetPosition);
-            var isInWander = distanceFromWander < wanderZone;
-            return isInWander;
-        }
-
-        float CalcAttackRange(Common_WanderScript other)
-        {
-            var thisRange = navMeshAgent ? navMeshAgent.radius : characterController.radius;
-            var thatRange = other.navMeshAgent ? other.navMeshAgent.radius : other.characterController.radius;
-            return attackReach + thisRange + thatRange;
-        }
-
         public void SetState(WanderState state)
         {
-            var previousState = CurrentState;
-            //if (previousState == WanderState.Dead)
+            CurrentState = state;
+            switch (state)
             {
-                //Debug.LogError("Attempting to set a state to a dead animal.");
-                //return;
-            }
-            //if (state != previousState)
-            {
-                CurrentState = state;
-                switch (CurrentState)
-                {
-                    case WanderState.Idle:
-                        HandleBeginIdle();
-                        break;
-                    case WanderState.Chase:
-                        HandleBeginChase();
-                        break;
-                    case WanderState.Evade:
-                        HandleBeginEvade();
-                        break;
-                    case WanderState.Attack:
-                        HandleBeginAttack();
-                        break;
-                    case WanderState.Dead:
-                        HandleBeginDeath();
-                        break;
-                    case WanderState.Wander:
-                        HandleBeginWander();
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
+                case WanderState.Running:
+                    HandleBeginRunning();
+                    break;
+                case WanderState.Walking:
+                    HandleBeginWalking();
+                    break;
+                case WanderState.Attack:
+                    HandleBeginAttack();
+                    break;
+                case WanderState.Dead:
+                    HandleBeginDeath();
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
-
 
         void ClearAnimatorBools()
         {
@@ -816,6 +564,7 @@ namespace Polyperfect.Common
             foreach (var item in deathStates)
                 TrySetBool(item.animationBool, false);
         }
+
         void TrySetBool(string parameterName, bool value)
         {
             if (!string.IsNullOrEmpty(parameterName))
@@ -828,12 +577,9 @@ namespace Polyperfect.Common
         void HandleBeginDeath()
         {
             ClearAnimatorBools();
-            if (deathStates.Length > 0)
-                TrySetBool(deathStates[Random.Range(0, deathStates.Length)].animationBool, true);
+            if (deathStates.Length > 0) TrySetBool(deathStates[Random.Range(0, deathStates.Length)].animationBool, true);
 
-            deathEvent.Invoke();
-            if (navMeshAgent && navMeshAgent.isOnNavMesh)
-                navMeshAgent.destination = transform.position;
+            //deathEvent.Invoke();
             enabled = false;
         }
 
@@ -843,123 +589,40 @@ namespace Polyperfect.Common
             turnSpeed = 120f;
             ClearAnimatorBools();
             TrySetBool(attackingStates[attackState].animationBool, true);
-            attackingEvent.Invoke();
+            //attackingEvent.Invoke();
         }
 
-        void HandleBeginEvade()
+        void HandleBeginRunning()
         {
             SetMoveFast();
-            movementEvent.Invoke();
+            //movementEvent.Invoke();
         }
 
-        void HandleBeginChase()
+        void HandleBeginWalking()
         {
-            SetMoveFast();
-            movementEvent.Invoke();
+            primaryPrey = null;
+            SetMoveSlow();
         }
 
         void SetMoveFast()
         {
-            MovementState moveState = null;
-            var maxSpeed = 0f;
-            foreach (var state in movementStates)
-            {
-                var stateSpeed = state.moveSpeed;
-                if (stateSpeed > maxSpeed)
-                {
-                    moveState = state;
-                    maxSpeed = stateSpeed;
-                }
-            }
-
-            UnityEngine.Assertions.Assert.IsNotNull(moveState, string.Format("{0}'s wander script does not have any movement states.", gameObject.name));
-            turnSpeed = moveState.turnSpeed;
-            moveSpeed = maxSpeed;
+            turnSpeed = runningState.turnSpeed;
+            moveSpeed = runningState.moveSpeed;
             ClearAnimatorBools();
-            TrySetBool(moveState.animationBool, true);
+            TrySetBool(runningState.animationBool, true);
         }
 
         void SetMoveSlow()
         {
-            MovementState moveState = null;
-            var minSpeed = float.MaxValue;
-            foreach (var state in movementStates)
-            {
-                var stateSpeed = state.moveSpeed;
-                if (stateSpeed < minSpeed)
-                {
-                    moveState = state;
-                    minSpeed = stateSpeed;
-                }
-            }
-
-            UnityEngine.Assertions.Assert.IsNotNull(moveState, string.Format("{0}'s wander script does not have any movement states.", gameObject.name));
-            turnSpeed = moveState.turnSpeed;
-            moveSpeed = minSpeed;
+            turnSpeed = walkingState.turnSpeed;
+            moveSpeed = walkingState.moveSpeed;
             ClearAnimatorBools();
-            TrySetBool(moveState.animationBool, true);
+            TrySetBool(walkingState.animationBool, true);
         }
-        void HandleBeginIdle()
-        {
-            primaryPrey = null;
-            var targetWeight = Random.Range(0, totalIdleStateWeight);
-            var curWeight = 0;
-            foreach (var idleState in idleStates)
-            {
-                curWeight += idleState.stateWeight;
-                if (targetWeight > curWeight)
-                    continue;
-                idleUpdateTime = Time.time + Random.Range(idleState.minStateTime, idleState.maxStateTime);
-                ClearAnimatorBools();
-                TrySetBool(idleState.animationBool, true);
-                moveSpeed = 0f;
-                break;
-            }
-            idleEvent.Invoke();
-        }
-        void HandleBeginWander()
-        {
-            primaryPrey = null;
-            var rand = Random.insideUnitSphere * wanderZone;
-            var targetPos = startPosition + rand;
-            ValidatePosition(ref targetPos);
-
-            wanderTarget = targetPos;
-            SetMoveSlow();
-        }
-
-        void ValidatePosition(ref Vector3 targetPos)
-        {
-            if (navMeshAgent)
-            {
-                NavMeshHit hit;
-                if (!NavMesh.SamplePosition(targetPos, out hit, Mathf.Infinity, 1 << NavMesh.GetAreaFromName("Walkable")))
-                {
-                    Debug.LogError("Unable to sample nav mesh. Please ensure there's a Nav Mesh layer with the name Walkable");
-                    enabled = false;
-                    return;
-                }
-
-                targetPos = hit.position;
-            }
-        }
-
 
         IEnumerator RandomStartingDelay()
         {
             yield return new WaitForSeconds(Random.Range(0f, 2f));
-            started = true;
-            StartCoroutine(ConstantTicking(Random.Range(.7f, 1f)));
-        }
-
-        IEnumerator ConstantTicking(float delay)
-        {
-            while (true)
-            {
-                UpdateAI();
-                yield return new WaitForSeconds(delay);
-            }
-            // ReSharper disable once IteratorNeverReturns
         }
 
         [ContextMenu("This will delete any states you have set, and replace them with the default ones, you can't undo!")]
@@ -992,6 +655,38 @@ namespace Polyperfect.Common
             death.animationBool = "isDead";
             deathStates = new AIState[1];
             deathStates[0] = death;
+        }
+        
+        private void OnTriggerEnter(Collider other)
+        {
+            //맞닿은 object가 Animal layer가 아니라면 return. 
+            //generality 가 떨어지므로 좋지 않음.추후 수정해야할 코드.
+            if (other.gameObject.layer != gameObject.layer) return; 
+            if (other.gameObject.GetComponent<Common_WanderScript>().CurrentState == WanderState.Dead) return;
+            if (CurrentState == WanderState.Attack||CurrentState==WanderState.Dead) return; //만약 죽었거나 이미 공격 중이라면 새로운 object 가 공격 사거리에 들어와도 무시한다.
+
+            Common_WanderScript targetObject = other.GetComponent<Common_WanderScript>();
+             
+            if(targetObject.dominance<dominance) //타겟이 피식자라면 공격 코루틴 시작
+            {
+                SetState(WanderState.Attack);
+                StartCoroutine(attackCoroutine(targetObject));
+            }
+        }
+        
+        IEnumerator attackCoroutine(Common_WanderScript targetObject)
+        {
+            attackTimer = attackSpeed;
+            while (attackTimer - 0.1 > 0) { attackTimer -= 0.1f; yield return new WaitForSeconds(0.1f); }//매 0.1초 만큼 시간을 태운다.
+            if (targetObject.enabled == true) //공격 모션이 끝났다. 타겟이 아직 살아있다면 공격 시작
+            {
+                if (targetObject.TakeDamage(power)) //공격했는데 목표가 죽었다면
+                {
+                    hasKilled = true; //죽였음을 count 한다.
+                }
+            }
+            SetState(WanderState.Walking); // 현재 상태를 걷기로 전환
+            //findOtherTarget(); //사거리에 다른 목표가 있으면 찾고 공격한다. 
         }
     }
 }

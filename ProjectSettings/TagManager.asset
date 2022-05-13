@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Animal
+  - Bear
+  - Beaver
+  - Env
   layers:
   - Default
   - TransparentFX
@@ -12,7 +15,7 @@ TagManager:
   - Terrain
   - Water
   - UI
-  - 
+  - Animal
   - 
   - 
   - 
