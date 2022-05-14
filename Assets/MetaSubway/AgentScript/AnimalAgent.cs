@@ -57,7 +57,7 @@ public class AnimalAgent : Agent
         animalState.transform.localPosition = pos;
         animalState.transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
         canRunning = true;
-        animalState.setStart();
+        animalState.SetStart();
         killCnt = 0;
     }
     public override void OnActionReceived(ActionBuffers actions)
@@ -85,9 +85,9 @@ public class AnimalAgent : Agent
                 break;
         }
         transform.Rotate(rotateDir, animalState.TurnSpeed*Time.deltaTime);
-        animalState.updateAnimalState( 
+        animalState.UpdateAnimalState( 
             dirToGo, actions.DiscreteActions[2]); //z
-        evaluate();
+        Evaluate();
     }
 
     public override void CollectObservations(VectorSensor sensor)
@@ -115,7 +115,7 @@ public class AnimalAgent : Agent
     actionMask.SetActionEnabled(0, 2, false);
     */
 
-    private void evaluate()
+    private void Evaluate()
     {
         if(animalState.CurrentState==Polyperfect.Common.Common_WanderScript.WanderState.Dead)
         {
