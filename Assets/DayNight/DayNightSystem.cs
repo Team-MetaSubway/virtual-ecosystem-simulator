@@ -10,10 +10,10 @@ public class DayNightSystem : MonoBehaviour
     public float startTime = 0.4f;
     private float timeRate;
     public Vector3 noon;
-    /*
+    
     public GameObject StarDome;
     Material starMat;
-    */
+    
     [Header("Sun")]
     public Light sun;
     public Gradient sunColor;
@@ -28,10 +28,10 @@ public class DayNightSystem : MonoBehaviour
     public AnimationCurve lightingIntensityMultiplier;
     public AnimationCurve reflectionsIntensityMultiplier;
     
-    /*
+    
     public bool showUI;
     private int Day = 0;
-    */
+    
 
     // Start is called before the first frame update
     void Start()
@@ -39,11 +39,11 @@ public class DayNightSystem : MonoBehaviour
         timeRate = 1.0f / fullDayLength;
         time = startTime;
 
-        /*
+        
         //starDome 초기값
         starMat = StarDome.GetComponentInChildren<MeshRenderer>().material;
         starMat.color = new Color(1f, 1f, 1f, 0f);
-        */
+        
     }
 
     // Update is called once per frame
@@ -86,28 +86,36 @@ public class DayNightSystem : MonoBehaviour
         }
         
         if (moon.intensity == 0 && moon.gameObject.activeInHierarchy)
-        {
-            //starDom 안보이게
-            //starMat.color = new Color(1, 1, 1, Mathf.Lerp(0, 1, Time.deltaTime));
+        {   
             moon.gameObject.SetActive(false);
         }
         else if (moon.intensity > 0 && !moon.gameObject.activeInHierarchy)
         {
-            //starDom 보이게
-            //starMat.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, Time.deltaTime));
+           
             moon.gameObject.SetActive(true);
         }
+
+        //스타돔 보이게 안보이게
+        if (time > 0.25f && time < 0.75f)
+        {
+            starMat.color = new Color(1, 1, 1, Mathf.Lerp(0, 1, Time.deltaTime));
+        }
+        else
+        {
+            starMat.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, Time.deltaTime));
+        }
+
 
         //빛 반사 밀도 
         RenderSettings.ambientIntensity = lightingIntensityMultiplier.Evaluate(time);
         RenderSettings.reflectionIntensity = reflectionsIntensityMultiplier.Evaluate(time);
         
     }
-    /*
+    
     void OnGUI()
     {
         if (showUI)
             GUILayout.Box("Day: " + Day);
     }
-    */
+    
 }
