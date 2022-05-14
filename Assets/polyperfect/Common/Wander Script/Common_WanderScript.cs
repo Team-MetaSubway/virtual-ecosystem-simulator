@@ -149,9 +149,9 @@ namespace Polyperfect.Common
         }
 
         public WanderState CurrentState;
-        Common_WanderScript primaryPrey;
-        Common_WanderScript primaryPursuer;
-        Common_WanderScript attackTarget;
+        //Common_WanderScript primaryPrey;
+        //Common_WanderScript primaryPursuer;
+        //Common_WanderScript attackTarget;
         float moveSpeed = 0f;
         float attackReach = 2f;
         bool forceUpdate = false;
@@ -172,6 +172,10 @@ namespace Polyperfect.Common
         {
             get { return staminaThreshold; }
         }
+
+        private HashSet<Common_WanderScript> attackTargetBuffer;
+        List<Common_WanderScript> targetToErase;
+        float attackRangeSquare;
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -425,6 +429,12 @@ namespace Polyperfect.Common
             }
 
             UnityEngine.Assertions.Assert.IsNotNull(walkingState, string.Format("{0}'s wander script does not have any movement states.", gameObject.name));
+
+            attackRangeSquare = GetComponent<CapsuleCollider>().radius;
+            attackRangeSquare *= attackRangeSquare;
+
+            targetToErase = new List<Common_WanderScript>();
+            attackTargetBuffer = new HashSet<Common_WanderScript>();
             //성원 추가 끝
         }
 
@@ -459,7 +469,7 @@ namespace Polyperfect.Common
         //    setStart();
         //}
 
-        public void setStart()
+        public void SetStart()
         {
             if (Common_WanderManager.Instance != null && Common_WanderManager.Instance.PeaceTime)
             {
@@ -473,9 +483,8 @@ namespace Polyperfect.Common
        
         readonly HashSet<string> animatorParameters = new HashSet<string>();
 
-        public void updateAnimalState(Vector3 direction, int inputState)
+        public void UpdateAnimalState(Vector3 direction, int inputState)
         {
-            //if (!started) return;
             if (CurrentState == WanderState.Attack||CurrentState==WanderState.Dead) return;
             if (CurrentState != (WanderState)inputState)
             {
@@ -600,7 +609,6 @@ namespace Polyperfect.Common
 
         void HandleBeginWalking()
         {
-            primaryPrey = null;
             SetMoveSlow();
         }
 
@@ -661,23 +669,28 @@ namespace Polyperfect.Common
         {
             //맞닿은 object가 Animal layer가 아니라면 return. 
             //generality 가 떨어지므로 좋지 않음.추후 수정해야할 코드.
-            if (other.gameObject.layer != gameObject.layer) return; 
-            if (other.gameObject.GetComponent<Common_WanderScript>().CurrentState == WanderState.Dead) return;
-            if (CurrentState == WanderState.Attack||CurrentState==WanderState.Dead) return; //만약 죽었거나 이미 공격 중이라면 새로운 object 가 공격 사거리에 들어와도 무시한다.
+            if (other.gameObject.layer != gameObject.layer) return;
+            if (CurrentState == WanderState.Dead) return; //내가 현재 죽었다면 리턴. 오류 방지용 코드.
+            if (other.gameObject.GetComponent<Common_WanderScript>().CurrentState == WanderState.Dead) return; //오브젝트가 이미 죽었다면 리턴.
 
             Common_WanderScript targetObject = other.GetComponent<Common_WanderScript>();
              
             if(targetObject.dominance<dominance) //타겟이 피식자라면 공격 코루틴 시작
             {
+                if(CurrentState == WanderState.Attack) // 내가 현재 공격 중이라면 attackTargetBuffer에 삽입 후 리턴.
+                {
+                    attackTargetBuffer.Add(targetObject);//삽입
+                    return;
+                }
                 SetState(WanderState.Attack);
-                StartCoroutine(attackCoroutine(targetObject));
+                StartCoroutine(AttackCoroutine(targetObject));
             }
         }
-        
-        IEnumerator attackCoroutine(Common_WanderScript targetObject)
+
+        IEnumerator AttackCoroutine(Common_WanderScript targetObject)
         {
             attackTimer = attackSpeed;
-            while (attackTimer - 0.1 > 0) { attackTimer -= 0.1f; yield return new WaitForSeconds(0.1f); }//매 0.1초 만큼 시간을 태운다.
+            while (attackTimer > 0) { attackTimer -= 0.1f; yield return new WaitForSeconds(0.1f); }//매 0.1초 만큼 시간을 태운다.
             if (targetObject.enabled == true) //공격 모션이 끝났다. 타겟이 아직 살아있다면 공격 시작
             {
                 if (targetObject.TakeDamage(power)) //공격했는데 목표가 죽었다면
@@ -686,7 +699,28 @@ namespace Polyperfect.Common
                 }
             }
             SetState(WanderState.Walking); // 현재 상태를 걷기로 전환
-            //findOtherTarget(); //사거리에 다른 목표가 있으면 찾고 공격한다. 
+            FindOtherTarget(); //사거리에 다른 목표가 있으면 찾고 공격한다. 
+        }
+        void FindOtherTarget()
+        {
+            //버퍼 안 object는 동물이고 dominance가 자신 object 보다 낮음이 보장됨.
+            Common_WanderScript tmpAttackTarget=null;
+            foreach(var target in attackTargetBuffer)
+            {
+                targetToErase.Add(target);
+                if(target.CurrentState==WanderState.Dead||(target.transform.position-transform.position).sqrMagnitude>attackRangeSquare) //효율을 위해 제곱 비교.
+                {
+                    continue;
+                }
+                else
+                {
+                    tmpAttackTarget = target; //다음 공격 대상 찾음.
+                    break;
+                }
+            }
+            foreach (var target in targetToErase) attackTargetBuffer.Remove(target);
+            targetToErase.Clear();
+            if(tmpAttackTarget!=null) StartCoroutine(AttackCoroutine(tmpAttackTarget));
         }
     }
 }
