@@ -50,7 +50,8 @@ public class DayNightSystem : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //StarDome.transform.Rotate(new Vector3(0, 2f * Time.deltaTime, 0));
+        //스타돔이 천천히 회전하게 
+        StarDome.transform.Rotate(new Vector3(0, 2f * Time.deltaTime, 0));
 
         //시간 증가
         time += timeRate * Time.deltaTime;
@@ -91,19 +92,20 @@ public class DayNightSystem : MonoBehaviour
             moon.gameObject.SetActive(false);
         }
         else if (moon.intensity > 0 && !moon.gameObject.activeInHierarchy)
-        {
-           
+        {           
             moon.gameObject.SetActive(true);
         }
 
-        //스타돔 보이게 안보이게
+        //낮과 밤 구분 
         if (time > 0.25f && time < 0.75f)
         {
+            //낮 (스타돔 안보이게)
             starMat.color = new Color(1, 1, 1, Mathf.Lerp(0, 1, Time.deltaTime));
             AMPM = "Day";
         }
         else
         {
+            //밤 (스타돔 보이게)
             starMat.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, Time.deltaTime));
             AMPM = "Night";
         }
@@ -115,6 +117,7 @@ public class DayNightSystem : MonoBehaviour
         
     }
     
+    //UI 
     void OnGUI()
     {
         if (showUI)
