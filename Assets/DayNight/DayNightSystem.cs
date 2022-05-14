@@ -31,6 +31,7 @@ public class DayNightSystem : MonoBehaviour
     
     public bool showUI;
     private int Day = 0;
+    private string AMPM;
     
 
     // Start is called before the first frame update
@@ -57,7 +58,7 @@ public class DayNightSystem : MonoBehaviour
         //날짜 증가,시간 초기화
         if (time >= 1.0f)
         {
-            //Day++;
+            Day++;
             time = 0.0f;
         }
 
@@ -99,10 +100,12 @@ public class DayNightSystem : MonoBehaviour
         if (time > 0.25f && time < 0.75f)
         {
             starMat.color = new Color(1, 1, 1, Mathf.Lerp(0, 1, Time.deltaTime));
+            AMPM = "Day";
         }
         else
         {
             starMat.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, Time.deltaTime));
+            AMPM = "Night";
         }
 
 
@@ -115,7 +118,10 @@ public class DayNightSystem : MonoBehaviour
     void OnGUI()
     {
         if (showUI)
-            GUILayout.Box("Day: " + Day);
+        {
+            GUILayout.Box("Today: " + Day );
+            GUILayout.Box(AMPM);
+        }
     }
     
 }
