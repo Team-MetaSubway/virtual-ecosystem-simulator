@@ -3,19 +3,19 @@ using System.Collections;
 
 namespace DigitalRuby.RainMaker
 {
-    public class DemoScript : MonoBehaviour
+    public class CameraSetting: MonoBehaviour
     {
         public RainScript RainScript;
-        //public UnityEngine.UI.Toggle MouseLookToggle;
-        //public UnityEngine.UI.Toggle FlashlightToggle;
+        public UnityEngine.UI.Toggle MouseLookToggle;
+        public UnityEngine.UI.Toggle FlashlightToggle;
         public UnityEngine.UI.Slider RainSlider;
-        //public Light Flashlight;
-        //public GameObject Sun;
+        public Light Flashlight;
+        public GameObject Sun;
 
         private enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
         private RotationAxes axes = RotationAxes.MouseXAndY;
-        private float sensitivityX = 15F;
-        private float sensitivityY = 15F;
+        private float sensitivityX = 10F;
+        private float sensitivityY = 10F;
         private float minimumX = -360F;
         private float maximumX = 360F;
         private float minimumY = -60F;
@@ -46,7 +46,7 @@ namespace DigitalRuby.RainMaker
                 }
             }
         }
-        /*
+
         private void UpdateMovement()
         {
             float speed = 5.0f * Time.deltaTime;
@@ -115,12 +115,12 @@ namespace DigitalRuby.RainMaker
                 transform.localRotation = originalRotation * yQuaternion;
             }
         }
-        */
+
         public void RainSliderChanged(float val)
         {
             RainScript.RainIntensity = val;
         }
-        /*
+
         public void MouseLookChanged(bool val)
         {
             MouseLookToggle.isOn = val;
@@ -141,7 +141,7 @@ namespace DigitalRuby.RainMaker
         {
             RainScript.FollowCamera = val;
         }
-        */
+
         // Use this for initialization
         private void Start()
         {
@@ -154,10 +154,10 @@ namespace DigitalRuby.RainMaker
         private void Update()
         {
             UpdateRain();
-            //UpdateMovement();
-            //UpdateMouseLook();
+            UpdateMovement();
+            UpdateMouseLook();
         }
-        /*
+
         public static float ClampAngle(float angle, float min, float max)
         {
             if (angle < -360F)
@@ -171,6 +171,5 @@ namespace DigitalRuby.RainMaker
 
             return Mathf.Clamp(angle, min, max);
         }
-        */
     }
 }

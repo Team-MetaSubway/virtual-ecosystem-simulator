@@ -36,7 +36,6 @@ namespace DigitalRuby.RainMaker
                         var s2 = RainMistParticleSystem.shape;
                         s2.shapeType = ParticleSystemShapeType.Hemisphere;
                         Vector3 pos = Camera.transform.position;
-                        //Vector3 pos = new Vector3(0.0f, 0.0f, 0.0f);
                         pos.y += RainMistHeight;
                         RainMistParticleSystem.transform.position = pos;
                     }
