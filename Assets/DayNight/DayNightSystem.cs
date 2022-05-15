@@ -95,19 +95,23 @@ public class DayNightSystem : MonoBehaviour
         {           
             moon.gameObject.SetActive(true);
         }
-
+        
+        
+  
         //³·°ú ¹ã ±¸ºÐ 
         if (time > 0.25f && time < 0.75f)
         {
             //³· (½ºÅ¸µ¼ ¾Èº¸ÀÌ°Ô)
             starMat.color = new Color(1, 1, 1, Mathf.Lerp(0, 1, Time.deltaTime));
             AMPM = "Day";
+       
         }
         else
         {
             //¹ã (½ºÅ¸µ¼ º¸ÀÌ°Ô)
             starMat.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, Time.deltaTime));
             AMPM = "Night";
+         
         }
 
 
