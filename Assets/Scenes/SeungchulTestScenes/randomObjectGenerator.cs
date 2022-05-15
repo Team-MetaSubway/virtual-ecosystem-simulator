@@ -45,8 +45,9 @@ public class randomObjectGenerator : MonoBehaviour
 		Vector3 spawnPos = GetRandomPosition();//랜덤위치함수
 
 		//prefab, position, rotation
-		GameObject instance = Instantiate(selectedPrefab, spawnPos, Quaternion.identity);
-		instance.transform.parent = transform;
+		//GameObject instance = Instantiate(selectedPrefab, spawnPos, Quaternion.identity);
+		//instance.transform.parent = transform;
+		GameObject instance = Instantiate(selectedPrefab, spawnPos, Quaternion.identity, transform);
 		gameObject.Add(instance);
 	}
 
