@@ -289,11 +289,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 1159860665}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b2ada089f74f934c930032ed1cfd4aa, type: 3}
+  m_Script: {fileID: 11500000, guid: 6a15d7f5f48abdf48a262c0874d21c3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  time: 0.077
-  fullDayLength: 30
+  time: 0
+  fullDayLength: 20
   startTime: 0.4
   noon: {x: 90, y: 0, z: 0}
   StarDome: {fileID: 1883870324}
@@ -333,15 +333,15 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 0.09358359
-      outSlope: 0.09358359
+      inSlope: 3.761713
+      outSlope: 3.761713
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
-      outWeight: 0.08414512
+      outWeight: 0.04464037
     - serializedVersion: 3
-      time: 0.5003887
-      value: 1.0025816
+      time: 0.5036438
+      value: 1.000617
       inSlope: 0.065598965
       outSlope: 0.065598965
       tangentMode: 0
@@ -351,11 +351,11 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 1
       value: 0
-      inSlope: -0.038621794
-      outSlope: -0.038621794
+      inSlope: -4.0748105
+      outSlope: -4.0748105
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.10210369
+      inWeight: 0.040917624
       outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
