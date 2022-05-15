@@ -1,16 +1,16 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 namespace DigitalRuby.RainMaker
 {
-    public class CameraSetting: MonoBehaviour
+    public class AA : MonoBehaviour
     {
         public RainScript RainScript;
         public UnityEngine.UI.Toggle MouseLookToggle;
         public UnityEngine.UI.Toggle FlashlightToggle;
         public UnityEngine.UI.Slider RainSlider;
         public Light Flashlight;
-        public GameObject Sun;
+        //public GameObject Sun;
 
         private enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
         private RotationAxes axes = RotationAxes.MouseXAndY;
@@ -26,7 +26,7 @@ namespace DigitalRuby.RainMaker
 
         //
         //
-        
+
         //
         //
 
@@ -77,7 +77,7 @@ namespace DigitalRuby.RainMaker
             {
                 FlashlightToggle.isOn = !FlashlightToggle.isOn;
             }
-           
+
         }
 
         private void UpdateMouseLook()
@@ -139,12 +139,12 @@ namespace DigitalRuby.RainMaker
             FlashlightToggle.isOn = val;
             Flashlight.enabled = val;
         }
-
+        /*
         public void DawnDuskSliderChanged(float val)
         {
             Sun.transform.rotation = Quaternion.Euler(val, 0.0f, 0.0f);
         }
-
+        */
         public void FollowCameraChanged(bool val)
         {
             RainScript.FollowCamera = val;
@@ -156,14 +156,14 @@ namespace DigitalRuby.RainMaker
             originalRotation = transform.localRotation;
             RainScript.RainIntensity = RainSlider.value = 0.5f;
             RainScript.EnableWind = true;
-            
-          
-    }
+
+
+        }
 
         // Update is called once per frame
         private void Update()
         {
-            
+
             UpdateRain();
             UpdateMovement();
             UpdateMouseLook();

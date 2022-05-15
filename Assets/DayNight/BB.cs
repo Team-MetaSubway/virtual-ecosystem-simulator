@@ -3,9 +3,9 @@ using UnityEngine;
 
 namespace UnityStandardAssets.Characters.FirstPerson
 {
-    [RequireComponent(typeof (Rigidbody))]
-    [RequireComponent(typeof (CapsuleCollider))]
-    public class RigidbodyFirstPersonController : MonoBehaviour
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(CapsuleCollider))]
+    public class BB : MonoBehaviour
     {
         [Serializable]
         public class MovementSettings
@@ -14,7 +14,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             public float BackwardSpeed = 4.0f;  // Speed when walking backwards
             public float StrafeSpeed = 4.0f;    // Speed when walking sideways
             public float RunMultiplier = 2.0f;   // Speed when sprinting
-	        public KeyCode RunKey = KeyCode.LeftShift;
+            public KeyCode RunKey = KeyCode.LeftShift;
             public float JumpForce = 30f;
             public AnimationCurve SlopeCurveModifier = new AnimationCurve(new Keyframe(-90.0f, 1.0f), new Keyframe(0.0f, 1.0f), new Keyframe(90.0f, 0.0f));
             [HideInInspector] public float CurrentTargetSpeed = 8f;
@@ -25,33 +25,33 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
             public void UpdateDesiredTargetSpeed(Vector2 input)
             {
-	            if (input == Vector2.zero) return;
-				if (input.x > 0 || input.x < 0)
-				{
-					//strafe
-					CurrentTargetSpeed = StrafeSpeed;
-				}
-				if (input.y < 0)
-				{
-					//backwards
-					CurrentTargetSpeed = BackwardSpeed;
-				}
-				if (input.y > 0)
-				{
-					//forwards
-					//handled last as if strafing and moving forward at the same time forwards speed should take precedence
-					CurrentTargetSpeed = ForwardSpeed;
-				}
+                if (input == Vector2.zero) return;
+                if (input.x > 0 || input.x < 0)
+                {
+                    //strafe
+                    CurrentTargetSpeed = StrafeSpeed;
+                }
+                if (input.y < 0)
+                {
+                    //backwards
+                    CurrentTargetSpeed = BackwardSpeed;
+                }
+                if (input.y > 0)
+                {
+                    //forwards
+                    //handled last as if strafing and moving forward at the same time forwards speed should take precedence
+                    CurrentTargetSpeed = ForwardSpeed;
+                }
 #if !MOBILE_INPUT
-	            if (Input.GetKey(RunKey))
-	            {
-		            CurrentTargetSpeed *= RunMultiplier;
-		            m_Running = true;
-	            }
-	            else
-	            {
-		            m_Running = false;
-	            }
+                if (Input.GetKey(RunKey))
+                {
+                    CurrentTargetSpeed *= RunMultiplier;
+                    m_Running = true;
+                }
+                else
+                {
+                    m_Running = false;
+                }
 #endif
             }
 
@@ -78,7 +78,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         public Camera cam;
         public MovementSettings movementSettings = new MovementSettings();
-        public MouseLook mouseLook = new MouseLook();
+        // public MouseLook mouseLook = new MouseLook();
         public AdvancedSettings advancedSettings = new AdvancedSettings();
 
 
@@ -108,8 +108,8 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             get
             {
- #if !MOBILE_INPUT
-				return movementSettings.Running;
+#if !MOBILE_INPUT
+                return movementSettings.Running;
 #else
 	            return false;
 #endif
@@ -121,20 +121,21 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             m_RigidBody = GetComponent<Rigidbody>();
             m_Capsule = GetComponent<CapsuleCollider>();
-            mouseLook.Init (transform, cam.transform);
+            //mouseLook.Init (transform, cam.transform);
         }
 
 
         private void Update()
         {
 
-			if (Input.GetKeyDown (KeyCode.Escape)) {
-				Debug.Break ();
-			}
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                Debug.Break();
+            }
 
-            RotateView();
+            //RotateView();
 
-			if (Input.GetButtonDown("Jump") && !m_Jump)
+            if (Input.GetButtonDown("Jump") && !m_Jump)
             {
                 m_Jump = true;
             }
@@ -149,16 +150,16 @@ namespace UnityStandardAssets.Characters.FirstPerson
             if ((Mathf.Abs(input.x) > float.Epsilon || Mathf.Abs(input.y) > float.Epsilon) && (advancedSettings.airControl || m_IsGrounded))
             {
                 // always move along the camera forward as it is the direction that it being aimed at
-                Vector3 desiredMove = cam.transform.forward*input.y + cam.transform.right*input.x;
+                Vector3 desiredMove = cam.transform.forward * input.y + cam.transform.right * input.x;
                 desiredMove = Vector3.ProjectOnPlane(desiredMove, m_GroundContactNormal).normalized;
 
-                desiredMove.x = desiredMove.x*movementSettings.CurrentTargetSpeed;
-                desiredMove.z = desiredMove.z*movementSettings.CurrentTargetSpeed;
-                desiredMove.y = desiredMove.y*movementSettings.CurrentTargetSpeed;
+                desiredMove.x = desiredMove.x * movementSettings.CurrentTargetSpeed;
+                desiredMove.z = desiredMove.z * movementSettings.CurrentTargetSpeed;
+                desiredMove.y = desiredMove.y * movementSettings.CurrentTargetSpeed;
                 if (m_RigidBody.velocity.sqrMagnitude <
-                    (movementSettings.CurrentTargetSpeed*movementSettings.CurrentTargetSpeed))
+                    (movementSettings.CurrentTargetSpeed * movementSettings.CurrentTargetSpeed))
                 {
-                    m_RigidBody.AddForce(desiredMove*SlopeMultiplier(), ForceMode.Impulse);
+                    m_RigidBody.AddForce(desiredMove * SlopeMultiplier(), ForceMode.Impulse);
                 }
             }
 
@@ -202,7 +203,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
         {
             RaycastHit hitInfo;
             if (Physics.SphereCast(transform.position, m_Capsule.radius * (1.0f - advancedSettings.shellOffset), Vector3.down, out hitInfo,
-                                   ((m_Capsule.height/2f) - m_Capsule.radius) +
+                                   ((m_Capsule.height / 2f) - m_Capsule.radius) +
                                    advancedSettings.stickToGroundHelperDistance, ~0, QueryTriggerInteraction.Ignore))
             {
                 if (Mathf.Abs(Vector3.Angle(hitInfo.normal, Vector3.up)) < 85f)
@@ -215,17 +216,17 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private Vector2 GetInput()
         {
-            
+
             Vector2 input = new Vector2
-                {
-				x = Input.GetAxis("Horizontal"),
-				y = Input.GetAxis("Vertical")
-                };
-			movementSettings.UpdateDesiredTargetSpeed(input);
+            {
+                x = Input.GetAxis("Horizontal"),
+                y = Input.GetAxis("Vertical")
+            };
+            movementSettings.UpdateDesiredTargetSpeed(input);
             return input;
         }
 
-        
+        /*
         private void RotateView()
         {
             //avoids the mouse looking if the game is effectively paused
@@ -243,14 +244,14 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 m_RigidBody.velocity = velRotation*m_RigidBody.velocity;
             }
         }
-        
+        */
         /// sphere cast down just beyond the bottom of the capsule to see if the capsule is colliding round the bottom
         private void GroundCheck()
         {
             m_PreviouslyGrounded = m_IsGrounded;
             RaycastHit hitInfo;
             if (Physics.SphereCast(transform.position, m_Capsule.radius * (1.0f - advancedSettings.shellOffset), Vector3.down, out hitInfo,
-                                   ((m_Capsule.height/2f) - m_Capsule.radius) + advancedSettings.groundCheckDistance, ~0, QueryTriggerInteraction.Ignore))
+                                   ((m_Capsule.height / 2f) - m_Capsule.radius) + advancedSettings.groundCheckDistance, ~0, QueryTriggerInteraction.Ignore))
             {
                 m_IsGrounded = true;
                 m_GroundContactNormal = hitInfo.normal;

@@ -109,13 +109,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - PixelSnap: 0
-    - _AmbientLightMultiplier: 0.5
+    - _AmbientLightMultiplier: 1
     - _Brightness: 1
     - _BumpScale: 1
     - _ColorMask: 15
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DirectionalLightMultiplier: 5
+    - _DirectionalLightMultiplier: 10
     - _DstBlend: 10
     - _EmissionScaleUI: 1
     - _Glossiness: 0.5
@@ -124,7 +124,7 @@ Material:
     - _Mode: 2
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _PointSpotLightMultiplier: 5
+    - _PointSpotLightMultiplier: 10
     - _ReflDistort: 0.44
     - _RefrDistort: 0.4
     - _SrcBlend: 5

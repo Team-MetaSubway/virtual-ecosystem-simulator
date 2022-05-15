@@ -61,7 +61,7 @@ Material:
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DirectionalLightMultiplier: 1
+    - _DirectionalLightMultiplier: 2
     - _DstBlend: 10
     - _EmissionScaleUI: 0
     - _Glossiness: 0.5
@@ -70,7 +70,7 @@ Material:
     - _Mode: 2
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _PointSpotLightMultiplier: 0.5
+    - _PointSpotLightMultiplier: 1
     - _SrcBlend: 5
     - _UVSec: 0
     - _ZWrite: 0
