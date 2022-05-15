@@ -6,15 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/SeungchulTestScenes/startscene.unity
-    guid: 809b3324b80d77947961fb25a2095220
+    path: Assets/Scenes/Startscene.unity
+    guid: c72f35eae927764438c5ded86aac325e
   - enabled: 1
-    path: Assets/Scenes/SeungchulTestScenes/SeungchulTestScene.unity
-    guid: f6e681c8a02db9e4faf2c3d779f800d8
+    path: Assets/Scenes/MainScene.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
   - enabled: 1
-    path: Assets/Scenes/SeungchulTestScenes/SeungchulTestScene2.unity
-    guid: bd283c68693d8b145b7a61ea236ec5aa
+    path: Assets/Scenes/MainScene2.unity
+    guid: 58708fc2458054d4ab13c2e14e5854ea
   - enabled: 1
-    path: Assets/Scenes/SeungchulTestScenes/SeungchulTestScene3.unity
-    guid: bfc075012dd7c174da5d3f5b94a09535
+    path: Assets/Scenes/MainScene3.unity
+    guid: 61fb52f1cd897df4ab6df5cca81e122d
   m_configObjects: {}
