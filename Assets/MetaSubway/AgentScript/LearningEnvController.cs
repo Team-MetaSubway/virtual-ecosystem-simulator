@@ -23,20 +23,7 @@ using UnityEngine;
 
         int timer = 0;
 
-        [Tooltip("Environment Steps")]
-        public int learningStep = 500;
-
-        void Start()
-        {
-            timer = 0;
-        }
-
-        void FixedUpdate()
-        {
-            ++timer;
-            if (timer >= learningStep) isTimeout = true;
-        }
-
+        
         public void resetTimer()
         {
             timer = 0;

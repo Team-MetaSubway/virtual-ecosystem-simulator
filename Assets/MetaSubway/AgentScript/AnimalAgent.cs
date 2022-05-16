@@ -26,6 +26,10 @@ public class AnimalAgent : Agent
     Transform transformOfParent;
     float staminaThreshold;
 
+
+    float maxStamina;
+    float maxToughness;
+    float maxHunger;
     int killCnt = 0;
     bool canRunning;
 
@@ -42,6 +46,10 @@ public class AnimalAgent : Agent
         mapLength = learningEnv.mapLength*0.8f; //맵의 최대 세로 길이(z축으로), 너무 구석에 스폰되는 것을 방지하기 위해 0.8 곱함.
         mapMaxHeight = learningEnv.mapMaxHeight; //맵의 최대 높이(y축으로)
         staminaThreshold = animalState.StaminaThreshold;
+
+        maxStamina = animalState.MaxStamina;
+        maxHunger = animalState.MaxHunger;
+        maxToughness = animalState.MaxToughness;
     }
     public override void OnEpisodeBegin()
     {
@@ -53,7 +61,6 @@ public class AnimalAgent : Agent
         RaycastHit hitData;
         Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
         pos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
-        Debug.Log("Episode Begin position is: " + pos);
         animalState.transform.localPosition = pos;
         animalState.transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
         canRunning = true;
@@ -92,6 +99,8 @@ public class AnimalAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
+        sensor.AddObservation(animalState.Toughness);
+        sensor.AddObservation(animalState.Hunger);
         sensor.AddObservation(animalState.Stamina);
     }
     
@@ -120,25 +129,16 @@ public class AnimalAgent : Agent
         if(animalState.CurrentState==Polyperfect.Common.Common_WanderScript.WanderState.Dead)
         {
             SetReward(-1f);
+            animalState.enabled = false;
             EndEpisode();
         }
         else if(animalState.HasKilled)
         {
-            AddReward(1.0f/3);
             ++killCnt;
             animalState.HasKilled = false;
         }
-
-        if((Animal)behaviorParameters.TeamId==Animal.Bear)
-        {
-            if (killCnt >= 3) EndEpisode();
-            AddReward(-existential);
-        }
-        else if((Animal)behaviorParameters.TeamId == Animal.Beaver)
-        {
-            AddReward(existential);
-        }
-        
+        SetReward(animalState.Hunger / maxHunger + animalState.Toughness / maxToughness - 1);
+        if (killCnt >= 5) EndEpisode();
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
