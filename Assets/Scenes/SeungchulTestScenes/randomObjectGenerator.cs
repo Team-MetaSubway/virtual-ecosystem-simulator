@@ -9,8 +9,21 @@ public class randomObjectGenerator : MonoBehaviour
 
 	private List<GameObject> gameObject = new List<GameObject>();
 
-	void Start()
+	float maxHeightOfMap;
+
+    private void Awake()
+    {
+		maxHeightOfMap = FindObjectOfType<LearningEnvController>().mapMaxHeight;
+    }
+
+    public void Start()
 	{
+		StartCoroutine(GenerateObject());
+	}
+
+	IEnumerator GenerateObject()
+    {
+		yield return new WaitForSeconds(1.0f);
 		area = GetComponent<BoxCollider>();
 
 		//prefab선택
@@ -18,7 +31,7 @@ public class randomObjectGenerator : MonoBehaviour
 		{
 			//count개 생성
 			int count = prefabs[i].count;
-			for (int j = 0; j < count;j++)
+			for (int j = 0; j < count; j++)
 				Spawn(i);
 		}
 		area.enabled = false;
@@ -33,8 +46,14 @@ public class randomObjectGenerator : MonoBehaviour
 		//float posY = basePosition.y + Random.Range(-size.y / 2f, size.y / 2f);
 		float posZ = basePosition.z + Random.Range(-size.z / 2f, size.z / 2f);
 
-		Vector3 spawnPos = new Vector3(posX, basePosition.y, posZ);
-		Debug.Log(transform.position);
+		Vector3 spawnPos = new Vector3(posX, maxHeightOfMap, posZ);
+		Ray ray = new Ray(spawnPos, Vector3.down); //월드 좌표로 변경해서 삽입.
+		RaycastHit hitData;
+		Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
+		spawnPos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
+
+
+		Debug.Log("generator position is:"+ spawnPos);
 		return spawnPos;
 	}
 
