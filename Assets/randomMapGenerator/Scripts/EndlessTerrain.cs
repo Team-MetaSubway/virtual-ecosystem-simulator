@@ -24,7 +24,7 @@ public class EndlessTerrain : MonoBehaviour {
 	Dictionary<Vector2, TerrainChunk> terrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
 	static List<TerrainChunk> visibleTerrainChunks = new List<TerrainChunk>();
 
-	void Start() {
+	void Awake() {
 		mapGenerator = FindObjectOfType<MapGenerator> ();
 
 		maxViewDst = detailLevels [detailLevels.Length - 1].visibleDstThreshold;

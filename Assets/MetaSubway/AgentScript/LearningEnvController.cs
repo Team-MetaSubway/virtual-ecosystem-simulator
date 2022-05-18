@@ -14,31 +14,4 @@ using UnityEngine;
         public float mapLength = 50f;
         [Tooltip("maximum height of the map, y value")]
         public float mapMaxHeight = 100f;
-
-        bool isTimeout = false;
-        public bool IsTimeout
-        {
-            get { return isTimeout; }
-        }
-
-        int timer = 0;
-
-        [Tooltip("Environment Steps")]
-        public int learningStep = 500;
-
-        void Start()
-        {
-            timer = 0;
-        }
-
-        void FixedUpdate()
-        {
-            ++timer;
-            if (timer >= learningStep) isTimeout = true;
-        }
-
-        public void resetTimer()
-        {
-            timer = 0;
-        }
     }
