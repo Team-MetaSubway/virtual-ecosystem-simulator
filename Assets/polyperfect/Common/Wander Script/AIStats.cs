@@ -25,10 +25,14 @@ namespace Polyperfect.Common
         [SerializeField, Tooltip("How quickly this does damage to another (every 'attackSpeed' seconds will cause 'power' amount of damage).")]
         public float attackSpeed = 0.5f;
 
+        [SerializeField, Tooltip("hunger. literally.")]
+        public float hunger = 100f;
+
         [SerializeField, Tooltip("If true, this will attack other of the same specices.")]
         public bool territorial = false;
 
         [SerializeField, Tooltip("Stealthy can't be detected by others.")]
         public bool stealthy = false;
+
     }
 }

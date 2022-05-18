@@ -17,7 +17,7 @@ namespace Polyperfect.Common
     [RequireComponent(typeof(Animator)), RequireComponent(typeof(CharacterController))]
     public class Common_WanderScript : MonoBehaviour
     {
-        
+
         [SerializeField] public IdleState[] idleStates;
         [SerializeField] private MovementState[] movementStates;
         [SerializeField] private AIState[] attackingStates;
@@ -57,9 +57,14 @@ namespace Polyperfect.Common
 
         // [SerializeField, Tooltip("How many seconds this animal can run for before it gets tired.")]
         private float stamina = 10f;
+        private float maxStamina;
         public float Stamina
         {
             get { return stamina; }
+        }
+        public float MaxStamina
+        {
+            get { return maxStamina; }
         }
 
         // [SerializeField, Tooltip("How much this damage this animal does to another animal.")]
@@ -67,6 +72,15 @@ namespace Polyperfect.Common
 
         // [SerializeField, Tooltip("How much health this animal has.")]
         private float toughness = 5f;
+        private float maxToughness;
+        public float Toughness
+        {
+            get { return toughness; }
+        }
+        public float MaxToughness
+        {
+            get { return maxToughness; }
+        }
 
         // [SerializeField, Tooltip("Chance of this animal attacking another animal."), Range(0f, 100f)]
         private float aggression = 0f;
@@ -137,16 +151,6 @@ namespace Polyperfect.Common
             Dead
         }
 
-        float attackTimer = 0;
-        float MinimumStaminaForAggression
-        {
-            get { return stats.stamina * .9f; }
-        }
-
-        float MinimumStaminaForFlee
-        {
-            get { return stats.stamina * .1f; }
-        }
 
         public WanderState CurrentState;
         //Common_WanderScript primaryPrey;
@@ -176,6 +180,20 @@ namespace Polyperfect.Common
         private HashSet<Common_WanderScript> attackTargetBuffer;
         List<Common_WanderScript> targetToErase;
         float attackRangeSquare;
+
+        float hunger;
+        public float maxHunger;
+        public float Hunger
+        {
+            get { return hunger; }
+        }
+        public float MaxHunger
+        {
+            get { return maxHunger; }
+        }
+
+        float hpFactor;
+        float hungerFactor;
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -217,13 +235,13 @@ namespace Polyperfect.Common
             if (!Application.isPlaying)
                 return;
 
-            
+
             if (targetLocation != Vector3.zero)
             {
                 Gizmos.DrawSphere(targetLocation + new Vector3(0f, 0.1f, 0f), 0.2f);
                 Gizmos.DrawLine(transform.position, targetLocation);
             }
-           
+
         }
 
         private void Awake()
@@ -373,16 +391,19 @@ namespace Polyperfect.Common
             origin = transform.position;
             animator.applyRootMotion = false;
             characterController = GetComponent<CharacterController>();
-            
+
 
             //Assign the stats to variables
             originalDominance = stats.dominance;
             dominance = originalDominance;
 
             toughness = stats.toughness;
+            maxToughness = stats.toughness;
+
             territorial = stats.territorial;
 
             stamina = stats.stamina;
+            maxStamina = stats.stamina;
 
             originalAggression = stats.agression;
             aggression = originalAggression;
@@ -392,6 +413,12 @@ namespace Polyperfect.Common
 
             originalScent = scent;
             scent = originalScent;
+
+            hunger = stats.hunger;
+            maxHunger = stats.hunger;
+
+            hungerFactor = maxHunger * 0.3f;
+            hpFactor = maxToughness * 0.01f;
 
             if (matchSurfaceRotation && transform.childCount > 0)
             {
@@ -456,6 +483,8 @@ namespace Polyperfect.Common
         void OnEnable()
         {
             //allAnimals.Add(this);
+            StartCoroutine(HungerCoroutine());
+            StartCoroutine(HpCoroutine());
         }
 
         void OnDisable()
@@ -475,20 +504,27 @@ namespace Polyperfect.Common
             {
                 SetPeaceTime(true);
             }
-            stamina = stats.stamina;
-            toughness = stats.toughness;
+
+            stamina = maxStamina/2f;
+            toughness = maxToughness/2f;
+            hunger = maxHunger / 2f;
             //StartCoroutine(RandomStartingDelay());
         }
 
-       
+
         readonly HashSet<string> animatorParameters = new HashSet<string>();
 
         public void UpdateAnimalState(Vector3 direction, int inputState)
         {
-            if (CurrentState == WanderState.Attack||CurrentState==WanderState.Dead) return;
+            if (CurrentState == WanderState.Attack || CurrentState == WanderState.Dead) return;
             if (CurrentState != (WanderState)inputState)
             {
                 SetState((WanderState)inputState);
+            }
+            if(toughness<=0)
+            {
+                Die();
+                return;
             }
             switch (CurrentState)
             {
@@ -664,9 +700,20 @@ namespace Polyperfect.Common
             deathStates = new AIState[1];
             deathStates[0] = death;
         }
-        
+
+        private bool isCollidedWithWall = false;
+        public bool IsCollidedWithWall
+        {
+            get { return isCollidedWithWall; }
+            set { isCollidedWithWall = value; }
+        }
         private void OnTriggerEnter(Collider other)
         {
+            if(other.CompareTag("Env"))
+            {
+                isCollidedWithWall = true;
+                return;
+            }
             //맞닿은 object가 Animal layer가 아니라면 return. 
             //generality 가 떨어지므로 좋지 않음.추후 수정해야할 코드.
             if (other.gameObject.layer != gameObject.layer) return;
@@ -674,10 +721,10 @@ namespace Polyperfect.Common
             if (other.gameObject.GetComponent<Common_WanderScript>().CurrentState == WanderState.Dead) return; //오브젝트가 이미 죽었다면 리턴.
 
             Common_WanderScript targetObject = other.GetComponent<Common_WanderScript>();
-             
-            if(targetObject.dominance<dominance) //타겟이 피식자라면 공격 코루틴 시작
+
+            if (targetObject.dominance < dominance) //타겟이 피식자라면 공격 코루틴 시작
             {
-                if(CurrentState == WanderState.Attack) // 내가 현재 공격 중이라면 attackTargetBuffer에 삽입 후 리턴.
+                if (CurrentState == WanderState.Attack) // 내가 현재 공격 중이라면 attackTargetBuffer에 삽입 후 리턴.
                 {
                     attackTargetBuffer.Add(targetObject);//삽입
                     return;
@@ -689,13 +736,13 @@ namespace Polyperfect.Common
 
         IEnumerator AttackCoroutine(Common_WanderScript targetObject)
         {
-            attackTimer = attackSpeed;
-            while (attackTimer > 0) { attackTimer -= 0.1f; yield return new WaitForSeconds(0.1f); }//매 0.1초 만큼 시간을 태운다.
+            yield return new WaitForSeconds(attackSpeed);//공격 속도만큼 시간을 태운다.
             if (targetObject.enabled == true) //공격 모션이 끝났다. 타겟이 아직 살아있다면 공격 시작
             {
                 if (targetObject.TakeDamage(power)) //공격했는데 목표가 죽었다면
                 {
-                    hasKilled = true; //죽였음을 count 한다.
+                    hasKilled = true;
+                    CalculateHunger(targetObject);
                 }
             }
             SetState(WanderState.Walking); // 현재 상태를 걷기로 전환
@@ -704,11 +751,11 @@ namespace Polyperfect.Common
         void FindOtherTarget()
         {
             //버퍼 안 object는 동물이고 dominance가 자신 object 보다 낮음이 보장됨.
-            Common_WanderScript tmpAttackTarget=null;
-            foreach(var target in attackTargetBuffer)
+            Common_WanderScript tmpAttackTarget = null;
+            foreach (var target in attackTargetBuffer)
             {
                 targetToErase.Add(target);
-                if(target.CurrentState==WanderState.Dead||(target.transform.position-transform.position).sqrMagnitude>attackRangeSquare) //효율을 위해 제곱 비교.
+                if (target.CurrentState == WanderState.Dead || (target.transform.position - transform.position).sqrMagnitude > attackRangeSquare) //효율을 위해 제곱 비교.
                 {
                     continue;
                 }
@@ -720,7 +767,30 @@ namespace Polyperfect.Common
             }
             foreach (var target in targetToErase) attackTargetBuffer.Remove(target);
             targetToErase.Clear();
-            if(tmpAttackTarget!=null) StartCoroutine(AttackCoroutine(tmpAttackTarget));
+            if (tmpAttackTarget != null) StartCoroutine(AttackCoroutine(tmpAttackTarget));
+        }
+        IEnumerator HungerCoroutine()
+        {
+            while (true)
+            {
+                if (hunger > 0) hunger -= 1.0f; //배고픔이 0 이상일 경우 1 감소
+                yield return new WaitForSeconds(1.0f); //1초 후에 다시 실행
+            }
+        }
+        IEnumerator HpCoroutine()
+        {
+            while (true)
+            {
+                
+                if (hunger > maxHunger * 0.5f) toughness = Mathf.Clamp(toughness + hpFactor, 0, maxToughness);
+                else if (hunger <= 0) toughness -= hpFactor;
+                
+                yield return new WaitForSeconds(1.0f); //1초 후에 다시 실행.
+            }
+        }
+        void CalculateHunger(Common_WanderScript target)
+        {
+            hunger = Mathf.Clamp(hunger + hungerFactor * (1 + target.MaxToughness / maxToughness), 0, maxHunger);
         }
     }
 }
