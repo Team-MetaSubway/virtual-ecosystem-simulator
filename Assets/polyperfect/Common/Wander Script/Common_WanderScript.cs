@@ -701,8 +701,19 @@ namespace Polyperfect.Common
             deathStates[0] = death;
         }
 
+        private bool isCollidedWithWall = false;
+        public bool IsCollidedWithWall
+        {
+            get { return isCollidedWithWall; }
+            set { isCollidedWithWall = value; }
+        }
         private void OnTriggerEnter(Collider other)
         {
+            if(other.CompareTag("Env"))
+            {
+                isCollidedWithWall = true;
+                return;
+            }
             //맞닿은 object가 Animal layer가 아니라면 return. 
             //generality 가 떨어지므로 좋지 않음.추후 수정해야할 코드.
             if (other.gameObject.layer != gameObject.layer) return;
@@ -763,7 +774,7 @@ namespace Polyperfect.Common
             while (true)
             {
                 if (hunger > 0) hunger -= 1.0f; //배고픔이 0 이상일 경우 1 감소
-                yield return new WaitForSeconds(3.0f); //3초 후에 다시 실행
+                yield return new WaitForSeconds(1.0f); //1초 후에 다시 실행
             }
         }
         IEnumerator HpCoroutine()
@@ -779,7 +790,7 @@ namespace Polyperfect.Common
         }
         void CalculateHunger(Common_WanderScript target)
         {
-            hunger = Mathf.Clamp(hunger + hungerFactor * (1 + target.MaxToughness / maxToughness), 0, maxToughness);
+            hunger = Mathf.Clamp(hunger + hungerFactor * (1 + target.MaxToughness / maxToughness), 0, maxHunger);
         }
     }
 }

@@ -31,7 +31,7 @@ public class randomObjectGenerator : MonoBehaviour
 	private Vector3 GetRandomPosition()
 	{ 
 		var envComponent = FindObjectOfType<LearningEnvController>();
-		Vector3 size = new Vector3(envComponent.mapWidth*0.9f, envComponent.mapMaxHeight, envComponent.mapLength*0.9f);
+		Vector3 size = new Vector3(envComponent.mapWidth*0.95f, envComponent.mapMaxHeight, envComponent.mapLength*0.95f);
 
 		Vector3 spawnPos = new Vector3(Random.Range(-size.x / 2f, size.x / 2f), size.y, Random.Range(-size.z / 2f, size.z / 2f));
 		Ray ray = new Ray(spawnPos, Vector3.down); //월드 좌표로 변경해서 삽입.
