@@ -8,9 +8,12 @@ namespace DigitalRuby.RainMaker
         public RainScript RainScript;
         public UnityEngine.UI.Toggle MouseLookToggle;
         public UnityEngine.UI.Toggle FlashlightToggle;
-        public UnityEngine.UI.Slider RainSlider;
+        //
+        public UnityEngine.UI.Toggle RainToggle;
+        //
+        //public UnityEngine.UI.Slider RainSlider;
         public Light Flashlight;
-        public GameObject Sun;
+        //public GameObject Sun;
 
         private enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
         private RotationAxes axes = RotationAxes.MouseXAndY;
@@ -29,7 +32,7 @@ namespace DigitalRuby.RainMaker
         
         //
         //
-
+        /*
         private void UpdateRain()
         {
             if (RainScript != null)
@@ -52,10 +55,10 @@ namespace DigitalRuby.RainMaker
                 }
             }
         }
-
+        */
         private void UpdateMovement()
         {
-            float speed = 5.0f * Time.deltaTime;
+            float speed = 15.0f * Time.deltaTime;
 
             if (Input.GetKey(KeyCode.W))
             {
@@ -139,34 +142,62 @@ namespace DigitalRuby.RainMaker
             FlashlightToggle.isOn = val;
             Flashlight.enabled = val;
         }
+        //
+        public void Rain(bool val)
+        {
+            //RainScript.RainIntensity = val;
+            RainToggle.isOn = val;
+            
+        }
 
+        private void RainChanged()
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                RainToggle.isOn = !RainToggle.isOn;
+            }
+
+            if (!RainToggle.isOn)
+            {
+                RainScript.RainIntensity = 0.0f;
+                    return;
+            }
+                 
+            else
+                RainScript.RainIntensity = 1.0f;
+            
+        }
+        //
+        /*
         public void DawnDuskSliderChanged(float val)
         {
             Sun.transform.rotation = Quaternion.Euler(val, 0.0f, 0.0f);
         }
-
+        */
+        /*
         public void FollowCameraChanged(bool val)
         {
             RainScript.FollowCamera = val;
         }
-
+        */
         // Use this for initialization
         private void Start()
         {
             originalRotation = transform.localRotation;
-            RainScript.RainIntensity = RainSlider.value = 0.5f;
+            //RainScript.RainIntensity = RainSlider.value = 0.5f;
             RainScript.EnableWind = true;
             
           
-    }
+        }
 
         // Update is called once per frame
         private void Update()
         {
             
-            UpdateRain();
+            //UpdateRain();
             UpdateMovement();
             UpdateMouseLook();
+            RainChanged();
         }
 
         public static float ClampAngle(float angle, float min, float max)
