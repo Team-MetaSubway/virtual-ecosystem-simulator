@@ -9,6 +9,8 @@ public class randomObjectGenerator : MonoBehaviour
 
 	private List<GameObject> gameObject = new List<GameObject>();
 
+	public bool enableStatusBar = false;
+
     public void Start()
 	{
 		StartCoroutine(GenerateObject());
@@ -53,6 +55,7 @@ public class randomObjectGenerator : MonoBehaviour
 		//GameObject instance = Instantiate(selectedPrefab, spawnPos, Quaternion.identity);
 		//instance.transform.parent = transform;
 		GameObject instance = Instantiate(selectedPrefab, spawnPos, Quaternion.identity, transform);
+		instance.GetComponentInChildren<StatBarController>().gameObject.SetActive(enableStatusBar);
 		gameObject.Add(instance);
 	}
 

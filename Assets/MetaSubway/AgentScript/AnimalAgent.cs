@@ -112,17 +112,7 @@ public class AnimalAgent : Agent
     
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
     {
-       
-        if(canRunning==true&&animalState.Stamina<=0.0f)
-        {
-            canRunning = false;
-            actionMask.SetActionEnabled(2, 1, false);
-        }
-        else if(canRunning==false&&animalState.Stamina>staminaThreshold)
-        {
-            canRunning = true;
-            actionMask.SetActionEnabled(2, 1, true);
-        }
+        actionMask.SetActionEnabled(2, 1, canRunning);
     }
     /*
     usage: 
@@ -151,6 +141,16 @@ public class AnimalAgent : Agent
             AddReward(wallCollideFactor);
             animalState.IsCollidedWithWall = false;
         }
+
+        if (canRunning == true && animalState.Stamina <= 0.0f)
+        {
+            canRunning = false;
+        }
+        else if (canRunning == false && animalState.Stamina > staminaThreshold)
+        {
+            canRunning = true;
+        }
+
         if (killCnt >= 3) EndEpisode();
     }
 

@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: Bear
   m_EditorClassIdentifier: 
   dominance: 8
-  stamina: 10
+  stamina: 40
   power: 40
   toughness: 100
   agression: 99
   attackSpeed: 1.5
+  hunger: 100
   territorial: 1
   stealthy: 0
