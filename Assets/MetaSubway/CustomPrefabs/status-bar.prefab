@@ -19,7 +19,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1555975407296027138
 RectTransform:
   m_ObjectHideFlags: 0
@@ -118,13 +118,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 84888855dd8c3744d8ac66054ad73c2e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animal: {fileID: 0}
-  hpForeground: {fileID: 5187970177453903920}
-  hpBackground: {fileID: 8245640372490400606}
-  hungerForeground: {fileID: 7489408860857820373}
-  hungerBackground: {fileID: 8060960549236802672}
-  staminaForeground: {fileID: 2976580324479148280}
-  staminaBackground: {fileID: 932770405255467702}
   hpLengthFactor: 0.05
   hungerLengthFactor: 0.05
   staminaLengthFactor: 0.05

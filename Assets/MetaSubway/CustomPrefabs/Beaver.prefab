@@ -3408,6 +3408,10 @@ PrefabInstance:
       propertyPath: hungerLengthFactor
       value: 0.01
       objectReference: {fileID: 0}
+    - target: {fileID: 1518998939990899348, guid: 35f9dfba25dbb8649a8bf6989158b14a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6135117171356769639, guid: 35f9dfba25dbb8649a8bf6989158b14a, type: 3}
       propertyPath: m_RootOrder
       value: 2

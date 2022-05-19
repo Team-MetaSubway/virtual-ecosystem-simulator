@@ -32,6 +32,7 @@ public class StatBarController : MonoBehaviour
     private void Start()
     {
         cam = GameObject.Find("Free Camera").transform;
+
         hpForeground = transform.Find("hp-foreground").GetComponent<Image>();
         hpBackground = transform.Find("hp-background").GetComponent<Image>();
         hungerForeground = transform.Find("hunger-foreground").GetComponent<Image>();
