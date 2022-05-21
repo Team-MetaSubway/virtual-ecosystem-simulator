@@ -23,7 +23,7 @@ public class SceneLoader : MonoBehaviour
 	{
 		loadScene = _name;
 		loadType = _loadType;
-		SceneManager.LoadScene("Loading");
+		SceneManager.LoadScene("LoadingScene");
 	}
 	IEnumerator LoadScene()
 	{

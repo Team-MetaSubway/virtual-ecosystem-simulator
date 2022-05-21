@@ -8,9 +8,9 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 	public BTNType currentType;
 	public Transform buttonScale;
 	Vector3 defaultScale;
-	public CanvasGroup startGroup;
-	public CanvasGroup mainGroup;
-	public CanvasGroup optionGroup;
+	public CanvasGroup currGroup;
+	public CanvasGroup nextGroup;
+
 	private void Start()
 	{
 		defaultScale = buttonScale.localScale;
@@ -21,18 +21,19 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 		switch (currentType)
 		{
 			case BTNType.Press:
-				CanvasGroupOn(mainGroup);
-				CanvasGroupOff(startGroup);
+				CanvasGroupOn(nextGroup);
+				CanvasGroupOff(currGroup);
 				break;
-			case BTNType.New:
+			case BTNType.Start:
 				SceneLoader.LoadSceneHandle("Play", 0);
 				break;
-			case BTNType.Continue:
-				SceneLoader.LoadSceneHandle("Play", 1);
+			case BTNType.Animal:
+				CanvasGroupOn(nextGroup);
+				CanvasGroupOff(currGroup);
 				break;
-			case BTNType.Option:
-				CanvasGroupOn(optionGroup);
-				CanvasGroupOff(mainGroup);
+			case BTNType.Weather:
+				CanvasGroupOn(nextGroup);
+				CanvasGroupOff(currGroup);
 				break;
 			case BTNType.Sound:
 				if (isSound)
@@ -46,8 +47,8 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 				isSound = !isSound;
 				break;
 			case BTNType.Back:
-				CanvasGroupOn(mainGroup);
-				CanvasGroupOff(optionGroup);
+				CanvasGroupOn(nextGroup);
+				CanvasGroupOff(currGroup);
 				break;
 			case BTNType.Quit:
 #if UNITY_EDITOR

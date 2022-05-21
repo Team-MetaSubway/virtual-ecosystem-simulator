@@ -5,9 +5,9 @@ using UnityEngine;
 public enum BTNType
 {
 	Press,
-	New,
-	Continue,
-	Option,
+	Start,
+	Animal,
+	Weather,
 	Sound,
 	Back,
 	Quit
