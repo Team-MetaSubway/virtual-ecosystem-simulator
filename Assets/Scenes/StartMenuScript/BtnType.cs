@@ -50,7 +50,11 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 				CanvasGroupOff(optionGroup);
 				break;
 			case BTNType.Quit:
-				Application.Quit();
+#if UNITY_EDITOR
+				UnityEditor.EditorApplication.isPlaying = false;
+#else
+		Application.Quit();
+#endif
 				Debug.Log("Á¾·á");
 				break;
 		}
