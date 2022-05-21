@@ -244,7 +244,7 @@ namespace Polyperfect.Common
 
         }
 
-        private void Awake()
+        public void Awake()
         {
             if (!stats)
             {
@@ -465,7 +465,7 @@ namespace Polyperfect.Common
             //성원 추가 끝
         }
 
-        IEnumerable<AIState> AllStates
+        public virtual IEnumerable<AIState> AllStates
         {
             get
             {
@@ -480,14 +480,14 @@ namespace Polyperfect.Common
             }
         }
 
-        void OnEnable()
+        public virtual void OnEnable()
         {
             //allAnimals.Add(this);
             StartCoroutine(HungerCoroutine());
             StartCoroutine(HpCoroutine());
         }
 
-        void OnDisable()
+        public virtual void OnDisable()
         {
             //allAnimals.Remove(this);
             StopAllCoroutines();
@@ -498,7 +498,7 @@ namespace Polyperfect.Common
         //    setStart();
         //}
 
-        public void SetStart()
+        public virtual void SetStart()
         {
             if (Common_WanderManager.Instance != null && Common_WanderManager.Instance.PeaceTime)
             {
@@ -511,10 +511,9 @@ namespace Polyperfect.Common
             //StartCoroutine(RandomStartingDelay());
         }
 
-
         readonly HashSet<string> animatorParameters = new HashSet<string>();
 
-        public void UpdateAnimalState(Vector3 direction, int inputState)
+        public virtual void UpdateAnimalState(Vector3 direction, int inputState)
         {
             if (CurrentState == WanderState.Attack || CurrentState == WanderState.Dead) return;
             if (CurrentState != (WanderState)inputState)
@@ -539,13 +538,13 @@ namespace Polyperfect.Common
             characterController.SimpleMove(moveSpeed * direction);
         }
 
-        void FaceDirection(Vector3 facePosition)
+        public virtual void FaceDirection(Vector3 facePosition)
         {
             transform.rotation = Quaternion.LookRotation(Vector3.ProjectOnPlane(Vector3.RotateTowards(transform.forward,
                 facePosition, turnSpeed * Time.deltaTime * Mathf.Deg2Rad, 0f), Vector3.up), Vector3.up);
         }
 
-        public bool TakeDamage(float damage)
+        public virtual bool TakeDamage(float damage)
         {
             toughness -= damage;
             if (toughness <= 0f)
@@ -555,12 +554,13 @@ namespace Polyperfect.Common
             }
             return false;
         }
-        public void Die()
+
+        public virtual void Die()
         {
             SetState(WanderState.Dead);
         }
 
-        public void SetPeaceTime(bool peace)
+        public virtual void SetPeaceTime(bool peace)
         {
             if (peace)
             {
@@ -576,7 +576,7 @@ namespace Polyperfect.Common
             }
         }
 
-        public void SetState(WanderState state)
+        public virtual void SetState(WanderState state)
         {
             CurrentState = state;
             switch (state)
@@ -598,7 +598,7 @@ namespace Polyperfect.Common
             }
         }
 
-        void ClearAnimatorBools()
+        public virtual  void ClearAnimatorBools()
         {
             foreach (var item in idleStates)
                 TrySetBool(item.animationBool, false);
@@ -610,7 +610,7 @@ namespace Polyperfect.Common
                 TrySetBool(item.animationBool, false);
         }
 
-        void TrySetBool(string parameterName, bool value)
+        public virtual void TrySetBool(string parameterName, bool value)
         {
             if (!string.IsNullOrEmpty(parameterName))
             {
@@ -619,7 +619,7 @@ namespace Polyperfect.Common
             }
         }
 
-        void HandleBeginDeath()
+        public virtual void HandleBeginDeath()
         {
             ClearAnimatorBools();
             if (deathStates.Length > 0) TrySetBool(deathStates[Random.Range(0, deathStates.Length)].animationBool, true);
@@ -628,7 +628,7 @@ namespace Polyperfect.Common
             enabled = false;
         }
 
-        void HandleBeginAttack()
+        public virtual void HandleBeginAttack()
         {
             var attackState = Random.Range(0, attackingStates.Length);
             turnSpeed = 120f;
@@ -637,13 +637,13 @@ namespace Polyperfect.Common
             //attackingEvent.Invoke();
         }
 
-        void HandleBeginRunning()
+        public virtual void HandleBeginRunning()
         {
             SetMoveFast();
             //movementEvent.Invoke();
         }
 
-        void HandleBeginWalking()
+        public virtual void HandleBeginWalking()
         {
             SetMoveSlow();
         }
@@ -664,13 +664,13 @@ namespace Polyperfect.Common
             TrySetBool(walkingState.animationBool, true);
         }
 
-        IEnumerator RandomStartingDelay()
+        public virtual IEnumerator RandomStartingDelay()
         {
             yield return new WaitForSeconds(Random.Range(0f, 2f));
         }
 
         [ContextMenu("This will delete any states you have set, and replace them with the default ones, you can't undo!")]
-        public void BasicWanderSetUp()
+        public virtual void BasicWanderSetUp()
         {
             MovementState walking = new MovementState(), running = new MovementState();
             IdleState idle = new IdleState();
@@ -707,7 +707,7 @@ namespace Polyperfect.Common
             get { return isCollidedWithWall; }
             set { isCollidedWithWall = value; }
         }
-        private void OnTriggerEnter(Collider other)
+        public virtual void OnTriggerEnter(Collider other)
         {
             if(other.CompareTag("Env"))
             {
@@ -734,7 +734,7 @@ namespace Polyperfect.Common
             }
         }
 
-        IEnumerator AttackCoroutine(Common_WanderScript targetObject)
+        public virtual IEnumerator AttackCoroutine(Common_WanderScript targetObject)
         {
             yield return new WaitForSeconds(attackSpeed);//공격 속도만큼 시간을 태운다.
             if (targetObject.enabled == true) //공격 모션이 끝났다. 타겟이 아직 살아있다면 공격 시작
@@ -748,7 +748,7 @@ namespace Polyperfect.Common
             SetState(WanderState.Walking); // 현재 상태를 걷기로 전환
             FindOtherTarget(); //사거리에 다른 목표가 있으면 찾고 공격한다. 
         }
-        void FindOtherTarget()
+        public virtual void FindOtherTarget()
         {
             //버퍼 안 object는 동물이고 dominance가 자신 object 보다 낮음이 보장됨.
             Common_WanderScript tmpAttackTarget = null;
@@ -769,7 +769,7 @@ namespace Polyperfect.Common
             targetToErase.Clear();
             if (tmpAttackTarget != null) StartCoroutine(AttackCoroutine(tmpAttackTarget));
         }
-        IEnumerator HungerCoroutine()
+        public virtual IEnumerator HungerCoroutine()
         {
             while (true)
             {
@@ -777,7 +777,7 @@ namespace Polyperfect.Common
                 yield return new WaitForSeconds(1.0f); //1초 후에 다시 실행
             }
         }
-        IEnumerator HpCoroutine()
+        public virtual IEnumerator HpCoroutine()
         {
             while (true)
             {
@@ -788,7 +788,7 @@ namespace Polyperfect.Common
                 yield return new WaitForSeconds(1.0f); //1초 후에 다시 실행.
             }
         }
-        void CalculateHunger(Common_WanderScript target)
+        public virtual void CalculateHunger(Common_WanderScript target)
         {
             hunger = Mathf.Clamp(hunger + hungerFactor * (1 + target.MaxToughness / maxToughness), 0, maxHunger);
         }
