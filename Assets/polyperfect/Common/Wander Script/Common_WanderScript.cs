@@ -148,9 +148,15 @@ namespace Polyperfect.Common
             Walking, //반드시 0
             Running, //반드시 1
             Attack,
-            Dead
+            Dead,
+            Wander
         }
 
+        public enum AnimalType //초식동물인가 육식동물인가?
+        {
+            Calnivore, //육식동물이 디폴트
+            Herbivore //초식동물
+        }
 
         public WanderState CurrentState;
         //Common_WanderScript primaryPrey;
@@ -161,6 +167,9 @@ namespace Polyperfect.Common
         bool forceUpdate = false;
 
         //성원 추가
+
+        public AnimalType animalType; //자식 클래스에서 접근, protected
+
         bool hasKilled = false;
         public bool HasKilled
         {
@@ -244,7 +253,7 @@ namespace Polyperfect.Common
 
         }
 
-        public void Awake()
+        public virtual void Awake()
         {
             if (!stats)
             {
@@ -419,6 +428,8 @@ namespace Polyperfect.Common
 
             hungerFactor = maxHunger * 0.3f;
             hpFactor = maxToughness * 0.01f;
+
+            animalType = AnimalType.Calnivore;
 
             if (matchSurfaceRotation && transform.childCount > 0)
             {
