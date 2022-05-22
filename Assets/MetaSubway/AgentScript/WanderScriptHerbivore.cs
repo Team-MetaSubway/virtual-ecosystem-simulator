@@ -25,28 +25,31 @@ namespace Polyperfect.Animals
             base.Awake();
             animalType = AnimalType.Herbivore;
         }
-
+        bool started = false;
         public override void OnEnable()
         {
-            SetState(WanderState.Walking);
-            Vector3 pos = new Vector3(Random.value * LearningEnvController.instance.mapWidth - LearningEnvController.instance.mapWidth / 2,
+            base.SetStart();
+            characterController.enabled = false;
+            Vector3 pos = new Vector3(Random.value * LearningEnvController.instance.mapWidth - LearningEnvController.instance.mapWidth / 2f,
                                       LearningEnvController.instance.mapMaxHeight,
-                                      Random.value * LearningEnvController.instance.mapLength - LearningEnvController.instance.mapLength / 2); //로컬 좌표 랜덤하게 생성.
-            
-            Ray ray = new Ray(transformOfParent.TransformPoint(pos), Vector3.down); //월드 좌표로 변경해서 삽입.
+                                      Random.value * LearningEnvController.instance.mapLength - LearningEnvController.instance.mapLength / 2f); //로컬 좌표 랜덤하게 생성.
+
+            Ray ray = new Ray(pos, Vector3.down); //월드 좌표로 변경해서 삽입.
             RaycastHit hitData;
             Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
             pos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
-            transform.localPosition = pos;
-            transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
-            SetStart();
+
+            transform.position = pos;
+            transform.rotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
+            characterController.enabled = true;
+
             base.OnEnable();
         }
 
         public override void OnDisable()
         {
             base.OnDisable();
-            enabled = true; //다시 스폰되게.
+            started = false;
         }
         // Update is called once per frame
         void Update() //base class의 UpdateAnimalState 함수를 여기에 구현. 적절히 수정.
@@ -60,7 +63,7 @@ namespace Polyperfect.Animals
             switch(CurrentState)
             {
                 case WanderState.Walking:
-                    stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
+                    stamina = Mathf.MoveTowards(stamina, MaxStamina, Time.deltaTime);
                     break;
                 case WanderState.Running:
                     stamina -= Time.deltaTime;
@@ -158,7 +161,7 @@ namespace Polyperfect.Animals
                     case WanderState.Walking: //2-1
                         {
                             targetFood = other.gameObject;//먹이 설정
-                            directionToGo = (targetFood.transform.position - transform.position).normalized; //초식동물이 먹이를 바라보는 방향.
+                            directionToGo = Vector3.ProjectOnPlane((targetFood.transform.position - transform.position),Vector3.up).normalized; //초식동물이 먹이를 바라보는 방향.
                             SetState(WanderState.FoundFood);
                             StartCoroutine(EatFoodCoroutine());//먹이와의 거리 판단하는 코루틴 삽입
                             break;
@@ -216,7 +219,7 @@ namespace Polyperfect.Animals
                     SetState(WanderState.Walking);
                     break;
                 }
-                if((targetFood.transform.position-transform.position).sqrMagnitude < 5.0f)
+                if((targetFood.transform.position-transform.position).sqrMagnitude < 16.0f)
                 {
                     EatFood();
                     SetState(WanderState.Walking);
@@ -236,12 +239,12 @@ namespace Polyperfect.Animals
                     break;
                 }
                 Vector3 runAwayDirection = transform.position - targetChaser.transform.position; //포식자에서 초식동물을 바라보는 방향.
-                if (runAwayDirection.sqrMagnitude>attackRangeSquare*4)//attackRangeSquare는 감지 범위의 제곱. 곱하기 4해서 감지 범위 2배의 제곱.
+                if (runAwayDirection.sqrMagnitude>200f)//attackRangeSquare*4)//attackRangeSquare는 감지 범위의 제곱. 대충 곱하기 2.
                 {
                     SetState(WanderState.Walking);
                     break;
                 }
-                directionToGo = runAwayDirection.normalized; //방향 assign.
+                directionToGo = Vector3.ProjectOnPlane(runAwayDirection,Vector3.up).normalized; //방향 assign.
                 yield return new WaitForSeconds(2.0f);
             }
         }
@@ -252,7 +255,7 @@ namespace Polyperfect.Animals
                 if (CurrentState != WanderState.Walking) break;
                 directionToGo = Quaternion.Euler(0, Random.Range(0, 359f), 0) * Vector3.forward; //길이 1, 방향 0~359도로 랜덤한 벡터.
 
-                yield return new WaitForSeconds(Random.Range(5f, 15f));
+                yield return new WaitForSeconds(Random.Range(50f, 100f));
             }
         }
         public override void HandleBeginWalking()

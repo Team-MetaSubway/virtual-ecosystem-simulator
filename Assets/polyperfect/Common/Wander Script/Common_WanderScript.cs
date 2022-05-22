@@ -167,7 +167,6 @@ namespace Polyperfect.Common
         bool forceUpdate = false;
 
         //성원 추가
-        public static Transform transformOfParent;
 
         public GameObject targetFood;
         public GameObject targetChaser;
@@ -442,7 +441,6 @@ namespace Polyperfect.Common
 
 
             //성원 추가
-            transformOfParent = transform.parent.transform;
             staminaThreshold = stats.stamina * 0.2f;
 
             runningState = null;
