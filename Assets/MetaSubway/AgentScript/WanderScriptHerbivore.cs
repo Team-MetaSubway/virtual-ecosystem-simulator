@@ -16,7 +16,7 @@ using UnityEditor;
 
 namespace Polyperfect.Animals
 {
-    public class WanderScript_Harvibore : Common_WanderScript
+    public class WanderScriptHerbivore : Common_WanderScript
     {
         Vector3 directionToGo;
 
