@@ -18,26 +18,21 @@ namespace Polyperfect.Animals
 {
     public class WanderScript_Harvibore : Common_WanderScript
     {
-        LearningEnvController learningEnv;
-        float mapWidth;
-        float mapLength;
-        float mapMaxHeight;
-        Transform transformOfParent;
+        Vector3 directionToGo;
+
         public override void Awake()
         {
             base.Awake();
-            learningEnv = transform.parent.GetComponent<LearningEnvController>();
-            mapWidth = learningEnv.mapWidth * 0.95f; //맵의 최대 가로 길이(x축으로), 너무 구석에 스폰되는 것을 방지하기 위해 0.8 곱함.
-            mapLength = learningEnv.mapLength * 0.95f; //맵의 최대 세로 길이(z축으로), 너무 구석에 스폰되는 것을 방지하기 위해 0.8 곱함.
-            mapMaxHeight = learningEnv.mapMaxHeight; //맵의 최대 높이(y축으로)
-            transformOfParent = transform.parent.transform;
             animalType = AnimalType.Herbivore;
         }
 
         public override void OnEnable()
         {
             SetState(WanderState.Walking);
-            Vector3 pos = new Vector3(Random.value * mapWidth - mapWidth / 2, mapMaxHeight, Random.value * mapLength - mapLength / 2); //로컬 좌표 랜덤하게 생성.
+            Vector3 pos = new Vector3(Random.value * LearningEnvController.instance.mapWidth - LearningEnvController.instance.mapWidth / 2,
+                                      LearningEnvController.instance.mapMaxHeight,
+                                      Random.value * LearningEnvController.instance.mapLength - LearningEnvController.instance.mapLength / 2); //로컬 좌표 랜덤하게 생성.
+            
             Ray ray = new Ray(transformOfParent.TransformPoint(pos), Vector3.down); //월드 좌표로 변경해서 삽입.
             RaycastHit hitData;
             Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
@@ -56,7 +51,28 @@ namespace Polyperfect.Animals
         // Update is called once per frame
         void Update() //base class의 UpdateAnimalState 함수를 여기에 구현. 적절히 수정.
         {
-            
+            if (CurrentState == WanderState.Dead) return;
+            if (Toughness <= 0)
+            {
+                Die();
+                return;
+            }
+            switch(CurrentState)
+            {
+                case WanderState.Walking:
+                    stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
+                    break;
+                case WanderState.Running:
+                    stamina -= Time.deltaTime;
+                    if (stamina <= 0) SetMoveSlow();
+                    break;
+                case WanderState.FoundFood:
+                    break;
+
+                default: break;
+            }
+            FaceDirection(directionToGo);
+            characterController.SimpleMove(moveSpeed * directionToGo);
         }
 
         public override void OnTriggerEnter(Collider other)
@@ -67,7 +83,7 @@ namespace Polyperfect.Animals
             //
             //1. 동물을 encounter 한 경우
             //
-            //1-1. 현재 Wander 상태인 경우, 마주친 동물이 - 
+            //1-1. 현재 Walking 상태인 경우, 마주친 동물이 - 
             //1-1-1. 동물이 초식 동물이면 do nothing
             //1-1-2. 동물이 육식 동물이면 현재 무엇을 하고 있든 회피상태로 전환한다. 
             //     회피는 Running상태. 육식동물의 반대편으로 계속 이동한다.
@@ -76,7 +92,7 @@ namespace Polyperfect.Animals
             //1-2-1. 동물이 초식 동물이면 do nothing.
             //1-2-2. 동물이 육식 동물이면 do nothing. 회피 중 회피는 복잡도 때문에 일단 구현 X.
             //
-            //1-3. 현재 Walking(먹이를 먹으러 가는)상태인 경우
+            //1-3. 현재 FoundFood(먹이를 먹으러 가는)상태인 경우
             //1-3-1. 동물이 초식 동물이면 do nothing
             //1-3-2. 동물이 육식 동물이면 1-2 처럼 회피 상태로 전환한다.
             //
@@ -84,17 +100,17 @@ namespace Polyperfect.Animals
             //
             //2. 먹이를 encounter 한 경우
             //
-            //2-1. 현재 Wander 상태인 경우 Walking 상태로 전환. 방향을 먹이방향으로 고정.
+            //2-1. 현재 Walking 상태인 경우 FountFood 상태로 전환. 방향을 먹이방향으로 고정.
             //2-2. 현재 Running 상태(회피상태)인 경우 무시.
-            //2-3. 현재 Walking 상태(먹이상태)인 경우 무시.
+            //2-3. 현재 FoundFood 상태(먹이상태)인 경우 무시.
             //
             ///////////////////////////////////////////////////////////
             //
             //3. 벽(Env 태그)을 encounter 한 경우
             //
-            //3-1. 현재 Wander 상태인 경우 벽 normal에 대한 반사벡터 구해서 방향 벡터 set.
+            //3-1. 현재 Walking 상태인 경우 벽 normal에 대한 반사벡터 구해서 방향 벡터 set.
             //3-2. 현재 Running 상태(회피상태)인 경우 무시.
-            //3-3. 현재 Walking 상태(먹이상태)인 경우 무시.
+            //3-3. 현재 FoundFood 상태(먹이상태)인 경우 무시.
             //
             //////////////////////////////////////////////////////////
 
@@ -106,14 +122,14 @@ namespace Polyperfect.Animals
                 AnimalType targetType = other.GetComponent<Common_WanderScript>().animalType;
                 switch(CurrentState)
                 {
-                    case WanderState.Wander: //1-1
+                    case WanderState.Walking: //1-1
                     {
                         if(targetType==AnimalType.Calnivore) // 1-1-2.
                         {
-                            //타겟 설정하는 코드 삽입 필요.
+                            targetChaser = other.gameObject; //타겟 설정하는 코드 삽입 필요.
                             SetState(WanderState.Running);
-                            //타겟에서 벗어났는지 확인하는 코루틴 삽입 필요.
-                        }
+                            StartCoroutine(CheckChaserCoroutine());//타겟에서 벗어났는지 확인하는 코루틴 삽입 필요.
+                            }
                         break;
                     }
 
@@ -122,13 +138,13 @@ namespace Polyperfect.Animals
                         //현재로선 회피 중 회피는 구현 X.
                         break;
                     }
-                    case WanderState.Walking: //1-3.
+                    case WanderState.FoundFood: //1-3.
                     {
                         if (targetType == AnimalType.Calnivore) // 1-3-2.
                         {
-                            //타겟 설정하는 코드 삽입 필요.
+                            targetChaser = other.gameObject; //타겟 설정하는 코드 삽입 필요.
                             SetState(WanderState.Running);
-                            //타겟에서 벗어났는지 확인하는 코루틴 삽입 필요.
+                            StartCoroutine(CheckChaserCoroutine());//타겟에서 벗어났는지 확인하는 코루틴 삽입 필요.
                         }
                         break;
                     }
@@ -139,11 +155,12 @@ namespace Polyperfect.Animals
             {
                 switch (CurrentState)
                 {
-                    case WanderState.Wander: //2-1
+                    case WanderState.Walking: //2-1
                         {
-                            //먹이 설정하는 벡터 설정
-                            SetState(WanderState.Walking);
-                            //먹이와의 거리 판단하는 코루틴 삽입
+                            targetFood = other.gameObject;//먹이 설정
+                            directionToGo = (targetFood.transform.position - transform.position).normalized; //초식동물이 먹이를 바라보는 방향.
+                            SetState(WanderState.FoundFood);
+                            StartCoroutine(EatFoodCoroutine());//먹이와의 거리 판단하는 코루틴 삽입
                             break;
                         }
 
@@ -151,7 +168,7 @@ namespace Polyperfect.Animals
                         {
                             break;
                         }
-                    case WanderState.Walking: //2-3.
+                    case WanderState.FoundFood: //2-3.
                         {
                             break;
                         }
@@ -162,10 +179,12 @@ namespace Polyperfect.Animals
             {
                 switch (CurrentState)
                 {
-                    case WanderState.Wander: //2-1
+                    case WanderState.Walking: //2-1
                         {
-                            //반사 벡터 구해서 방향벡터를 set하는 코드 삽입.
-                            SetState(WanderState.Walking);
+                            Ray ray = new Ray(transform.position, directionToGo);
+                            RaycastHit hit;
+                            Physics.Raycast(ray, out hit);
+                            directionToGo = Vector3.Reflect(directionToGo, hit.normal); //반사 벡터 구해서 방향벡터를 set하는 코드 삽입.
                             break;
                         }
 
@@ -173,7 +192,7 @@ namespace Polyperfect.Animals
                         {
                             break;
                         }
-                    case WanderState.Walking: //2-3.
+                    case WanderState.FoundFood: //2-3.
                         {
                             break;
                         }
@@ -184,7 +203,62 @@ namespace Polyperfect.Animals
 
         void EatFood() //먹이를 먹고 허기를 채우는 함수.
         {
+            Destroy(targetFood);
+            hunger = Mathf.Clamp(hunger + hungerFactor * 2, 0, maxHunger);
+        }
+        IEnumerator EatFoodCoroutine() //2초 마다 먹이를 먹어야하는지 판단하는 코루틴.
+        {
+            while(true)
+            {
+                if (CurrentState != WanderState.FoundFood) break;
+                if (targetFood == null)
+                {
+                    SetState(WanderState.Walking);
+                    break;
+                }
+                if((targetFood.transform.position-transform.position).sqrMagnitude < 5.0f)
+                {
+                    EatFood();
+                    SetState(WanderState.Walking);
+                    break;
+                }
+                yield return new WaitForSeconds(2.0f);
+            }
+        }
+        IEnumerator CheckChaserCoroutine() //포식자에게서 벗어났는지 확인하는 코루틴.
+        {
+            while(true)
+            {
+                if (CurrentState != WanderState.Running) break;
+                if(targetChaser==null)
+                {
+                    SetState(WanderState.Walking);
+                    break;
+                }
+                Vector3 runAwayDirection = transform.position - targetChaser.transform.position; //포식자에서 초식동물을 바라보는 방향.
+                if (runAwayDirection.sqrMagnitude>attackRangeSquare*4)//attackRangeSquare는 감지 범위의 제곱. 곱하기 4해서 감지 범위 2배의 제곱.
+                {
+                    SetState(WanderState.Walking);
+                    break;
+                }
+                directionToGo = runAwayDirection.normalized; //방향 assign.
+                yield return new WaitForSeconds(2.0f);
+            }
+        }
+        IEnumerator WanderCoroutine() // 랜덤 시간마다 방향을 바꾸는 코루틴.
+        {
+            while(true)
+            {
+                if (CurrentState != WanderState.Walking) break;
+                directionToGo = Quaternion.Euler(0, Random.Range(0, 359f), 0) * Vector3.forward; //길이 1, 방향 0~359도로 랜덤한 벡터.
 
+                yield return new WaitForSeconds(Random.Range(5f, 15f));
+            }
+        }
+        public override void HandleBeginWalking()
+        {
+            base.HandleBeginWalking();
+            StartCoroutine(WanderCoroutine());
         }
     }
 }

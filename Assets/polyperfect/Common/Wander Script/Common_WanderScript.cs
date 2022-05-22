@@ -56,7 +56,7 @@ namespace Polyperfect.Common
         private float originalScent = 0f;
 
         // [SerializeField, Tooltip("How many seconds this animal can run for before it gets tired.")]
-        private float stamina = 10f;
+        protected float stamina = 10f;
         private float maxStamina;
         public float Stamina
         {
@@ -126,7 +126,7 @@ namespace Polyperfect.Common
         private Color awarnessColor = new Color(1f, 0f, 1f, 1f);
         private Color scentColor = new Color(1f, 0f, 0f, 1f);
         private Animator animator;
-        private CharacterController characterController;
+        public CharacterController characterController;
         private Vector3 origin;
 
         private Vector3 targetLocation = Vector3.zero;
@@ -149,7 +149,7 @@ namespace Polyperfect.Common
             Running, //반드시 1
             Attack,
             Dead,
-            Wander
+            FoundFood
         }
 
         public enum AnimalType //초식동물인가 육식동물인가?
@@ -162,11 +162,15 @@ namespace Polyperfect.Common
         //Common_WanderScript primaryPrey;
         //Common_WanderScript primaryPursuer;
         //Common_WanderScript attackTarget;
-        float moveSpeed = 0f;
+        public float moveSpeed = 0f;
         float attackReach = 2f;
         bool forceUpdate = false;
 
         //성원 추가
+        public static Transform transformOfParent;
+
+        public GameObject targetFood;
+        public GameObject targetChaser;
 
         public AnimalType animalType; //자식 클래스에서 접근, protected
 
@@ -188,9 +192,9 @@ namespace Polyperfect.Common
 
         private HashSet<Common_WanderScript> attackTargetBuffer;
         List<Common_WanderScript> targetToErase;
-        float attackRangeSquare;
+        public float attackRangeSquare;
 
-        float hunger;
+        protected float hunger;
         public float maxHunger;
         public float Hunger
         {
@@ -202,7 +206,7 @@ namespace Polyperfect.Common
         }
 
         float hpFactor;
-        float hungerFactor;
+        public float hungerFactor;
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -438,6 +442,7 @@ namespace Polyperfect.Common
 
 
             //성원 추가
+            transformOfParent = transform.parent.transform;
             staminaThreshold = stats.stamina * 0.2f;
 
             runningState = null;
@@ -515,7 +520,7 @@ namespace Polyperfect.Common
             {
                 SetPeaceTime(true);
             }
-
+            SetState(WanderState.Walking);
             stamina = maxStamina/2f;
             toughness = maxToughness/2f;
             hunger = maxHunger / 2f;
@@ -604,6 +609,9 @@ namespace Polyperfect.Common
                 case WanderState.Dead:
                     HandleBeginDeath();
                     break;
+                case WanderState.FoundFood:
+                    HandleBeginFoundFood();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -659,7 +667,12 @@ namespace Polyperfect.Common
             SetMoveSlow();
         }
 
-        void SetMoveFast()
+        public virtual void HandleBeginFoundFood()
+        {
+            SetMoveSlow();
+        }
+
+        public virtual void SetMoveFast()
         {
             turnSpeed = runningState.turnSpeed;
             moveSpeed = runningState.moveSpeed;
@@ -667,7 +680,7 @@ namespace Polyperfect.Common
             TrySetBool(runningState.animationBool, true);
         }
 
-        void SetMoveSlow()
+        public virtual void SetMoveSlow()
         {
             turnSpeed = walkingState.turnSpeed;
             moveSpeed = walkingState.moveSpeed;
