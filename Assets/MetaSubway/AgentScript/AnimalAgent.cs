@@ -114,6 +114,8 @@ public class AnimalAgent : Agent
             animalState.enabled = false;
 #if ENABLE_RESPAWN
             EndEpisode();
+#else
+            enabled = false;
 #endif
         }
         else if(animalState.HasKilled)

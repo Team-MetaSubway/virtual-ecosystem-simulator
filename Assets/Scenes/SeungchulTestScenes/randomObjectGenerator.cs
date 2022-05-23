@@ -17,9 +17,6 @@ public class RandomObjectGenerator : MonoBehaviour
 	[Tooltip("toggle status bar")]
 	public bool enableStatusBar = false;
 
-	[Tooltip("toggle respawn")]
-	public bool enableRespawn = false;
-
 	private List<Polyperfect.Common.Common_WanderScript> animalGameObjects = new List<Polyperfect.Common.Common_WanderScript>();
 	private List<GameObject> plantGameObjects = new List<GameObject>();
 
@@ -67,7 +64,6 @@ public class RandomObjectGenerator : MonoBehaviour
 
 	public Vector3 GetRandomPosition()
 	{
-		Debug.Log(mapWidth);
 		Vector3 spawnPos = new Vector3(Random.Range(-mapWidth*0.5f, mapWidth*0.5f),
 									   mapMaxHeight, 
 									   Random.Range(-mapLength*0.5f, mapLength*0.5f));

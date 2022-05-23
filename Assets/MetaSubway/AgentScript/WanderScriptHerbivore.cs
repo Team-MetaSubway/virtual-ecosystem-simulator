@@ -41,14 +41,17 @@ namespace Polyperfect.Animals
             started = false;
         }
         // Update is called once per frame
+        
         void Update() //base class의 UpdateAnimalState 함수를 여기에 구현. 적절히 수정.
         {
+            
             if (CurrentState == WanderState.Dead) return;
             if (Toughness <= 0)
             {
                 Die();
                 return;
             }
+            
             switch(CurrentState)
             {
                 case WanderState.Walking:
@@ -63,10 +66,12 @@ namespace Polyperfect.Animals
 
                 default: break;
             }
+            
             FaceDirection(directionToGo);
             characterController.SimpleMove(moveSpeed * directionToGo);
+            
         }
-
+        
         public override void OnTriggerEnter(Collider other)
         {
             //초식동물은 collider의 크기가 크다. 크기는 곧 감지 범위이다. ray sensor 처럼.
