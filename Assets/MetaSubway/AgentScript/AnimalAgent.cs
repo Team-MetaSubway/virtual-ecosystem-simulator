@@ -48,7 +48,7 @@ public class AnimalAgent : Agent
         animalState.enabled = true;
 
         animalState.characterController.enabled = false;
-        transform.localPosition = randomObjectGenerator.instance.GetRandomPosition();
+        transform.localPosition = RandomObjectGenerator.instance.GetRandomPosition();
         transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
         animalState.characterController.enabled = true;
 
@@ -112,7 +112,9 @@ public class AnimalAgent : Agent
         {
             SetReward(-1f);
             animalState.enabled = false;
+#if ENABLE_RESPAWN
             EndEpisode();
+#endif
         }
         else if(animalState.HasKilled)
         {
@@ -136,8 +138,9 @@ public class AnimalAgent : Agent
         {
             canRunning = true;
         }
-
+#if ENABLE_RESPAWN
         if (killCnt >= 3) EndEpisode();
+#endif
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

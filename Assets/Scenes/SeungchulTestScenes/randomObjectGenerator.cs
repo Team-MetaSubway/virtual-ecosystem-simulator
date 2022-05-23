@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class randomObjectGenerator : MonoBehaviour
+public class RandomObjectGenerator : MonoBehaviour
 {
 	public PFinfo[] animalPrefabs;
 	public PFinfo[] plantPrefabs;
@@ -23,7 +23,7 @@ public class randomObjectGenerator : MonoBehaviour
 	private List<Polyperfect.Common.Common_WanderScript> animalGameObjects = new List<Polyperfect.Common.Common_WanderScript>();
 	private List<GameObject> plantGameObjects = new List<GameObject>();
 
-	public static randomObjectGenerator instance = null;
+	public static RandomObjectGenerator instance = null;
 
 	private void Awake()
 	{
@@ -35,9 +35,9 @@ public class randomObjectGenerator : MonoBehaviour
 	public void Start()
 	{
 		StartCoroutine(GenerateObject());
-
-		if(enableRespawn)
-			StartCoroutine(RespawnObject());
+#if ENABLE_RESPAWN
+		StartCoroutine(RespawnObject());
+#endif
 	}
 
 	IEnumerator GenerateObject()

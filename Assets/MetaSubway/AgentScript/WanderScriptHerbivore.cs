@@ -30,7 +30,7 @@ namespace Polyperfect.Animals
         {
             base.OnEnable();
             characterController.enabled = false;
-            transform.position = randomObjectGenerator.instance.GetRandomPosition();
+            transform.position = RandomObjectGenerator.instance.GetRandomPosition();
             transform.rotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
             characterController.enabled = true;
         }
