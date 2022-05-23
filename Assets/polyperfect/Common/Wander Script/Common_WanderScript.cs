@@ -497,6 +497,7 @@ namespace Polyperfect.Common
         public virtual void OnEnable()
         {
             //allAnimals.Add(this);
+            SetStart();
             StartCoroutine(HungerCoroutine());
             StartCoroutine(HpCoroutine());
         }
