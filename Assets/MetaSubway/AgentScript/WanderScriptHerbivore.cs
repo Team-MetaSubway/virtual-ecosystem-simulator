@@ -19,11 +19,15 @@ namespace Polyperfect.Animals
     public class WanderScriptHerbivore : Common_WanderScript
     {
         Vector3 directionToGo;
+        GameObject targetFood;
+        Common_WanderScript targetChaser;
+        static LayerMask foodLayer;
 
         public override void Awake()
         {
             base.Awake();
             animalType = AnimalType.Herbivore;
+            foodLayer = LayerMask.NameToLayer("Food");
         }
         bool started = false;
         public override void OnEnable()
@@ -41,7 +45,8 @@ namespace Polyperfect.Animals
             started = false;
         }
         // Update is called once per frame
-        
+
+        bool isStaminaRemain = false;
         void Update() //base class의 UpdateAnimalState 함수를 여기에 구현. 적절히 수정.
         {
             
@@ -58,8 +63,15 @@ namespace Polyperfect.Animals
                     stamina = Mathf.MoveTowards(stamina, MaxStamina, Time.deltaTime);
                     break;
                 case WanderState.Running:
-                    stamina -= Time.deltaTime;
-                    if (stamina <= 0) SetMoveSlow();
+                    if (isStaminaRemain)
+                    {
+                        stamina -= 0.5f * Time.deltaTime;
+                        if(stamina<=0)
+                        {
+                            SetMoveSlow();
+                            isStaminaRemain = false;
+                        }
+                    }
                     break;
                 case WanderState.FoundFood:
                     break;
@@ -74,7 +86,7 @@ namespace Polyperfect.Animals
         
         public override void OnTriggerEnter(Collider other)
         {
-            //초식동물은 collider의 크기가 크다. 크기는 곧 감지 범위이다. ray sensor 처럼.
+            //collider 는 detector이고 현재 food, Terrain, animal 레이어 감지.
 
             //////////////////////////////////////////////////////////
             //
@@ -113,20 +125,20 @@ namespace Polyperfect.Animals
 
             if (CurrentState == WanderState.Dead) return; //내가 현재 죽었다면 리턴. 오류 방지용 코드.
 
-            if (other.gameObject.layer == LayerMask.NameToLayer("Animal")) //1. 동물은 공통으로 Animal 레이어.
+            if (other.gameObject.layer == animalLayer) //1. 동물은 공통으로 Animal 레이어.
             {
-                //나중에, 죽은 동물이면 무시하는 코드 삽입해야할 듯.
-                AnimalType targetType = other.GetComponent<Common_WanderScript>().animalType;
-                switch(CurrentState)
+                Common_WanderScript target = other.GetComponent<Common_WanderScript>();
+                switch (CurrentState)
                 {
                     case WanderState.Walking: //1-1
                     {
-                        if(targetType==AnimalType.Calnivore) // 1-1-2.
+                        if(target.animalType==AnimalType.Calnivore) // 1-1-2.
                         {
-                            targetChaser = other.gameObject; //타겟 설정하는 코드 삽입 필요.
+                            targetChaser = target; //타겟 설정하는 코드 삽입 필요.
                             SetState(WanderState.Running);
+                            isStaminaRemain = true;
                             StartCoroutine(CheckChaserCoroutine());//타겟에서 벗어났는지 확인하는 코루틴 삽입 필요.
-                            }
+                        }
                         break;
                     }
 
@@ -137,9 +149,9 @@ namespace Polyperfect.Animals
                     }
                     case WanderState.FoundFood: //1-3.
                     {
-                        if (targetType == AnimalType.Calnivore) // 1-3-2.
+                        if (target.animalType == AnimalType.Calnivore) // 1-3-2.
                         {
-                            targetChaser = other.gameObject; //타겟 설정하는 코드 삽입 필요.
+                            targetChaser = target; //타겟 설정하는 코드 삽입 필요.
                             SetState(WanderState.Running);
                             StartCoroutine(CheckChaserCoroutine());//타겟에서 벗어났는지 확인하는 코루틴 삽입 필요.
                         }
@@ -148,7 +160,7 @@ namespace Polyperfect.Animals
                     default: break;
                 }
             }
-            else if(other.gameObject.layer == LayerMask.NameToLayer("Food")) //2. 먹이는 공통으로 Food 레이어.
+            else if(other.gameObject.layer == foodLayer) //2. 먹이는 공통으로 Food 레이어.
             {
                 switch (CurrentState)
                 {

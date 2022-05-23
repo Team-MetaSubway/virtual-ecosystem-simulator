@@ -138,7 +138,6 @@ GameObject:
   - component: {fileID: 177514091459310575}
   - component: {fileID: 177514092656100337}
   - component: {fileID: 2566708482620620611}
-  - component: {fileID: 2566708482620620610}
   - component: {fileID: 8281251179618111074}
   m_Layer: 6
   m_Name: Beaver
@@ -218,20 +217,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!136 &2566708482620620610
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 177514091468783657}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 1
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &8281251179618111074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -295,11 +280,7 @@ MonoBehaviour:
   characterController: {fileID: 0}
   CurrentState: 0
   moveSpeed: 0
-  targetFood: {fileID: 0}
-  targetChaser: {fileID: 0}
   animalType: 0
-  attackRangeSquare: 0
-  maxHunger: 0
   hungerFactor: 0
 --- !u!1 &177514091468783659
 GameObject:
