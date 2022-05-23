@@ -168,7 +168,11 @@ namespace Polyperfect.Common
 
         //성원 추가
 
-
+        private float detectionRange;
+        public float DetectionRange
+        {
+            get { return detectionRange; }
+        }
 
         public GameObject targetFood;
         public GameObject targetChaser;
@@ -448,6 +452,9 @@ namespace Polyperfect.Common
 
 
             //성원 추가
+
+            detectionRange = stats.detectionRange;
+
             deadBodyLayer = LayerMask.NameToLayer("Ignore Raycast");
             animalLayer = LayerMask.NameToLayer("Animal");
             objectTag = gameObject.tag;
@@ -768,6 +775,14 @@ namespace Polyperfect.Common
                 }
                 SetState(WanderState.Attack);
                 StartCoroutine(AttackCoroutine(targetObject));
+            }
+        }
+
+        public void OnTriggerStay(Collider other)
+        {
+            if(other.CompareTag("Env"))
+            {
+                isCollidedWithWall = true;
             }
         }
 

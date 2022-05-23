@@ -5,12 +5,14 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
+using System.Linq;
 
 public enum Animal
 {
-    Bear = 0,
+    EmptyAnimal = 0,
+    Bear,
     Beaver,
-    NumOfAnimal
+    NumOfAnimals
 }
 
 
@@ -29,12 +31,20 @@ public class AnimalAgent : Agent
     float previousReward;
     float previousHunger;
     float previousToughness;
+    BufferSensorComponent bufferSensor;
+    static LayerMask animalLayerMask;
+    int idx;
+    float detectionRangeNormalizer;
+
+    Dictionary<string, float> animalTagSet = new Dictionary<string, float>();
 
     public override void Initialize()
     {
         animalState = GetComponent<Polyperfect.Common.Common_WanderScript>();
-
+        bufferSensor = GetComponent<BufferSensorComponent>();
         animalType = (Animal)GetComponent<BehaviorParameters>().TeamId;
+
+        animalLayerMask = LayerMask.GetMask("Animal");
         staminaThreshold = animalState.StaminaThreshold;
 
         transformOfParent = transform.parent.transform;
@@ -42,6 +52,12 @@ public class AnimalAgent : Agent
         maxStamina = 1f/animalState.MaxStamina;
         maxHunger = 1f/animalState.MaxHunger;
         maxToughness = 1f/animalState.MaxToughness;
+
+        float value = 0;
+        foreach (string animal in System.Enum.GetNames(typeof(Animal)))
+        {
+            animalTagSet.Add(animal, value++/(float)Animal.NumOfAnimals);
+        }
     }
     public override void OnEpisodeBegin()
     {
@@ -94,6 +110,26 @@ public class AnimalAgent : Agent
         sensor.AddObservation(animalState.Toughness);
         sensor.AddObservation(animalState.Hunger);
         sensor.AddObservation(animalState.Stamina);
+
+        //buffer process
+        Vector3 nowPosition = transform.position;
+        var listOfAnimals = Physics.OverlapSphere(nowPosition, animalState.DetectionRange, animalLayerMask);
+        var closestAnimals = listOfAnimals.OrderBy(c => (c.transform.position - nowPosition).sqrMagnitude).ToArray();
+        //Debug.Log("현재 접촉 동물 수:" + closestAnimals.Length);
+        int len = Mathf.Min(bufferSensor.MaxNumObservables + 1, closestAnimals.Length);
+
+        for(idx=1; idx<len; ++idx)
+        {
+            Vector3 targetPosition = closestAnimals[idx].transform.position;
+            float[] animalObservation = new float[] {
+                                                        (targetPosition-nowPosition).magnitude/animalState.DetectionRange,
+                                                        Mathf.Atan2(targetPosition.z-nowPosition.z,targetPosition.x-nowPosition.x)/Mathf.PI,
+                                                        animalTagSet[closestAnimals[idx].tag]
+                                                    };
+            //Debug.Log(animalObservation);
+            bufferSensor.AppendObservation(animalObservation);
+        }
+    
     }
     
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)

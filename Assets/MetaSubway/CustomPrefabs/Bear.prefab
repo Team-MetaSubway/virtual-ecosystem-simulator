@@ -164,7 +164,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827548528600906822}
-  - component: {fileID: 6832308148357303612}
+  - component: {fileID: 4288076043555690364}
   m_Layer: 6
   m_Name: RotationHelper
   m_TagString: Untagged
@@ -188,7 +188,7 @@ Transform:
   m_Father: {fileID: 6827542242142560048}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6832308148357303612
+--- !u!114 &4288076043555690364
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -202,17 +202,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
-  - Bear
-  - Beaver
   - Env
-  m_RaysPerDirection: 20
-  m_MaxRayDegrees: 180
-  m_SphereCastRadius: 1
-  m_RayLength: 50
+  m_RaysPerDirection: 0
+  m_MaxRayDegrees: 0
+  m_SphereCastRadius: 0
+  m_RayLength: 20
   m_RayLayerMask:
     serializedVersion: 2
-    m_Bits: 72
-  m_ObservationStacks: 2
+    m_Bits: 8
+  m_ObservationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   m_StartVerticalOffset: 0
@@ -236,6 +234,7 @@ GameObject:
   - component: {fileID: 6832308148783200211}
   - component: {fileID: 6832308148783200210}
   - component: {fileID: 6832308148783200213}
+  - component: {fileID: 586053278022334956}
   m_Layer: 6
   m_Name: Bear
   m_TagString: Bear
@@ -527,11 +526,11 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: f7ca17b3caedf084383896a22d6b6997, type: 3}
+  m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Bear
-  TeamId: 0
+  TeamId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_DeterministicInference: 0
@@ -566,6 +565,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
+--- !u!114 &586053278022334956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6833189228233191510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd8012d5925524537b27131fef517017, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: BufferSensor
+  m_ObservableSize: 3
+  m_MaxNumObservables: 5
 --- !u!1 &6833208212048306818
 GameObject:
   m_ObjectHideFlags: 0
