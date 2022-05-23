@@ -47,20 +47,11 @@ public class AnimalAgent : Agent
     {
         animalState.enabled = true;
 
-        Vector3 pos = new Vector3(Random.value * LearningEnvController.instance.mapWidth - LearningEnvController.instance.mapWidth / 2,
-                                      LearningEnvController.instance.mapMaxHeight,
-                                      Random.value * LearningEnvController.instance.mapLength - LearningEnvController.instance.mapLength / 2); //로컬 좌표 랜덤하게 생성.
-
-        Ray ray = new Ray(transformOfParent.TransformPoint(pos), Vector3.down); //월드 좌표로 변경해서 삽입.
-        RaycastHit hitData;
-        Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
-        pos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
         animalState.characterController.enabled = false;
-        transform.localPosition = pos;
+        transform.localPosition = RandomObjectGenerator.instance.GetRandomPosition();
         transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
         animalState.characterController.enabled = true;
 
-        animalState.SetStart();
         killCnt = 0;
         wallCollideFactor = -0.001f;
         previousReward = 0f;
@@ -121,7 +112,11 @@ public class AnimalAgent : Agent
         {
             SetReward(-1f);
             animalState.enabled = false;
+#if ENABLE_RESPAWN
             EndEpisode();
+#else
+            enabled = false;
+#endif
         }
         else if(animalState.HasKilled)
         {
@@ -145,8 +140,9 @@ public class AnimalAgent : Agent
         {
             canRunning = true;
         }
-
+#if ENABLE_RESPAWN
         if (killCnt >= 3) EndEpisode();
+#endif
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

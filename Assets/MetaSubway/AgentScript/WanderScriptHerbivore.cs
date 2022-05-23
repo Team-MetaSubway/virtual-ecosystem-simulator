@@ -28,22 +28,11 @@ namespace Polyperfect.Animals
         bool started = false;
         public override void OnEnable()
         {
-            base.SetStart();
+            base.OnEnable();
             characterController.enabled = false;
-            Vector3 pos = new Vector3(Random.value * LearningEnvController.instance.mapWidth - LearningEnvController.instance.mapWidth / 2f,
-                                      LearningEnvController.instance.mapMaxHeight,
-                                      Random.value * LearningEnvController.instance.mapLength - LearningEnvController.instance.mapLength / 2f); //로컬 좌표 랜덤하게 생성.
-
-            Ray ray = new Ray(pos, Vector3.down); //월드 좌표로 변경해서 삽입.
-            RaycastHit hitData;
-            Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
-            pos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
-
-            transform.position = pos;
+            transform.position = RandomObjectGenerator.instance.GetRandomPosition();
             transform.rotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
             characterController.enabled = true;
-
-            base.OnEnable();
         }
 
         public override void OnDisable()
@@ -52,14 +41,17 @@ namespace Polyperfect.Animals
             started = false;
         }
         // Update is called once per frame
+        
         void Update() //base class의 UpdateAnimalState 함수를 여기에 구현. 적절히 수정.
         {
+            
             if (CurrentState == WanderState.Dead) return;
             if (Toughness <= 0)
             {
                 Die();
                 return;
             }
+            
             switch(CurrentState)
             {
                 case WanderState.Walking:
@@ -74,10 +66,12 @@ namespace Polyperfect.Animals
 
                 default: break;
             }
+            
             FaceDirection(directionToGo);
             characterController.SimpleMove(moveSpeed * directionToGo);
+            
         }
-
+        
         public override void OnTriggerEnter(Collider other)
         {
             //초식동물은 collider의 크기가 크다. 크기는 곧 감지 범위이다. ray sensor 처럼.

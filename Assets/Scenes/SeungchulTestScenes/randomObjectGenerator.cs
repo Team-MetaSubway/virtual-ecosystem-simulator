@@ -2,23 +2,39 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class randomObjectGenerator : MonoBehaviour
+public class RandomObjectGenerator : MonoBehaviour
 {
 	public PFinfo[] animalPrefabs;
 	public PFinfo[] plantPrefabs;
-	private BoxCollider area;
 
-	private List<GameObject> animalGameObjects = new List<GameObject>();
+	[Tooltip("size x of the map, x value")]
+	public float mapWidth=180f;
+	[Tooltip("size z of the map, z value")]
+	public float mapLength = 180f;
+	[Tooltip("maximum height of the map, y value")]
+	public float mapMaxHeight = 100f;
+
+	[Tooltip("toggle status bar")]
+	public bool enableStatusBar = false;
+
+	private List<Polyperfect.Common.Common_WanderScript> animalGameObjects = new List<Polyperfect.Common.Common_WanderScript>();
 	private List<GameObject> plantGameObjects = new List<GameObject>();
 
-	public bool enableStatusBar = false;
-	public bool enableRespawnHerbivore = false;
-    public void Start()
+	public static RandomObjectGenerator instance = null;
+
+	private void Awake()
+	{
+		mapWidth *= 0.95f;
+		mapLength *= 0.95f;
+		instance = this;
+	}
+
+	public void Start()
 	{
 		StartCoroutine(GenerateObject());
-
-		if(enableRespawnHerbivore)
-			StartCoroutine(RespawnObject());
+#if ENABLE_RESPAWN
+		StartCoroutine(RespawnObject());
+#endif
 	}
 
 	IEnumerator GenerateObject()
@@ -39,23 +55,22 @@ public class randomObjectGenerator : MonoBehaviour
         {
 			foreach(var animal in animalGameObjects)
             {
-				if (animal.GetComponent<Polyperfect.Common.Common_WanderScript>().enabled == false) 
-					animal.GetComponent<Polyperfect.Common.Common_WanderScript>().enabled = true;
+				if (animal.enabled == false) 
+					animal.enabled = true;
 			}
 			yield return new WaitForSeconds(5.0f);
         }
     }
 
-	private Vector3 GetRandomPosition()
-	{ 
-		Vector3 spawnPos = new Vector3(Random.Range(-LearningEnvController.instance.mapWidth / 2f, LearningEnvController.instance.mapWidth / 2f),
-									   LearningEnvController.instance.mapMaxHeight, 
-									   Random.Range(-LearningEnvController.instance.mapLength / 2f, LearningEnvController.instance.mapLength / 2f));
+	public Vector3 GetRandomPosition()
+	{
+		Vector3 spawnPos = new Vector3(Random.Range(-mapWidth*0.5f, mapWidth*0.5f),
+									   mapMaxHeight, 
+									   Random.Range(-mapLength*0.5f, mapLength*0.5f));
 		Ray ray = new Ray(spawnPos, Vector3.down); //월드 좌표로 변경해서 삽입.
 		RaycastHit hitData;
 		Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
 		spawnPos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
-		Debug.Log("generator. 스폰 포인트는" + spawnPos + "거리는" + hitData.distance);
 		return spawnPos;
 	}
 
@@ -71,7 +86,7 @@ public class randomObjectGenerator : MonoBehaviour
 			{
 				//GameObject instance = Instantiate(animalPrefab, GetRandomPosition(), Quaternion.identity, transform);
 				GameObject instance = Instantiate(animalPrefab, transform);
-				animalGameObjects.Add(instance);
+				animalGameObjects.Add(instance.GetComponent<Polyperfect.Common.Common_WanderScript>());
 			}
 		}
 		else
@@ -81,7 +96,7 @@ public class randomObjectGenerator : MonoBehaviour
 				//GameObject instance = Instantiate(animalPrefab, GetRandomPosition(), Quaternion.identity, transform);
 				GameObject instance = Instantiate(animalPrefab, transform);
 				instance.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
-				animalGameObjects.Add(instance);
+				animalGameObjects.Add(instance.GetComponent<Polyperfect.Common.Common_WanderScript>());
 			}
 		}
 	}

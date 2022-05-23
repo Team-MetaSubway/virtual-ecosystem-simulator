@@ -9,6 +9,7 @@ TagManager:
   - Beaver
   - Env
   - User
+  - DeadBody
   layers:
   - Default
   - TransparentFX

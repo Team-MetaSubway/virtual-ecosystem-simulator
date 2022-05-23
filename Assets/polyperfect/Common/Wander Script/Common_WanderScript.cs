@@ -168,6 +168,8 @@ namespace Polyperfect.Common
 
         //성원 추가
 
+
+
         public GameObject targetFood;
         public GameObject targetChaser;
 
@@ -206,6 +208,11 @@ namespace Polyperfect.Common
 
         float hpFactor;
         public float hungerFactor;
+
+        private string objectTag;
+
+        static int deadBodyLayer;
+        static int animalLayer; 
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -441,6 +448,9 @@ namespace Polyperfect.Common
 
 
             //성원 추가
+            deadBodyLayer = LayerMask.NameToLayer("Ignore Raycast");
+            animalLayer = LayerMask.NameToLayer("Animal");
+            objectTag = gameObject.tag;
             staminaThreshold = stats.stamina * 0.2f;
 
             runningState = null;
@@ -497,6 +507,9 @@ namespace Polyperfect.Common
         public virtual void OnEnable()
         {
             //allAnimals.Add(this);
+            gameObject.layer = animalLayer;
+            gameObject.tag = objectTag;
+            SetStart();
             StartCoroutine(HungerCoroutine());
             StartCoroutine(HpCoroutine());
         }
@@ -504,6 +517,8 @@ namespace Polyperfect.Common
         public virtual void OnDisable()
         {
             //allAnimals.Remove(this);
+            gameObject.layer = deadBodyLayer;
+            gameObject.tag = "DeadBody";
             StopAllCoroutines();
         }
 
@@ -548,7 +563,7 @@ namespace Polyperfect.Common
                     stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
                     break;
             }
-            //FaceDirection(direction.normalized);
+            FaceDirection(direction.normalized);
             characterController.SimpleMove(moveSpeed * direction);
         }
 
