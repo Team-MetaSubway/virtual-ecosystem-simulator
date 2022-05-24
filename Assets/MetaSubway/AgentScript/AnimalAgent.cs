@@ -5,73 +5,80 @@ using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
+using System.Linq;
 
 public enum Animal
 {
-    Bear = 0,
+    EmptyAnimal = 0,
+    Bear,
     Beaver,
-    NumOfAnimal
+    NumOfAnimals
 }
 
 
 public class AnimalAgent : Agent
 {
     Polyperfect.Common.Common_WanderScript animalState;
-    BehaviorParameters behaviorParameters;
-    LearningEnvController learningEnv;
-    float mapWidth;
-    float mapLength;
-    float mapMaxHeight;
-    Transform transformOfParent;
     float staminaThreshold;
     Animal animalType;
-
     float maxStamina;
     float maxToughness;
     float maxHunger;
-    int killCnt = 0;
+    float toughnessThreshold;
+    float hungerThreshold;
+    int killCnt;
     bool canRunning;
     float wallCollideFactor;
     float previousReward;
     float previousHunger;
     float previousToughness;
+    BufferSensorComponent bufferSensor;
+    static LayerMask animalLayerMask;
+    int idx;
+    int maxBufferSize;
+
+    Dictionary<string, float> animalTagSet = new Dictionary<string, float>();
 
     public override void Initialize()
     {
         animalState = GetComponent<Polyperfect.Common.Common_WanderScript>();
-        behaviorParameters = GetComponent<BehaviorParameters>();
-        learningEnv = transform.parent.GetComponent<LearningEnvController>();
-        transformOfParent = transform.parent.transform;
+        bufferSensor = GetComponent<BufferSensorComponent>();
+        animalType = (Animal)GetComponent<BehaviorParameters>().TeamId;
 
-        animalType = (Animal)behaviorParameters.TeamId;
-        mapWidth = learningEnv.mapWidth*0.95f; //맵의 최대 가로 길이(x축으로), 너무 구석에 스폰되는 것을 방지하기 위해 0.8 곱함.
-        mapLength = learningEnv.mapLength*0.95f; //맵의 최대 세로 길이(z축으로), 너무 구석에 스폰되는 것을 방지하기 위해 0.8 곱함.
-        mapMaxHeight = learningEnv.mapMaxHeight; //맵의 최대 높이(y축으로)
+        animalLayerMask = LayerMask.GetMask("Animal");
         staminaThreshold = animalState.StaminaThreshold;
+
 
         maxStamina = 1f/animalState.MaxStamina;
         maxHunger = 1f/animalState.MaxHunger;
         maxToughness = 1f/animalState.MaxToughness;
+
+        hungerThreshold = 0.95f * animalState.MaxHunger;
+        toughnessThreshold = 0.95f * animalState.MaxToughness;
+
+        maxBufferSize = bufferSensor.MaxNumObservables + 1;
+
+        float value = 0;
+        foreach (string animal in System.Enum.GetNames(typeof(Animal)))
+        {
+            animalTagSet.Add(animal, value++/(float)Animal.NumOfAnimals);
+        }
     }
     public override void OnEpisodeBegin()
     {
         animalState.enabled = true;
-        animalState.SetState(Polyperfect.Common.Common_WanderScript.WanderState.Walking);
 
-        Vector3 pos = new Vector3(Random.value * mapWidth - mapWidth / 2, mapMaxHeight, Random.value * mapLength - mapLength / 2); //로컬 좌표 랜덤하게 생성.
-        Ray ray= new Ray(transformOfParent.TransformPoint(pos), Vector3.down); //월드 좌표로 변경해서 삽입.
-        RaycastHit hitData;
-        Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
-        pos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
-        animalState.transform.localPosition = pos;
-        animalState.transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
-        canRunning = true;
-        animalState.SetStart();
+        animalState.characterController.enabled = false;
+        transform.localPosition = RandomObjectGenerator.instance.GetRandomPosition();
+        transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
+        animalState.characterController.enabled = true;
+
         killCnt = 0;
-        wallCollideFactor = -0.001f;
+        wallCollideFactor = -0.1f;
         previousReward = 0f;
         previousToughness = animalState.Toughness;
         previousHunger = animalState.Hunger;
+        canRunning = true;
     }
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -105,9 +112,29 @@ public class AnimalAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(animalState.Toughness);
-        sensor.AddObservation(animalState.Hunger);
-        sensor.AddObservation(animalState.Stamina);
+        sensor.AddObservation(animalState.Toughness*maxToughness);
+        sensor.AddObservation(animalState.Hunger*maxHunger);
+        sensor.AddObservation(animalState.Stamina*maxStamina);
+
+        //buffer process
+        Vector3 nowPosition = transform.position;
+        var listOfAnimals = Physics.OverlapSphere(nowPosition, animalState.DetectionRange, animalLayerMask);
+        var closestAnimals = listOfAnimals.OrderBy(c => (c.transform.position - nowPosition).sqrMagnitude).ToArray();
+        int len = Mathf.Min(maxBufferSize, closestAnimals.Length);
+        //Debug.Log("현재 접촉 동물 수:" + closestAnimals.Length);
+        for (idx=1; idx<len; ++idx)
+        {
+            Vector3 targetPosition = closestAnimals[idx].transform.position;
+            Vector3 localSpaceDirection = transform.InverseTransformDirection(targetPosition - nowPosition);
+            float[] animalObservation = new float[] {
+                                                        (targetPosition-nowPosition).magnitude/animalState.DetectionRange,
+                                                        Mathf.Atan2(localSpaceDirection.x,localSpaceDirection.z)/Mathf.PI,
+                                                        animalTagSet[closestAnimals[idx].tag]
+                                                    };
+            //Debug.Log("거리" + animalObservation[0]*animalState.DetectionRange + "각도" + animalObservation[1]*Mathf.PI + "태그" + animalObservation[2]);
+            bufferSensor.AppendObservation(animalObservation);
+        }
+        
     }
     
     public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
@@ -124,16 +151,16 @@ public class AnimalAgent : Agent
     {
         if(animalState.CurrentState==Polyperfect.Common.Common_WanderScript.WanderState.Dead)
         {
-            SetReward(-1f);
+            AddReward(-1f);
             animalState.enabled = false;
+#if ENABLE_RESPAWN
             EndEpisode();
+#else
+            enabled = false;
+#endif
         }
-        else if(animalState.HasKilled)
-        {
-            ++killCnt;
-            animalState.HasKilled = false;
-        }
-        SetReward((animalState.Toughness-previousToughness)*maxToughness+(animalState.Hunger-previousHunger)*maxHunger);
+        
+        AddReward((animalState.Toughness-previousToughness)*maxToughness+(animalState.Hunger-previousHunger)*maxHunger);
         previousToughness = animalState.Toughness;
         previousHunger = animalState.Hunger;
         if (animalState.IsCollidedWithWall)
@@ -150,8 +177,14 @@ public class AnimalAgent : Agent
         {
             canRunning = true;
         }
-
-        if (killCnt >= 3) EndEpisode();
+#if ENABLE_RESPAWN
+        if (animalState.Toughness >= toughnessThreshold && animalState.Hunger >= hungerThreshold)
+        {
+            Debug.Log("완벽.");
+            animalState.enabled = false;
+            EndEpisode();
+        }
+#endif
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -329,7 +329,6 @@ GameObject:
   m_Component:
   - component: {fileID: 174883364}
   - component: {fileID: 174883363}
-  - component: {fileID: 174883365}
   m_Layer: 0
   m_Name: ObjectGenerator
   m_TagString: Untagged
@@ -351,12 +350,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animalPrefabs:
   - prefab: {fileID: 6833189228233191510, guid: 563654b22bc35154986d1f3ca1466ff8, type: 3}
-    count: 20
+    count: 50
   - prefab: {fileID: 177514091468783657, guid: 554436490099c464b821152d8edcd9dc, type: 3}
-    count: 20
+    count: 300
   plantPrefabs:
   - prefab: {fileID: 1573628690202234, guid: 9d4d39397bb3e4df98ac838ef29e39a1, type: 3}
-    count: 2000
+    count: 1000
+  mapWidth: 600
+  mapLength: 600
+  mapMaxHeight: 100
   enableStatusBar: 0
 --- !u!4 &174883364
 Transform:
@@ -372,21 +374,6 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &174883365
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 174883361}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b3df103910b48ab4fa610522abe78437, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  mapWidth: 900
-  mapLength: 900
-  mapMaxHeight: 100
 --- !u!1 &219044703
 GameObject:
   m_ObjectHideFlags: 0
@@ -990,7 +977,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 629637044}
-  m_Mesh: {fileID: 1385660954}
+  m_Mesh: {fileID: 1441276757}
 --- !u!23 &629637047
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -1965,7 +1952,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   time: 0
-  fullDayLength: 100
+  fullDayLength: 1000
   startTime: 0.4
   noon: {x: 90, y: 0, z: 0}
   StarDome: {fileID: 1737733153}
@@ -2233,7 +2220,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 180, z: 0}
---- !u!43 &1385660954
+--- !u!43 &1441276757
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -13,58 +13,58 @@ MonoBehaviour:
   m_Name: Default Terrain
   m_EditorClassIdentifier: 
   autoUpdate: 1
-  uniformScale: 2
+  uniformScale: 11
   useFlatShading: 1
-  useFalloff: 0
-  meshHeightMultiplier: 60
+  useFalloff: 1
+  meshHeightMultiplier: 40
   meshHeightCurve:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
-      time: 0
-      value: 0
-      inSlope: 0
-      outSlope: 0
+      time: 0.0000007627532
+      value: -0.004717989
+      inSlope: 0.77959615
+      outSlope: 0.77959615
+      tangentMode: 34
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0.33333334
+    - serializedVersion: 3
+      time: 0.1435429
+      value: 0.10718691
+      inSlope: 0.5287645
+      outSlope: 0.5287645
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.10760671
-      value: 0.25693068
-      inSlope: 0.38591516
-      outSlope: 0.38591516
+      time: 0.3230412
+      value: 0.17454074
+      inSlope: 0.71777934
+      outSlope: 0.71777934
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.49755293
-      value: 0.53702617
-      inSlope: 2.6796696
-      outSlope: 2.6796696
+      time: 0.6714656
+      value: 0.39341927
+      inSlope: 0.19582339
+      outSlope: 0.19582339
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.17537355
+      inWeight: 0.37326193
       outWeight: 0.33333334
     - serializedVersion: 3
-      time: 0.96180856
-      value: 0.7550739
-      inSlope: 0.5736546
-      outSlope: 0.5736546
+      time: 1.0166626
+      value: 0.587265
+      inSlope: 0.38995028
+      outSlope: 0.38995028
       tangentMode: 0
       weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
-    - serializedVersion: 3
-      time: 1
-      value: 1
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0.33333334
-      outWeight: 0.33333334
+      inWeight: 0.1844231
+      outWeight: 0
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 0

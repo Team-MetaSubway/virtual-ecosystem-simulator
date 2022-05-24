@@ -8,6 +8,8 @@ TagManager:
   - Bear
   - Beaver
   - Env
+  - User
+  - DeadBody
   layers:
   - Default
   - TransparentFX
@@ -16,9 +18,9 @@ TagManager:
   - Water
   - UI
   - Animal
-  - 
-  - 
-  - 
+  - Food
+  - Detector
+  - AttackBoundary
   - 
   - 
   - 
