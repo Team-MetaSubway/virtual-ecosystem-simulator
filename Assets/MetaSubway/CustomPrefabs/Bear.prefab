@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836345073256400500}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint26
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40,7 +40,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836010296697919062}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint34
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -71,7 +71,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6835987366157375956}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint23
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -102,7 +102,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827776005801018382}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint20
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -133,7 +133,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836184916846758796}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -164,8 +164,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827548528600906822}
-  - component: {fileID: 6832308148357303612}
-  m_Layer: 6
+  - component: {fileID: 4288076043555690364}
+  - component: {fileID: 4015956197503523379}
+  m_Layer: 9
   m_Name: RotationHelper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -188,7 +189,7 @@ Transform:
   m_Father: {fileID: 6827542242142560048}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6832308148357303612
+--- !u!114 &4288076043555690364
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -202,21 +203,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SensorName: RayPerceptionSensor
   m_DetectableTags:
-  - Bear
-  - Beaver
   - Env
-  m_RaysPerDirection: 20
-  m_MaxRayDegrees: 180
-  m_SphereCastRadius: 1
-  m_RayLength: 50
+  m_RaysPerDirection: 0
+  m_MaxRayDegrees: 0
+  m_SphereCastRadius: 0
+  m_RayLength: 20
   m_RayLayerMask:
     serializedVersion: 2
-    m_Bits: 72
-  m_ObservationStacks: 2
+    m_Bits: 8
+  m_ObservationStacks: 1
   rayHitColor: {r: 1, g: 0, b: 0, a: 1}
   rayMissColor: {r: 1, g: 1, b: 1, a: 1}
   m_StartVerticalOffset: 0
   m_EndVerticalOffset: 0
+--- !u!136 &4015956197503523379
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6833178275146524068}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 2
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6833189228233191510
 GameObject:
   m_ObjectHideFlags: 0
@@ -232,10 +245,10 @@ GameObject:
   - component: {fileID: 6865206211533627992}
   - component: {fileID: 6865358224584805088}
   - component: {fileID: 4781304278181981743}
-  - component: {fileID: 4781304278181981742}
   - component: {fileID: 6832308148783200211}
   - component: {fileID: 6832308148783200210}
   - component: {fileID: 6832308148783200213}
+  - component: {fileID: 586053278022334956}
   m_Layer: 6
   m_Name: Bear
   m_TagString: Bear
@@ -428,12 +441,12 @@ MonoBehaviour:
   - stateName: Walk
     animationBool: isWalking
     maxStateTime: 10
-    moveSpeed: 2
+    moveSpeed: 4
     turnSpeed: 100
   - stateName: Running
     animationBool: isRunning
     maxStateTime: 20
-    moveSpeed: 6
+    moveSpeed: 8
     turnSpeed: 200
   attackingStates:
   - stateName: Attack
@@ -469,11 +482,7 @@ MonoBehaviour:
   characterController: {fileID: 0}
   CurrentState: 0
   moveSpeed: 0
-  targetFood: {fileID: 0}
-  targetChaser: {fileID: 0}
   animalType: 0
-  attackRangeSquare: 0
-  maxHunger: 0
   hungerFactor: 0
 --- !u!54 &4781304278181981743
 Rigidbody:
@@ -491,20 +500,6 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!136 &4781304278181981742
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6833189228233191510}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 2
-  m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6832308148783200211
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -527,11 +522,11 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: f7ca17b3caedf084383896a22d6b6997, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: c4acb18ed6bdfd34ea0daa61fb9169e4, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 0
+  m_BehaviorType: 2
   m_BehaviorName: Bear
-  TeamId: 0
+  TeamId: 1
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_DeterministicInference: 0
@@ -551,7 +546,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 10000
+  MaxStep: 100000
 --- !u!114 &6832308148783200213
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -566,6 +561,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DecisionPeriod: 5
   TakeActionsBetweenDecisions: 1
+--- !u!114 &586053278022334956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6833189228233191510}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd8012d5925524537b27131fef517017, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SensorName: BufferSensor
+  m_ObservableSize: 3
+  m_MaxNumObservables: 5
 --- !u!1 &6833208212048306818
 GameObject:
   m_ObjectHideFlags: 0
@@ -575,7 +585,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827775859437107204}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint21
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -605,7 +615,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836274775279082772}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint33
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -636,7 +646,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836334708331273374}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint38
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -666,7 +676,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836337400102025462}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint18
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -697,7 +707,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836028153171267506}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -728,7 +738,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827939745297070698}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -761,7 +771,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827487989450080544}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -792,7 +802,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827504350297470500}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint15
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -823,7 +833,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827485859830824640}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint29
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -854,7 +864,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827648392828815438}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint19
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -885,7 +895,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827493752154141632}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint35
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -916,7 +926,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827537135634540422}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint25
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -947,7 +957,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827496953597691454}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint22
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -978,7 +988,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836119993797924802}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint11
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1010,7 +1020,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6836287299432792808}
   - component: {fileID: 6861521129244659468}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: polar-bear
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1132,7 +1142,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836023283028570464}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint13
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1163,7 +1173,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827906405183864690}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint27
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1194,7 +1204,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836334673363817516}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint31
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1225,7 +1235,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827595000776626838}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1256,7 +1266,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827485412063656498}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint16
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1286,7 +1296,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827914839236964988}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1320,7 +1330,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6835966803962118700}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint14
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1350,7 +1360,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836272933872047696}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint40
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1380,7 +1390,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827644169385169720}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1413,7 +1423,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836266230419494394}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint28
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1444,7 +1454,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827610721602131922}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint8
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1474,7 +1484,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836340813576038614}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint24
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1504,7 +1514,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836018116045045278}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint17
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1535,7 +1545,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827484474023285166}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint7
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1567,7 +1577,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827739260404807756}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint36
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1597,7 +1607,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827596164891853942}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint9
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1628,7 +1638,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836367015926662320}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint12
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1659,7 +1669,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827751681905926802}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint32
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1690,7 +1700,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827558368011696798}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint30
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1720,7 +1730,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6836195454397514560}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint39
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1751,7 +1761,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6827777135923755018}
-  m_Layer: 6
+  m_Layer: 0
   m_Name: joint37
   m_TagString: Untagged
   m_Icon: {fileID: 0}
