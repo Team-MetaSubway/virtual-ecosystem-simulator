@@ -16,9 +16,9 @@ public class ChangeCamera : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        change = false;
-        FreeCamera.SetActive(false);
-        PersonCamera.SetActive(true);
+        change = true;
+        FreeCamera.SetActive(true);
+        PersonCamera.SetActive(false);
     }
 
     // Update is called once per frame
@@ -53,7 +53,7 @@ public class ChangeCamera : MonoBehaviour
 
     void PersonCameraChange()
     {
-        
+        PersonCamera1.rotation = FreeCamera.transform.localRotation;
         PersonCamera.transform.position = FreeCamera.transform.position + new Vector3(0,20,0);
         
         FreeCamera.SetActive(false);
