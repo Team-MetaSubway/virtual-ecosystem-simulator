@@ -22,12 +22,15 @@ namespace Polyperfect.Animals
         GameObject targetFood;
         Common_WanderScript targetChaser;
         static LayerMask foodLayer;
+        private float detectionRangeSquare;
 
         public override void Awake()
         {
             base.Awake();
             animalType = AnimalType.Herbivore;
             foodLayer = LayerMask.NameToLayer("Food");
+            var detectionRange = GetComponentInChildren<CapsuleCollider>().radius;
+            detectionRangeSquare = detectionRange * detectionRange;
         }
         bool started = false;
         public override void OnEnable()
@@ -245,7 +248,7 @@ namespace Polyperfect.Animals
                     break;
                 }
                 Vector3 runAwayDirection = transform.position - targetChaser.transform.position; //포식자에서 초식동물을 바라보는 방향.
-                if (runAwayDirection.sqrMagnitude>200f)//attackRangeSquare*4)//attackRangeSquare는 감지 범위의 제곱. 대충 곱하기 2.
+                if (runAwayDirection.sqrMagnitude>detectionRangeSquare*2f)//detectionRangeSquare는 감지 범위의 제곱. 대충 곱하기 2.
                 {
                     SetState(WanderState.Walking);
                     break;

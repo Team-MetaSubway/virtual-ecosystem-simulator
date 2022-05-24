@@ -151,7 +151,7 @@ public class AnimalAgent : Agent
     {
         if(animalState.CurrentState==Polyperfect.Common.Common_WanderScript.WanderState.Dead)
         {
-            SetReward(-1f);
+            AddReward(-1f);
             animalState.enabled = false;
 #if ENABLE_RESPAWN
             EndEpisode();
@@ -160,7 +160,7 @@ public class AnimalAgent : Agent
 #endif
         }
         
-        SetReward((animalState.Toughness-previousToughness)*maxToughness+(animalState.Hunger-previousHunger)*maxHunger);
+        AddReward((animalState.Toughness-previousToughness)*maxToughness+(animalState.Hunger-previousHunger)*maxHunger);
         previousToughness = animalState.Toughness;
         previousHunger = animalState.Hunger;
         if (animalState.IsCollidedWithWall)
@@ -178,7 +178,12 @@ public class AnimalAgent : Agent
             canRunning = true;
         }
 #if ENABLE_RESPAWN
-        if (animalState.Toughness >= toughnessThreshold && animalState.Hunger >= hungerThreshold) EndEpisode();
+        if (animalState.Toughness >= toughnessThreshold && animalState.Hunger >= hungerThreshold)
+        {
+            Debug.Log("¿Ïº®.");
+            animalState.enabled = false;
+            EndEpisode();
+        }
 #endif
     }
 

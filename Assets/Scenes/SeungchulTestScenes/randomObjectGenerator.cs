@@ -20,12 +20,15 @@ public class RandomObjectGenerator : MonoBehaviour
 	private List<Polyperfect.Common.Common_WanderScript> animalGameObjects = new List<Polyperfect.Common.Common_WanderScript>();
 	private List<GameObject> plantGameObjects = new List<GameObject>();
 
+	private int terrainLayer;
+
 	public static RandomObjectGenerator instance = null;
 
 	private void Awake()
 	{
 		mapWidth *= 0.95f;
 		mapLength *= 0.95f;
+		terrainLayer = LayerMask.GetMask("Terrain");
 		instance = this;
 	}
 
@@ -33,7 +36,8 @@ public class RandomObjectGenerator : MonoBehaviour
 	{
 		StartCoroutine(GenerateObject());
 #if ENABLE_RESPAWN
-		StartCoroutine(RespawnObject());
+		StartCoroutine(RespawnAnimals());
+		StartCoroutine(RespawnFood());
 #endif
 	}
 
@@ -49,7 +53,7 @@ public class RandomObjectGenerator : MonoBehaviour
 
 	}
 
-	IEnumerator RespawnObject()
+	IEnumerator RespawnAnimals()
     {
 		while(true)
         {
@@ -61,6 +65,14 @@ public class RandomObjectGenerator : MonoBehaviour
 			yield return new WaitForSeconds(5.0f);
         }
     }
+	IEnumerator RespawnFood()
+    {
+		while(true)
+        {
+			Instantiate(plantPrefabs[0].prefab, GetRandomPosition(), Quaternion.identity, transform);
+			yield return new WaitForSeconds(5.0f);
+		}
+    }
 
 	public Vector3 GetRandomPosition()
 	{
@@ -69,7 +81,7 @@ public class RandomObjectGenerator : MonoBehaviour
 									   Random.Range(-mapLength*0.5f, mapLength*0.5f));
 		Ray ray = new Ray(spawnPos, Vector3.down); //월드 좌표로 변경해서 삽입.
 		RaycastHit hitData;
-		Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
+		Physics.Raycast(ray, out hitData, 2*mapMaxHeight, terrainLayer); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
 		spawnPos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
 		return spawnPos;
 	}

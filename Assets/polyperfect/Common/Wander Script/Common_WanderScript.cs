@@ -790,8 +790,7 @@ namespace Polyperfect.Common
             {
                 if (targetObject.TakeDamage(power)) //공격했는데 목표가 죽었다면
                 {
-                    hasKilled = true;
-                    CalculateHunger(targetObject);
+                    CalculateHungerAndHp(targetObject);
                 }
             }
             SetState(WanderState.Walking); // 현재 상태를 걷기로 전환
