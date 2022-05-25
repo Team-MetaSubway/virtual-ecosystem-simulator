@@ -34,5 +34,7 @@ namespace Polyperfect.Common
         [SerializeField, Tooltip("Stealthy can't be detected by others.")]
         public bool stealthy = false;
 
+        [SerializeField, Tooltip("animal detection range.")]
+        public float detectionRange = 20f;
     }
 }

@@ -9,6 +9,7 @@ TagManager:
   - Beaver
   - Env
   - User
+  - DeadBody
   layers:
   - Default
   - TransparentFX
@@ -19,7 +20,7 @@ TagManager:
   - Animal
   - Food
   - Detector
-  - 
+  - AttackBoundary
   - 
   - 
   - 

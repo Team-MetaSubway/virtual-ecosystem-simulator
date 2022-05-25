@@ -19,31 +19,27 @@ namespace Polyperfect.Animals
     public class WanderScriptHerbivore : Common_WanderScript
     {
         Vector3 directionToGo;
+        GameObject targetFood;
+        Common_WanderScript targetChaser;
+        static LayerMask foodLayer;
+        private float detectionRangeSquare;
 
         public override void Awake()
         {
             base.Awake();
             animalType = AnimalType.Herbivore;
+            foodLayer = LayerMask.NameToLayer("Food");
+            var detectionRange = GetComponentInChildren<CapsuleCollider>().radius;
+            detectionRangeSquare = detectionRange * detectionRange;
         }
         bool started = false;
         public override void OnEnable()
         {
-            base.SetStart();
+            base.OnEnable();
             characterController.enabled = false;
-            Vector3 pos = new Vector3(Random.value * LearningEnvController.instance.mapWidth - LearningEnvController.instance.mapWidth / 2f,
-                                      LearningEnvController.instance.mapMaxHeight,
-                                      Random.value * LearningEnvController.instance.mapLength - LearningEnvController.instance.mapLength / 2f); //로컬 좌표 랜덤하게 생성.
-
-            Ray ray = new Ray(pos, Vector3.down); //월드 좌표로 변경해서 삽입.
-            RaycastHit hitData;
-            Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
-            pos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
-
-            transform.position = pos;
+            transform.position = RandomObjectGenerator.instance.GetRandomPosition();
             transform.rotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
             characterController.enabled = true;
-
-            base.OnEnable();
         }
 
         public override void OnDisable()
@@ -52,35 +48,48 @@ namespace Polyperfect.Animals
             started = false;
         }
         // Update is called once per frame
+
+        bool isStaminaRemain = false;
         void Update() //base class의 UpdateAnimalState 함수를 여기에 구현. 적절히 수정.
         {
+            
             if (CurrentState == WanderState.Dead) return;
             if (Toughness <= 0)
             {
                 Die();
                 return;
             }
+            
             switch(CurrentState)
             {
                 case WanderState.Walking:
                     stamina = Mathf.MoveTowards(stamina, MaxStamina, Time.deltaTime);
                     break;
                 case WanderState.Running:
-                    stamina -= Time.deltaTime;
-                    if (stamina <= 0) SetMoveSlow();
+                    if (isStaminaRemain)
+                    {
+                        stamina -= 0.5f * Time.deltaTime;
+                        if(stamina<=0)
+                        {
+                            SetMoveSlow();
+                            isStaminaRemain = false;
+                        }
+                    }
                     break;
                 case WanderState.FoundFood:
                     break;
 
                 default: break;
             }
+            
             FaceDirection(directionToGo);
             characterController.SimpleMove(moveSpeed * directionToGo);
+            
         }
-
+        
         public override void OnTriggerEnter(Collider other)
         {
-            //초식동물은 collider의 크기가 크다. 크기는 곧 감지 범위이다. ray sensor 처럼.
+            //collider 는 detector이고 현재 food, Terrain, animal 레이어 감지.
 
             //////////////////////////////////////////////////////////
             //
@@ -119,20 +128,20 @@ namespace Polyperfect.Animals
 
             if (CurrentState == WanderState.Dead) return; //내가 현재 죽었다면 리턴. 오류 방지용 코드.
 
-            if (other.gameObject.layer == LayerMask.NameToLayer("Animal")) //1. 동물은 공통으로 Animal 레이어.
+            if (other.gameObject.layer == animalLayer) //1. 동물은 공통으로 Animal 레이어.
             {
-                //나중에, 죽은 동물이면 무시하는 코드 삽입해야할 듯.
-                AnimalType targetType = other.GetComponent<Common_WanderScript>().animalType;
-                switch(CurrentState)
+                Common_WanderScript target = other.GetComponent<Common_WanderScript>();
+                switch (CurrentState)
                 {
                     case WanderState.Walking: //1-1
                     {
-                        if(targetType==AnimalType.Calnivore) // 1-1-2.
+                        if(target.animalType==AnimalType.Calnivore) // 1-1-2.
                         {
-                            targetChaser = other.gameObject; //타겟 설정하는 코드 삽입 필요.
+                            targetChaser = target; //타겟 설정하는 코드 삽입 필요.
                             SetState(WanderState.Running);
+                            isStaminaRemain = true;
                             StartCoroutine(CheckChaserCoroutine());//타겟에서 벗어났는지 확인하는 코루틴 삽입 필요.
-                            }
+                        }
                         break;
                     }
 
@@ -143,9 +152,9 @@ namespace Polyperfect.Animals
                     }
                     case WanderState.FoundFood: //1-3.
                     {
-                        if (targetType == AnimalType.Calnivore) // 1-3-2.
+                        if (target.animalType == AnimalType.Calnivore) // 1-3-2.
                         {
-                            targetChaser = other.gameObject; //타겟 설정하는 코드 삽입 필요.
+                            targetChaser = target; //타겟 설정하는 코드 삽입 필요.
                             SetState(WanderState.Running);
                             StartCoroutine(CheckChaserCoroutine());//타겟에서 벗어났는지 확인하는 코루틴 삽입 필요.
                         }
@@ -154,7 +163,7 @@ namespace Polyperfect.Animals
                     default: break;
                 }
             }
-            else if(other.gameObject.layer == LayerMask.NameToLayer("Food")) //2. 먹이는 공통으로 Food 레이어.
+            else if(other.gameObject.layer == foodLayer) //2. 먹이는 공통으로 Food 레이어.
             {
                 switch (CurrentState)
                 {
@@ -239,7 +248,7 @@ namespace Polyperfect.Animals
                     break;
                 }
                 Vector3 runAwayDirection = transform.position - targetChaser.transform.position; //포식자에서 초식동물을 바라보는 방향.
-                if (runAwayDirection.sqrMagnitude>200f)//attackRangeSquare*4)//attackRangeSquare는 감지 범위의 제곱. 대충 곱하기 2.
+                if (runAwayDirection.sqrMagnitude>detectionRangeSquare*2f)//detectionRangeSquare는 감지 범위의 제곱. 대충 곱하기 2.
                 {
                     SetState(WanderState.Walking);
                     break;

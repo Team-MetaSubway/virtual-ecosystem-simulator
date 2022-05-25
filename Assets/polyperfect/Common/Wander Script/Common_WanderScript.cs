@@ -126,6 +126,7 @@ namespace Polyperfect.Common
         private Color awarnessColor = new Color(1f, 0f, 1f, 1f);
         private Color scentColor = new Color(1f, 0f, 0f, 1f);
         private Animator animator;
+        [HideInInspector]
         public CharacterController characterController;
         private Vector3 origin;
 
@@ -157,21 +158,26 @@ namespace Polyperfect.Common
             Calnivore, //육식동물이 디폴트
             Herbivore //초식동물
         }
-
+        [HideInInspector]
         public WanderState CurrentState;
         //Common_WanderScript primaryPrey;
         //Common_WanderScript primaryPursuer;
         //Common_WanderScript attackTarget;
+        [HideInInspector]
         public float moveSpeed = 0f;
         float attackReach = 2f;
         bool forceUpdate = false;
 
         //성원 추가
 
-        public GameObject targetFood;
-        public GameObject targetChaser;
+        private float detectionRange;
+        public float DetectionRange
+        {
+            get { return detectionRange; }
+        }
 
-        public AnimalType animalType; //자식 클래스에서 접근, protected
+        [HideInInspector]
+        public AnimalType animalType;
 
         bool hasKilled = false;
         public bool HasKilled
@@ -191,10 +197,12 @@ namespace Polyperfect.Common
 
         private HashSet<Common_WanderScript> attackTargetBuffer;
         List<Common_WanderScript> targetToErase;
-        public float attackRangeSquare;
+        
+        protected float attackRangeSquare;
 
         protected float hunger;
-        public float maxHunger;
+       
+        protected float maxHunger;
         public float Hunger
         {
             get { return hunger; }
@@ -205,7 +213,13 @@ namespace Polyperfect.Common
         }
 
         float hpFactor;
+        [HideInInspector]
         public float hungerFactor;
+
+        private string objectTag;
+
+        protected static int deadBodyLayer;
+        protected static int animalLayer; 
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -441,6 +455,12 @@ namespace Polyperfect.Common
 
 
             //성원 추가
+
+            detectionRange = stats.detectionRange;
+
+            deadBodyLayer = LayerMask.NameToLayer("Ignore Raycast");
+            animalLayer = LayerMask.NameToLayer("Animal");
+            objectTag = gameObject.tag;
             staminaThreshold = stats.stamina * 0.2f;
 
             runningState = null;
@@ -471,7 +491,7 @@ namespace Polyperfect.Common
 
             UnityEngine.Assertions.Assert.IsNotNull(walkingState, string.Format("{0}'s wander script does not have any movement states.", gameObject.name));
 
-            attackRangeSquare = GetComponent<CapsuleCollider>().radius;
+            attackRangeSquare = GetComponentInChildren<CapsuleCollider>().radius;
             attackRangeSquare *= attackRangeSquare;
 
             targetToErase = new List<Common_WanderScript>();
@@ -497,6 +517,9 @@ namespace Polyperfect.Common
         public virtual void OnEnable()
         {
             //allAnimals.Add(this);
+            gameObject.layer = animalLayer;
+            gameObject.tag = objectTag;
+            SetStart();
             StartCoroutine(HungerCoroutine());
             StartCoroutine(HpCoroutine());
         }
@@ -504,6 +527,8 @@ namespace Polyperfect.Common
         public virtual void OnDisable()
         {
             //allAnimals.Remove(this);
+            gameObject.layer = deadBodyLayer;
+            gameObject.tag = "DeadBody";
             StopAllCoroutines();
         }
 
@@ -542,13 +567,13 @@ namespace Polyperfect.Common
             switch (CurrentState)
             {
                 case WanderState.Running:
-                    stamina -= Time.deltaTime;
+                    stamina -= 0.5f*Time.deltaTime;
                     break;
                 case WanderState.Walking:
                     stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
                     break;
             }
-            //FaceDirection(direction.normalized);
+            FaceDirection(direction.normalized);
             characterController.SimpleMove(moveSpeed * direction);
         }
 
@@ -731,28 +756,30 @@ namespace Polyperfect.Common
         }
         public virtual void OnTriggerEnter(Collider other)
         {
-            if(other.CompareTag("Env"))
+            //Terrain(특히 Env 처리), Animal(animalLayer 변수에 캐시됨), AttackBoundary(무시해야함), Detector 레이어(무시해야함)에 대해 처리.
+            
+            if (CurrentState == WanderState.Dead) return; //내가 현재 죽었다면 리턴. 오류 방지용 코드.
+            
+            if(other.CompareTag("Env")) //Terrain의 Env인 경우
             {
                 isCollidedWithWall = true;
                 return;
             }
-            //맞닿은 object가 Animal layer가 아니라면 return. 
-            //generality 가 떨어지므로 좋지 않음.추후 수정해야할 코드.
-            if (other.gameObject.layer != gameObject.layer) return;
-            if (CurrentState == WanderState.Dead) return; //내가 현재 죽었다면 리턴. 오류 방지용 코드.
-            if (other.gameObject.GetComponent<Common_WanderScript>().CurrentState == WanderState.Dead) return; //오브젝트가 이미 죽었다면 리턴.
 
-            Common_WanderScript targetObject = other.GetComponent<Common_WanderScript>();
-
-            if (targetObject.dominance < dominance) //타겟이 피식자라면 공격 코루틴 시작
+            if(other.gameObject.layer == animalLayer)
             {
-                if (CurrentState == WanderState.Attack) // 내가 현재 공격 중이라면 attackTargetBuffer에 삽입 후 리턴.
+                Common_WanderScript targetObject = other.GetComponent<Common_WanderScript>();
+
+                if (targetObject.dominance < dominance) //타겟이 피식자라면 공격 코루틴 시작
                 {
-                    attackTargetBuffer.Add(targetObject);//삽입
-                    return;
+                    if (CurrentState == WanderState.Attack) // 내가 현재 공격 중이라면 attackTargetBuffer에 삽입 후 리턴.
+                    {
+                        attackTargetBuffer.Add(targetObject);//삽입
+                        return;
+                    }
+                    SetState(WanderState.Attack);
+                    StartCoroutine(AttackCoroutine(targetObject));
                 }
-                SetState(WanderState.Attack);
-                StartCoroutine(AttackCoroutine(targetObject));
             }
         }
 
@@ -763,8 +790,7 @@ namespace Polyperfect.Common
             {
                 if (targetObject.TakeDamage(power)) //공격했는데 목표가 죽었다면
                 {
-                    hasKilled = true;
-                    CalculateHunger(targetObject);
+                    CalculateHungerAndHp(targetObject);
                 }
             }
             SetState(WanderState.Walking); // 현재 상태를 걷기로 전환
@@ -810,9 +836,10 @@ namespace Polyperfect.Common
                 yield return new WaitForSeconds(1.0f); //1초 후에 다시 실행.
             }
         }
-        public virtual void CalculateHunger(Common_WanderScript target)
+        public virtual void CalculateHungerAndHp(Common_WanderScript target)
         {
             hunger = Mathf.Clamp(hunger + hungerFactor * (1 + target.MaxToughness / maxToughness), 0, maxHunger);
+            toughness = Mathf.Clamp(toughness + 0.05f * maxToughness, 0, maxToughness);
         }
     }
 }

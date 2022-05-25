@@ -78,7 +78,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         public Camera cam;
         public MovementSettings movementSettings = new MovementSettings();
-        // public MouseLook mouseLook = new MouseLook();
+        //public MouseLook mouseLook = new MouseLook();
         public AdvancedSettings advancedSettings = new AdvancedSettings();
 
 
@@ -127,13 +127,13 @@ namespace UnityStandardAssets.Characters.FirstPerson
 
         private void Update()
         {
-
+            
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Debug.Break();
             }
-
-            //RotateView();
+            
+            RotateView();
 
             if (Input.GetButtonDown("Jump") && !m_Jump)
             {
@@ -226,7 +226,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             return input;
         }
 
-        /*
+        
         private void RotateView()
         {
             //avoids the mouse looking if the game is effectively paused
@@ -235,7 +235,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
             // get the rotation before it's changed
             float oldYRotation = transform.eulerAngles.y;
 
-            mouseLook.LookRotation (transform, cam.transform);
+            //mouseLook.LookRotation (transform, cam.transform);
 
             if (m_IsGrounded || advancedSettings.airControl)
             {
@@ -244,7 +244,7 @@ namespace UnityStandardAssets.Characters.FirstPerson
                 m_RigidBody.velocity = velRotation*m_RigidBody.velocity;
             }
         }
-        */
+        
         /// sphere cast down just beyond the bottom of the capsule to see if the capsule is colliding round the bottom
         private void GroundCheck()
         {
