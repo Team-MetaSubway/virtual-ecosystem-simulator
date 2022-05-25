@@ -37,7 +37,7 @@ namespace DigitalRuby.RainMaker
             }
 
             else
-                RainScript.RainIntensity = 1.0f;
+                RainScript.RainIntensity = 0.5f;
         }
 
         private void FlashlightStart()
@@ -61,6 +61,12 @@ namespace DigitalRuby.RainMaker
         {
             RainChanged();
             FlashlightStart();
+        }
+
+        public void rainInit()
+        {
+            RainToggle.isOn = true;
+            RainChanged();
         }
 
     }

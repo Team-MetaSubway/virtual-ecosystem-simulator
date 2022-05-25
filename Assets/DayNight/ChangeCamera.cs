@@ -10,7 +10,7 @@ public class ChangeCamera : MonoBehaviour
 
     private UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController personCameraController;
     private DigitalRuby.RainMaker.CameraSetting freeCameraController;
- 
+    private DigitalRuby.RainMaker.AA personCameraSetting;
 
     public bool change;
 
@@ -19,6 +19,7 @@ public class ChangeCamera : MonoBehaviour
     {
         personCameraController = PersonCamera.GetComponent<UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController>();
         freeCameraController = FreeCamera.GetComponent<DigitalRuby.RainMaker.CameraSetting>();
+        personCameraSetting = PersonCamera1.GetComponent<DigitalRuby.RainMaker.AA>();
         change = true;
         FreeCamera.SetActive(true);
         PersonCamera.SetActive(false);
@@ -32,12 +33,34 @@ public class ChangeCamera : MonoBehaviour
         {
             if (change == false)
             {
+               
+                if(personCameraSetting.RainToggle.isOn)
+                {
+                    freeCameraController.rainInit();
+                }
+                else
+                {
+                    freeCameraController.RainToggle.isOn = false;
+                }
+               
                 change = true;
+                
                 FreeCameraChange();
             }
             else
             {
+                
+                if (freeCameraController.RainToggle.isOn)
+                {
+                    personCameraSetting.rainInit();
+                }
+                else
+                {
+                    personCameraSetting.RainToggle.isOn = false;
+                }
+                
                 change = false;
+                
                 PersonCameraChange();
             }
         }

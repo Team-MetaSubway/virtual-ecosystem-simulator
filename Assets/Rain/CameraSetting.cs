@@ -199,5 +199,11 @@ namespace DigitalRuby.RainMaker
             rotationY = x;
             UpdateMouseLook();
         }
+
+        public void rainInit()
+        {
+            RainToggle.isOn = true;
+            RainChanged();
+        }
     }
 }
