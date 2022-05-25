@@ -17,8 +17,8 @@ namespace DigitalRuby.RainMaker
 
         private enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
         private RotationAxes axes = RotationAxes.MouseXAndY;
-        private float sensitivityX = 2F;
-        private float sensitivityY = 2F;
+        private float sensitivityX = 6F;
+        private float sensitivityY = 6F;
         private float minimumX = -360F;
         private float maximumX = 360F;
         private float minimumY = -60F;
@@ -88,11 +88,11 @@ namespace DigitalRuby.RainMaker
                 FlashlightToggle.isOn = !FlashlightToggle.isOn;
             }
 
-            if (Input.GetKey(KeyCode.Q))
+            if (Input.GetKey(KeyCode.E))
             {
                 Camera.main.transform.Translate(0.0f, speed, 0.0f);
             }
-            else if (Input.GetKey(KeyCode.E))
+            else if (Input.GetKey(KeyCode.Q))
             {
                 Camera.main.transform.Translate(0.0f, -speed, 0.0f);
             }
@@ -142,6 +142,7 @@ namespace DigitalRuby.RainMaker
                 Quaternion yQuaternion = Quaternion.AngleAxis(-rotationY, Vector3.right);
                 transform.localRotation = originalRotation * yQuaternion;
             }
+            transform.localRotation = Quaternion.LookRotation(transform.forward, Vector3.up);
         }
 
         public void RainSliderChanged(float val)
