@@ -27,6 +27,7 @@ namespace DigitalRuby.RainMaker
         private float rotationY = 0F;
         private Quaternion originalRotation;
 
+
         //
         //
         
@@ -102,12 +103,12 @@ namespace DigitalRuby.RainMaker
         private void UpdateMouseLook()
         {
             //if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.M))
-            
+
             if (Input.GetKeyDown(KeyCode.M))
             {
                 MouseLookToggle.isOn = !MouseLookToggle.isOn;
             }
-            
+
             if (!MouseLookToggle.isOn)
             {
                 return;
@@ -116,13 +117,13 @@ namespace DigitalRuby.RainMaker
             {
                 // Read the mouse input axis
                 rotationX += Input.GetAxis("Mouse X") * sensitivityX;
-                rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
+                rotationY -= Input.GetAxis("Mouse Y") * sensitivityY;
 
                 rotationX = ClampAngle(rotationX, minimumX, maximumX);
                 rotationY = ClampAngle(rotationY, minimumY, maximumY);
 
                 Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
-                Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, -Vector3.right);
+                Quaternion yQuaternion = Quaternion.AngleAxis(rotationY, Vector3.right);
 
                 transform.localRotation = originalRotation * xQuaternion * yQuaternion;
             }
@@ -134,7 +135,7 @@ namespace DigitalRuby.RainMaker
                 Quaternion xQuaternion = Quaternion.AngleAxis(rotationX, Vector3.up);
                 transform.localRotation = originalRotation * xQuaternion;
             }
-            else
+            else if (axes == RotationAxes.MouseY)
             {
                 rotationY += Input.GetAxis("Mouse Y") * sensitivityY;
                 rotationY = ClampAngle(rotationY, minimumY, maximumY);
@@ -235,6 +236,13 @@ namespace DigitalRuby.RainMaker
             }
 
             return Mathf.Clamp(angle, min, max);
+        }
+
+        public void Init(float x, float y)
+        {
+            rotationX = y;
+            rotationY = x;
+            UpdateMouseLook();
         }
     }
 }
