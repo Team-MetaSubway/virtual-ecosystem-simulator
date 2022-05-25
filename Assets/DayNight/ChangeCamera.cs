@@ -10,9 +10,7 @@ public class ChangeCamera : MonoBehaviour
 
     private UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController personCameraController;
     private DigitalRuby.RainMaker.CameraSetting freeCameraController;
-    //public Transform FreeCamera1;
-    //public Transform PersonCamera1;
-    //public Transform PersonCamera2;
+ 
 
     public bool change;
 
