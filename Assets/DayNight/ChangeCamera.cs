@@ -7,7 +7,7 @@ public class ChangeCamera : MonoBehaviour
     public GameObject FreeCamera;
     public GameObject PersonCamera;
     public Transform PersonCamera1;
-
+    
     private UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController personCameraController;
     private DigitalRuby.RainMaker.CameraSetting freeCameraController;
     private DigitalRuby.RainMaker.AA personCameraSetting;
@@ -20,6 +20,7 @@ public class ChangeCamera : MonoBehaviour
         personCameraController = PersonCamera.GetComponent<UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController>();
         freeCameraController = FreeCamera.GetComponent<DigitalRuby.RainMaker.CameraSetting>();
         personCameraSetting = PersonCamera1.GetComponent<DigitalRuby.RainMaker.AA>();
+        
         change = true;
         FreeCamera.SetActive(true);
         PersonCamera.SetActive(false);
@@ -33,7 +34,7 @@ public class ChangeCamera : MonoBehaviour
         {
             if (change == false)
             {
-               
+                /*               
                 if(personCameraSetting.RainToggle.isOn)
                 {
                     freeCameraController.rainInit();
@@ -42,14 +43,15 @@ public class ChangeCamera : MonoBehaviour
                 {
                     freeCameraController.RainToggle.isOn = false;
                 }
-               
+                */
+                
                 change = true;
                 
                 FreeCameraChange();
             }
             else
             {
-                
+                /*
                 if (freeCameraController.RainToggle.isOn)
                 {
                     personCameraSetting.rainInit();
@@ -58,7 +60,7 @@ public class ChangeCamera : MonoBehaviour
                 {
                     personCameraSetting.RainToggle.isOn = false;
                 }
-                
+                */
                 change = false;
                 
                 PersonCameraChange();
@@ -77,6 +79,9 @@ public class ChangeCamera : MonoBehaviour
 
         freeCameraController.Init(angleX,angleY);
 
+        bool checkPersonRain = personCameraSetting.RainToggle.isOn;
+        freeCameraController.rainInit(checkPersonRain);
+
         FreeCamera.SetActive(true);
         PersonCamera.SetActive(false);
     }
@@ -89,7 +94,10 @@ public class ChangeCamera : MonoBehaviour
         PersonCamera1.transform.localRotation = Quaternion.Euler(FreeCamera.transform.localRotation.eulerAngles.x, 0, 0); 
 
         personCameraController.mouseLook.Init(PersonCamera.transform, PersonCamera1.transform);
-        
+
+        bool checkFreeRain = freeCameraController.RainToggle.isOn;
+        personCameraSetting.rainInit(checkFreeRain);
+
         FreeCamera.SetActive(false);
         PersonCamera.SetActive(true);
     }

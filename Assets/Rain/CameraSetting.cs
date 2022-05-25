@@ -11,6 +11,8 @@ namespace DigitalRuby.RainMaker
         public UnityEngine.UI.Toggle RainToggle;
         public Light Flashlight;
        
+        public GameObject DayNight;
+        private DayNightSystem DayNightTime;
 
         private enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
         private RotationAxes axes = RotationAxes.MouseXAndY;
@@ -75,11 +77,13 @@ namespace DigitalRuby.RainMaker
                 MouseLookToggle.isOn = !MouseLookToggle.isOn;
             }
             */
+            /*
             if (!MouseLookToggle.isOn)
             {
                 return;
             }
-            else if (axes == RotationAxes.MouseXAndY)
+            */
+            if (axes == RotationAxes.MouseXAndY)
             {
                 // Read the mouse input axis
                 rotationX += Input.GetAxis("Mouse X") * sensitivityX;
@@ -111,11 +115,12 @@ namespace DigitalRuby.RainMaker
             }
             transform.localRotation = Quaternion.LookRotation(transform.forward, Vector3.up);
         }
-
+        /*
         public void RainSliderChanged(float val)
         {
             RainScript.RainIntensity = val;
         }
+        */
         /*
         public void MouseLookChanged(bool val)
         {
@@ -128,21 +133,24 @@ namespace DigitalRuby.RainMaker
             Flashlight.enabled = val;
         }
         //
+        
         public void Rain(bool val)
         {
             
             RainToggle.isOn = val;
             
         }
-
+        
         private void RainChanged()
         {
+            
             if (Input.GetKeyDown(KeyCode.R))
             {
                 RainToggle.isOn = !RainToggle.isOn;
             }
+           
 
-            if (!RainToggle.isOn)
+            if(!RainToggle.isOn)
             {
                 RainScript.RainIntensity = 0.0f;
                     return;
@@ -163,7 +171,9 @@ namespace DigitalRuby.RainMaker
 
             MouseLookToggle.isOn = true;
 
+            DayNightTime = DayNight.GetComponent<DayNightSystem>();
 
+            Rain(false);
         }
 
         // Update is called once per frame
@@ -173,10 +183,22 @@ namespace DigitalRuby.RainMaker
             {
                 Debug.Break();
             }
-           
+            /*
+            if ( -1 < DayNightTime.Day && DayNightTime.Day < 3)
+            {
+                Rain(true);
+                RainChanged();
+            }
+            else
+            {
+                Rain(false);
+                RainChanged();
+            }
+            */
+            RainChanged();
             UpdateMovement();
             UpdateMouseLook();
-            RainChanged();
+            
         }
 
         public static float ClampAngle(float angle, float min, float max)
@@ -199,11 +221,12 @@ namespace DigitalRuby.RainMaker
             rotationY = x;
             UpdateMouseLook();
         }
-
-        public void rainInit()
+        
+        public void rainInit(bool check)
         {
-            RainToggle.isOn = true;
+            Rain(check);
             RainChanged();
         }
+        
     }
 }
