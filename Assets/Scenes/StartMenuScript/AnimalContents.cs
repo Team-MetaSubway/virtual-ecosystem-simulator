@@ -2,11 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class AnimalContents : MonoBehaviour
 {
-	public Dropdown animalDropDown;
-	public InputField cntInputField;
+	public Dropdown AnimalDropDown;
+	public InputField CntInputField;
 	public GameObject animalInfo;
 	int contentCnt;
 	int contentY;
@@ -19,17 +20,24 @@ public class AnimalContents : MonoBehaviour
 
 	public void OnSelectClick()
 	{
-		if (cntInputField.textComponent.text.Length == 0)
+		if (CntInputField.textComponent.text.Length == 0
+			|| (CntInputField.textComponent.text.Length == 1 && CntInputField.textComponent.text[0] == '0'))
 			return;
 		GameObject animalContent = Instantiate(animalInfo);
 		animalContent.transform.position = new Vector3(920, contentY, 0);
 		contentY += -200;
-		animalContent.transform.parent = transform;
+		animalContent.transform.SetParent(transform);
 		animalContent.SetActive(true);
 		Text name = animalContent.transform.Find("Name").gameObject.GetComponent<Text>();
-		name.text = animalDropDown.captionText.text;
+		name.text = AnimalDropDown.captionText.text;
 		Text count = animalContent.transform.Find("Count").gameObject.GetComponent<Text>();
-		count.text = cntInputField.textComponent.text;
+		count.text = int.Parse(CntInputField.textComponent.text).ToString();
+		Button remove =	animalContent.transform.transform.Find("Remove").GetComponent<Button>();
+		remove.onClick.AddListener(OnRemoveClick);
 	}
 
+	public void OnRemoveClick()
+	{
+		Destroy(EventSystem.current.currentSelectedGameObject.transform.parent.gameObject);
+	}
 }

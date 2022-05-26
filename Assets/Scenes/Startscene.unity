@@ -1066,8 +1066,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 96a5c605f05b246419c59b12224079da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  animalDropDown: {fileID: 2069459156}
-  cntInputField: {fileID: 2041538726}
+  AnimalDropDown: {fileID: 2069459156}
+  CntInputField: {fileID: 2041538726}
   animalInfo: {fileID: 6455020157332397175, guid: a0ef0c54611dafe4490a33e00884fc5a, type: 3}
 --- !u!1 &239298687
 GameObject:
