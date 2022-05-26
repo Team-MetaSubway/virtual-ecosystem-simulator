@@ -39,6 +39,7 @@ public class RandomObjectGenerator : MonoBehaviour
 		StartCoroutine(RespawnAnimals());
 		StartCoroutine(RespawnFood());
 #endif
+		StartCoroutine(ReproduceChild());
 	}
 
 	IEnumerator GenerateObject()
@@ -72,6 +73,17 @@ public class RandomObjectGenerator : MonoBehaviour
 			Instantiate(plantPrefabs[0].prefab, GetRandomPosition(), Quaternion.identity, transform);
 			yield return new WaitForSeconds(5.0f);
 		}
+    }
+
+	IEnumerator ReproduceChild()
+    {
+		while(true)
+        {
+            //Instantiate(animalPrefabs[Random.Range(0, animalPrefabs.Length - 1)].prefab, GetRandomPosition(), Quaternion.Euler(0, Random.Range(0, 359f), 0), transform);
+            Instantiate(animalPrefabs[0].prefab, GetRandomPosition(), Quaternion.Euler(0, Random.Range(0, 359f), 0), transform);
+
+            yield return new WaitForSeconds(4f);
+        }
     }
 
 	public Vector3 GetRandomPosition()

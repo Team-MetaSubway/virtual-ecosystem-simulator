@@ -793,7 +793,6 @@ namespace Polyperfect.Common
                     CalculateHungerAndHp(targetObject);
                 }
             }
-            SetState(WanderState.Walking); // 현재 상태를 걷기로 전환
             FindOtherTarget(); //사거리에 다른 목표가 있으면 찾고 공격한다. 
         }
         public virtual void FindOtherTarget()
@@ -816,6 +815,7 @@ namespace Polyperfect.Common
             foreach (var target in targetToErase) attackTargetBuffer.Remove(target);
             targetToErase.Clear();
             if (tmpAttackTarget != null) StartCoroutine(AttackCoroutine(tmpAttackTarget));
+            else SetState(WanderState.Walking); // 현재 상태를 걷기로 전환
         }
         public virtual IEnumerator HungerCoroutine()
         {
