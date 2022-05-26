@@ -5,7 +5,6 @@ using UnityEngine.UI;
 
 public class StatBarController : MonoBehaviour
 {
-    Transform cam;
     private Polyperfect.Common.Common_WanderScript animal;
 
     private Image hpForeground;
@@ -31,7 +30,7 @@ public class StatBarController : MonoBehaviour
 
     private void Start()
     {
-        cam = GameObject.Find("Free Camera").transform;
+        //cam = GameObject.Find("Free Camera").transform;
 
         hpForeground = transform.Find("hp-foreground").GetComponent<Image>();
         hpBackground = transform.Find("hp-background").GetComponent<Image>();
@@ -46,7 +45,7 @@ public class StatBarController : MonoBehaviour
 
     private void Update()
     {
-        transform.LookAt(transform.position + cam.rotation * Vector3.forward, cam.rotation * Vector3.up);
+        transform.LookAt(transform.position + Camera.main.transform.rotation * Vector3.forward, Camera.main.transform.rotation * Vector3.up);
         UpdateStatBar();
     }
 
