@@ -233,7 +233,7 @@ namespace DigitalRuby.RainMaker
         public void rainDelay()
         {
             Rain(false);
-            Invoke("rainInit", 0.1f);
+            Invoke("rainInit", 0.2f);
         }
 
         public void rainInit()
