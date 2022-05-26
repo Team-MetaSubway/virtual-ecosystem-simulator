@@ -30,6 +30,8 @@ public class RandomObjectGenerator : MonoBehaviour
 	private List<GameObject> plantGameObjects = new List<GameObject>();
 
 	private int terrainLayer;
+	private float childSpawnRange;
+	
 	public Dictionary<string, float> animalTagSet = new Dictionary<string, float>();
 
 
@@ -40,6 +42,7 @@ public class RandomObjectGenerator : MonoBehaviour
 		mapWidth *= 0.95f;
 		mapLength *= 0.95f;
 		terrainLayer = LayerMask.GetMask("Terrain");
+		childSpawnRange = 7f;
 
 		float value = 0;
 		foreach (string animal in System.Enum.GetNames(typeof(Animal)))
@@ -55,7 +58,7 @@ public class RandomObjectGenerator : MonoBehaviour
 	    StartCoroutine(RespawnFood());
 
 #if ENABLE_RESPAWN
-		StartCoroutine(RespawnAnimals()); //강화학습용 세팅. 동물 무한 부활.
+		StartCoroutine(RespawnAnimals()); //강화학습용 세팅. 동물 자동 부활.
 #endif
 
 	}
@@ -116,17 +119,17 @@ public class RandomObjectGenerator : MonoBehaviour
 		{
 			while (cnt-- > 0)
 			{
-				GameObject instance = Instantiate(animalPrefab, transform);
-				animalGameObjects.Add(instance);
+				GameObject animalInstance = Instantiate(animalPrefab, transform);
+				animalGameObjects.Add(animalInstance);
 			}
 		}
 		else
         {
 			while (cnt-- > 0)
 			{
-				GameObject instance = Instantiate(animalPrefab, transform);
-				instance.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
-				animalGameObjects.Add(instance);
+				GameObject animalInstance = Instantiate(animalPrefab, transform);
+				animalInstance.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
+				animalGameObjects.Add(animalInstance);
 			}
 		}
 	}
@@ -138,16 +141,38 @@ public class RandomObjectGenerator : MonoBehaviour
 
 		while(cnt-->0)
         {
-			GameObject instance = Instantiate(plantPrefab, GetRandomPosition(), Quaternion.identity, transform);
-			plantGameObjects.Add(instance);
+			GameObject plantInstance = Instantiate(plantPrefab, GetRandomPosition(), Quaternion.identity, transform);
+			plantGameObjects.Add(plantInstance);
 		}
     }
 
-	public void ReproduceAnimal(GameObject animalObject)
+	public void ReproduceAnimal(GameObject parentAnimalInstance)
     {
-		GameObject instance = Instantiate(animalObject, transform);
-		StartCoroutine(instance.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(gameObject));
-		animalGameObjects.Add(instance);
+		GameObject childAnimalInstance = Instantiate(parentAnimalInstance, transform);
+		//부모의 반경 7 안에 스폰되게 하드코딩. 랜덤위치가 지형 밖일 수도 있다. 랜덤위치가 지형 안쪽일때까지 랜덤위치 찾기 반복.
+		var transformOfParent = parentAnimalInstance.transform.position;
+
+		Vector3 spawnPos;
+		while (true)
+		{
+			spawnPos = new Vector3(transformOfParent.x + Random.Range(-childSpawnRange, childSpawnRange),
+								   mapMaxHeight,
+								   transformOfParent.z + Random.Range(-childSpawnRange, childSpawnRange)); //랜덤 위치 잡고
+			Ray ray = new Ray(spawnPos, Vector3.down); //아래 방향으로 빛 쏜다.
+			RaycastHit hitData;
+			if (Physics.Raycast(ray, out hitData, 2 * mapMaxHeight, terrainLayer)) //맞았으면 = 지형 안이면
+			{
+				spawnPos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
+				break;
+			}
+		}
+		childAnimalInstance.GetComponent<CharacterController>().enabled = false;
+		childAnimalInstance.transform.position = spawnPos; //부모 근처, 지형 안 랜덤 좌표로 재지정
+		childAnimalInstance.transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0); //바라보는 방향 랜덤하게
+		childAnimalInstance.GetComponent<CharacterController>().enabled = true;
+
+		StartCoroutine(childAnimalInstance.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
+		animalGameObjects.Add(childAnimalInstance);
 	}
 
 	[System.Serializable]
