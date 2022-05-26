@@ -7,10 +7,10 @@ public class ChangeCamera : MonoBehaviour
     public GameObject FreeCamera;
     public GameObject PersonCamera;
     public Transform PersonCamera1;
-
+    
     private UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController personCameraController;
     private DigitalRuby.RainMaker.CameraSetting freeCameraController;
- 
+    private DigitalRuby.RainMaker.AA personCameraSetting;
 
     public bool change;
 
@@ -19,6 +19,8 @@ public class ChangeCamera : MonoBehaviour
     {
         personCameraController = PersonCamera.GetComponent<UnityStandardAssets.Characters.FirstPerson.RigidbodyFirstPersonController>();
         freeCameraController = FreeCamera.GetComponent<DigitalRuby.RainMaker.CameraSetting>();
+        personCameraSetting = PersonCamera1.GetComponent<DigitalRuby.RainMaker.AA>();
+        
         change = true;
         FreeCamera.SetActive(true);
         PersonCamera.SetActive(false);
@@ -30,14 +32,21 @@ public class ChangeCamera : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Z))
         {
+       
+
             if (change == false)
             {
+          
+                
                 change = true;
+                
                 FreeCameraChange();
             }
             else
             {
+        
                 change = false;
+                
                 PersonCameraChange();
             }
         }
@@ -54,6 +63,13 @@ public class ChangeCamera : MonoBehaviour
 
         freeCameraController.Init(angleX,angleY);
 
+        bool checkPersonRain = personCameraSetting.RainToggle.isOn;
+
+        if (checkPersonRain)
+            freeCameraController.rainDelay();
+        else
+            freeCameraController.rainStop();
+
         FreeCamera.SetActive(true);
         PersonCamera.SetActive(false);
     }
@@ -66,7 +82,14 @@ public class ChangeCamera : MonoBehaviour
         PersonCamera1.transform.localRotation = Quaternion.Euler(FreeCamera.transform.localRotation.eulerAngles.x, 0, 0); 
 
         personCameraController.mouseLook.Init(PersonCamera.transform, PersonCamera1.transform);
-        
+
+        bool checkFreeRain = freeCameraController.RainToggle.isOn;
+
+        if (checkFreeRain)
+            personCameraSetting.rainDelay();
+        else
+            personCameraSetting.rainStop();
+
         FreeCamera.SetActive(false);
         PersonCamera.SetActive(true);
     }

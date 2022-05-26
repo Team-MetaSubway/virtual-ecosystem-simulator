@@ -1,14 +1,9 @@
-ï»¿//
-// Rain Maker (c) 2015 Digital Ruby, LLC
-// http://www.digitalruby.com
-//
-
 using UnityEngine;
 using System.Collections;
 
 namespace DigitalRuby.RainMaker
 {
-    public class RainScript : BaseRainScript
+    public class CC : DD
     {
         [Tooltip("The height above the camera that the rain will start falling from")]
         public float RainHeight = 25.0f;
@@ -57,29 +52,28 @@ namespace DigitalRuby.RainMaker
             }
         }
         //protected
-        protected override void Start()
+        public override void Start()
         {
             base.Start();
         }
 
         //protected
-        protected override void Update()
+        public override void Update()
         {
             base.Update();
 
             UpdateRain();
         }
 
-        
-        /*
+
+
         public override void UUPP()
         {
-            
+
             base.UUPP();
             UpdateRain();
-            
+            Debug.Log("rain ¿Ö ¾ÈµÅ?");
         }
-        */
-        
+
     }
 }
