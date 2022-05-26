@@ -516,26 +516,22 @@ namespace Polyperfect.Common
 
         public virtual void OnEnable()
         {
-            //allAnimals.Add(this);
+            characterController.enabled = false;
+            transform.localPosition = RandomObjectGenerator.instance.GetRandomPosition();
+            transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
+            characterController.enabled = true;
+
             gameObject.layer = animalLayer;
             gameObject.tag = objectTag;
             SetStart();
-            StartCoroutine(HungerCoroutine());
-            StartCoroutine(HpCoroutine());
         }
 
         public virtual void OnDisable()
         {
-            //allAnimals.Remove(this);
+            StopAllCoroutines();
             gameObject.layer = deadBodyLayer;
             gameObject.tag = "DeadBody";
-            StopAllCoroutines();
         }
-
-        //private void Start()
-        //{
-        //    setStart();
-        //}
 
         public virtual void SetStart()
         {
@@ -543,10 +539,12 @@ namespace Polyperfect.Common
             {
                 SetPeaceTime(true);
             }
-            SetState(WanderState.Walking);
             stamina = maxStamina/2f;
             toughness = maxToughness/2f;
             hunger = maxHunger / 2f;
+            SetState(WanderState.Walking);
+            StartCoroutine(HungerCoroutine());
+            StartCoroutine(HpCoroutine());
             //StartCoroutine(RandomStartingDelay());
         }
 

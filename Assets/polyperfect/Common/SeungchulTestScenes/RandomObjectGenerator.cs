@@ -7,6 +7,15 @@ public class RandomObjectGenerator : MonoBehaviour
 	public PFinfo[] animalPrefabs;
 	public PFinfo[] plantPrefabs;
 
+	public enum Animal
+	{
+		EmptyAnimal = 0,
+		Bear,
+		Beaver,
+		NumOfAnimals
+	}
+
+
 	[Tooltip("size x of the map, x value")]
 	public float mapWidth=180f;
 	[Tooltip("size z of the map, z value")]
@@ -17,10 +26,12 @@ public class RandomObjectGenerator : MonoBehaviour
 	[Tooltip("toggle status bar")]
 	public bool enableStatusBar = false;
 
-	private List<Polyperfect.Common.Common_WanderScript> animalGameObjects = new List<Polyperfect.Common.Common_WanderScript>();
+	private List<GameObject> animalGameObjects = new List<GameObject>();
 	private List<GameObject> plantGameObjects = new List<GameObject>();
 
 	private int terrainLayer;
+	public Dictionary<string, float> animalTagSet = new Dictionary<string, float>();
+
 
 	public static RandomObjectGenerator instance = null;
 
@@ -30,16 +41,24 @@ public class RandomObjectGenerator : MonoBehaviour
 		mapLength *= 0.95f;
 		terrainLayer = LayerMask.GetMask("Terrain");
 		instance = this;
+
+		float value = 0;
+		foreach (string animal in System.Enum.GetNames(typeof(Animal)))
+		{
+			animalTagSet.Add(animal, value++ / (float)Animal.NumOfAnimals);
+		}
+
 	}
 
 	public void Start()
 	{
 		StartCoroutine(GenerateObject());
+	    StartCoroutine(RespawnFood());
+
 #if ENABLE_RESPAWN
 		StartCoroutine(RespawnAnimals());
-		StartCoroutine(RespawnFood());
 #endif
-		StartCoroutine(ReproduceChild());
+
 	}
 
 	IEnumerator GenerateObject()
@@ -54,36 +73,26 @@ public class RandomObjectGenerator : MonoBehaviour
 
 	}
 
-	IEnumerator RespawnAnimals()
+	IEnumerator RespawnAnimals() //동물 자동 리스폰.
     {
 		while(true)
         {
 			foreach(var animal in animalGameObjects)
             {
-				if (animal.enabled == false) 
-					animal.enabled = true;
+				var nowAnimalScript = animal.GetComponent<Polyperfect.Common.Common_WanderScript>();
+				if (nowAnimalScript.enabled == false) 
+					nowAnimalScript.enabled = true;
 			}
 			yield return new WaitForSeconds(5.0f);
         }
     }
-	IEnumerator RespawnFood()
+	IEnumerator RespawnFood() // 먹이 자동 리스폰.
     {
 		while(true)
         {
 			Instantiate(plantPrefabs[0].prefab, GetRandomPosition(), Quaternion.identity, transform);
 			yield return new WaitForSeconds(5.0f);
 		}
-    }
-
-	IEnumerator ReproduceChild()
-    {
-		while(true)
-        {
-            //Instantiate(animalPrefabs[Random.Range(0, animalPrefabs.Length - 1)].prefab, GetRandomPosition(), Quaternion.Euler(0, Random.Range(0, 359f), 0), transform);
-            Instantiate(animalPrefabs[0].prefab, GetRandomPosition(), Quaternion.Euler(0, Random.Range(0, 359f), 0), transform);
-
-            yield return new WaitForSeconds(4f);
-        }
     }
 
 	public Vector3 GetRandomPosition()
@@ -108,19 +117,17 @@ public class RandomObjectGenerator : MonoBehaviour
 		{
 			while (cnt-- > 0)
 			{
-				//GameObject instance = Instantiate(animalPrefab, GetRandomPosition(), Quaternion.identity, transform);
 				GameObject instance = Instantiate(animalPrefab, transform);
-				animalGameObjects.Add(instance.GetComponent<Polyperfect.Common.Common_WanderScript>());
+				animalGameObjects.Add(instance);
 			}
 		}
 		else
         {
 			while (cnt-- > 0)
 			{
-				//GameObject instance = Instantiate(animalPrefab, GetRandomPosition(), Quaternion.identity, transform);
 				GameObject instance = Instantiate(animalPrefab, transform);
 				instance.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
-				animalGameObjects.Add(instance.GetComponent<Polyperfect.Common.Common_WanderScript>());
+				animalGameObjects.Add(instance);
 			}
 		}
 	}
