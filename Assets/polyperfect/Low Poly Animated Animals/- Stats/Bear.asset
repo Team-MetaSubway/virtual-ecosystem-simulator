@@ -21,3 +21,4 @@ MonoBehaviour:
   hunger: 100
   territorial: 1
   stealthy: 0
+  detectionRange: 40

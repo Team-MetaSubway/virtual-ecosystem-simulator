@@ -1,6 +1,6 @@
 {
     "name": "Polyperfect.Common",
-    "references": [],
+    "references": ["Unity.ML-Agents"],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
