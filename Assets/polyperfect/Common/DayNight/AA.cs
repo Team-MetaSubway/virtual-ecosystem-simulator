@@ -8,8 +8,6 @@ namespace DigitalRuby.RainMaker
         public RainScript RainScript;
         public UnityEngine.UI.Toggle FlashlightToggle;
         public Light Flashlight;
-        
-        
         public UnityEngine.UI.Toggle RainToggle;
   
         public void FlashlightChanged(bool val)
@@ -61,6 +59,23 @@ namespace DigitalRuby.RainMaker
         {
             RainChanged();
             FlashlightStart();
+        }
+
+        public void rainDelay()
+        {
+            Rain(false);
+            Invoke("rainInit", 0.2f);
+        }
+
+        public void rainInit()
+        {
+            Rain(true);           
+            RainChanged();
+        }
+
+        public void rainStop()
+        {
+            Rain(false);
         }
 
     }

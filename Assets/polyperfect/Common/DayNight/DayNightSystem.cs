@@ -30,7 +30,7 @@ public class DayNightSystem : MonoBehaviour
     
     
     public bool showUI;
-    private int Day = 0;
+    public int Day = 0;
     private string AMPM;
     
 
