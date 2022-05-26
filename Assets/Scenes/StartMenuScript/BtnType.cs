@@ -56,7 +56,6 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 #else
 		Application.Quit();
 #endif
-				Debug.Log("Á¾·á");
 				break;
 		}
 	}

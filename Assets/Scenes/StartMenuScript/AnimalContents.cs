@@ -9,31 +9,24 @@ public class AnimalContents : MonoBehaviour
 	public Dropdown AnimalDropDown;
 	public InputField CntInputField;
 	public GameObject animalInfo;
-	int contentCnt;
-	int contentY;
-
-	private void Start()
-	{
-		contentCnt = 0;
-		contentY = -120;
-	}
 
 	public void OnSelectClick()
 	{
-		if (CntInputField.textComponent.text.Length == 0
-			|| (CntInputField.textComponent.text.Length == 1 && CntInputField.textComponent.text[0] == '0'))
+		if (CntInputField.textComponent.text.Length == 0 || int.Parse(CntInputField.textComponent.text) == 0)
 			return;
 		GameObject animalContent = Instantiate(animalInfo);
-		animalContent.transform.position = new Vector3(920, contentY, 0);
-		contentY += -200;
+		animalContent.transform.position = new Vector3(920, -120, 0);
 		animalContent.transform.SetParent(transform);
-		animalContent.SetActive(true);
+
 		Text name = animalContent.transform.Find("Name").gameObject.GetComponent<Text>();
 		name.text = AnimalDropDown.captionText.text;
+
 		Text count = animalContent.transform.Find("Count").gameObject.GetComponent<Text>();
 		count.text = int.Parse(CntInputField.textComponent.text).ToString();
+
 		Button remove =	animalContent.transform.transform.Find("Remove").GetComponent<Button>();
 		remove.onClick.AddListener(OnRemoveClick);
+		animalContent.SetActive(true);
 	}
 
 	public void OnRemoveClick()
