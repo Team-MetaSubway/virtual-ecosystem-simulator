@@ -11,7 +11,7 @@ namespace DigitalRuby.RainMaker
         public UnityEngine.UI.Toggle RainToggle;
         public Light Flashlight;
        
-        public GameObject DayNight;
+        //public GameObject DayNight;
         //
         //private DayNightSystem DayNightTime;
         //
