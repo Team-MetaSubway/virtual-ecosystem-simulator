@@ -12,8 +12,9 @@ namespace DigitalRuby.RainMaker
         public Light Flashlight;
        
         public GameObject DayNight;
-        private DayNightSystem DayNightTime;
-
+        //
+        //private DayNightSystem DayNightTime;
+        //
         private enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
         private RotationAxes axes = RotationAxes.MouseXAndY;
         private float sensitivityX = 6F;
@@ -25,7 +26,11 @@ namespace DigitalRuby.RainMaker
         private float rotationX = 0F;
         private float rotationY = 0F;
         private Quaternion originalRotation;
-        
+
+        //
+        //private DigitalRuby.RainMaker.RainScript RainScriptController;
+        //public bool checkRain;
+        //
         private void UpdateMovement()
         {
             
@@ -115,12 +120,7 @@ namespace DigitalRuby.RainMaker
             }
             transform.localRotation = Quaternion.LookRotation(transform.forward, Vector3.up);
         }
-        /*
-        public void RainSliderChanged(float val)
-        {
-            RainScript.RainIntensity = val;
-        }
-        */
+
         /*
         public void MouseLookChanged(bool val)
         {
@@ -141,6 +141,7 @@ namespace DigitalRuby.RainMaker
             
         }
         
+     
         private void RainChanged()
         {
             
@@ -148,18 +149,21 @@ namespace DigitalRuby.RainMaker
             {
                 RainToggle.isOn = !RainToggle.isOn;
             }
-           
+            
 
             if(!RainToggle.isOn)
             {
+
                 RainScript.RainIntensity = 0.0f;
                     return;
+                 
             }
                  
             else
                 RainScript.RainIntensity = 1.0f;
             
         }
+  
         //
       
         // Use this for initialization
@@ -169,10 +173,11 @@ namespace DigitalRuby.RainMaker
            
             RainScript.EnableWind = true;
 
-            MouseLookToggle.isOn = true;
+            //MouseLookToggle.isOn = true;
 
-            DayNightTime = DayNight.GetComponent<DayNightSystem>();
+            //DayNightTime = DayNight.GetComponent<DayNightSystem>();
 
+            
             Rain(false);
         }
 
@@ -195,6 +200,8 @@ namespace DigitalRuby.RainMaker
                 RainChanged();
             }
             */
+   
+
             RainChanged();
             UpdateMovement();
             UpdateMouseLook();
@@ -221,12 +228,24 @@ namespace DigitalRuby.RainMaker
             rotationY = x;
             UpdateMouseLook();
         }
-        
-        public void rainInit(bool check)
+   
+
+        public void rainDelay()
         {
-            Rain(check);
+            Rain(false);
+            Invoke("rainInit", 0.1f);
+        }
+
+        public void rainInit()
+        {
+            Rain(true);
             RainChanged();
         }
-        
+
+        public void rainStop()
+        {
+            Rain(false);
+        }
+
     }
 }

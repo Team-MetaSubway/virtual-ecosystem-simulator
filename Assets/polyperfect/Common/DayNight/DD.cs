@@ -1,9 +1,3 @@
-﻿//
-// Rain Maker (c) 2015 Digital Ruby, LLC
-// http://www.digitalruby.com
-//
-
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +7,7 @@ using UnityEngine.Audio;
 
 namespace DigitalRuby.RainMaker
 {
-    public class BaseRainScript : MonoBehaviour
+    public class DD : MonoBehaviour
     {
         [Tooltip("Camera the rain should hover over, defaults to main camera")]
         public Camera Camera;
@@ -77,17 +71,16 @@ namespace DigitalRuby.RainMaker
         protected Material rainMaterial;
         protected Material rainExplosionMaterial;
         protected Material rainMistMaterial;
-        
+
         //
 
-        public float lastRainIntensityValue = -1.0f;
+        private float lastRainIntensityValue = -1.0f;
         private float nextWindTime;
 
         private void UpdateWind()
         {
             if (EnableWind && WindZone != null && WindSpeedRange.y > 1.0f)
             {
-                
                 WindZone.gameObject.SetActive(true);
                 if (FollowCamera)
                 {
@@ -116,7 +109,6 @@ namespace DigitalRuby.RainMaker
             }
             else
             {
-               
                 if (WindZone != null)
                 {
                     WindZone.gameObject.SetActive(false);
@@ -157,22 +149,18 @@ namespace DigitalRuby.RainMaker
                     LoopingAudioSource newSource;
                     if (RainIntensity >= 0.67f)
                     {
-                       
                         newSource = audioSourceRainHeavy;
                     }
                     else if (RainIntensity >= 0.33f)
                     {
-                       
                         newSource = audioSourceRainMedium;
                     }
                     else
                     {
                         newSource = audioSourceRainLight;
                     }
-
                     if (audioSourceRainCurrent != newSource)
                     {
-                      
                         if (audioSourceRainCurrent != null)
                         {
                             audioSourceRainCurrent.Stop();
@@ -182,12 +170,10 @@ namespace DigitalRuby.RainMaker
                     }
                     if (RainFallParticleSystem != null)
                     {
-                        
                         ParticleSystem.EmissionModule e = RainFallParticleSystem.emission;
                         e.enabled = RainFallParticleSystem.GetComponent<Renderer>().enabled = true;
                         if (!RainFallParticleSystem.isPlaying)
                         {
-                            
                             RainFallParticleSystem.Play();
                         }
                         ParticleSystem.MinMaxCurve rate = e.rateOverTime;
@@ -222,7 +208,7 @@ namespace DigitalRuby.RainMaker
             }
         }
         //protected
-        protected virtual void Start()
+        public virtual void Start()
         {
 
 #if DEBUG
@@ -283,7 +269,7 @@ namespace DigitalRuby.RainMaker
             }
         }
         //protected
-        protected virtual void Update()
+        public virtual void Update()
         {
 
 #if DEBUG
@@ -320,30 +306,26 @@ namespace DigitalRuby.RainMaker
                 return true;
             }
         }
-        /*
+
         public virtual void UUPP()
         {
-            lastRainIntensityValue = -1;
-            
-            Start();
             CheckForRainChange();
             UpdateWind();
             audioSourceRainLight.Update();
             audioSourceRainMedium.Update();
             audioSourceRainHeavy.Update();
         }
-        */
     }
 
     /// <summary>
     /// Provides an easy wrapper to looping audio sources with nice transitions for volume when starting and stopping
     /// </summary>
-    public class LoopingAudioSource
+    public class LoopingAudioSource1
     {
         public AudioSource AudioSource { get; private set; }
         public float TargetVolume { get; private set; }
 
-        public LoopingAudioSource(MonoBehaviour script, AudioClip clip, AudioMixerGroup mixer)
+        public LoopingAudioSource1(MonoBehaviour script, AudioClip clip, AudioMixerGroup mixer)
         {
             AudioSource = script.gameObject.AddComponent<AudioSource>();
 

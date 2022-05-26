@@ -32,18 +32,11 @@ public class ChangeCamera : MonoBehaviour
         
         if (Input.GetKeyDown(KeyCode.Z))
         {
+       
+
             if (change == false)
             {
-                /*               
-                if(personCameraSetting.RainToggle.isOn)
-                {
-                    freeCameraController.rainInit();
-                }
-                else
-                {
-                    freeCameraController.RainToggle.isOn = false;
-                }
-                */
+          
                 
                 change = true;
                 
@@ -51,16 +44,7 @@ public class ChangeCamera : MonoBehaviour
             }
             else
             {
-                /*
-                if (freeCameraController.RainToggle.isOn)
-                {
-                    personCameraSetting.rainInit();
-                }
-                else
-                {
-                    personCameraSetting.RainToggle.isOn = false;
-                }
-                */
+        
                 change = false;
                 
                 PersonCameraChange();
@@ -80,7 +64,11 @@ public class ChangeCamera : MonoBehaviour
         freeCameraController.Init(angleX,angleY);
 
         bool checkPersonRain = personCameraSetting.RainToggle.isOn;
-        freeCameraController.rainInit(checkPersonRain);
+
+        if (checkPersonRain)
+            freeCameraController.rainDelay();
+        else
+            freeCameraController.rainStop();
 
         FreeCamera.SetActive(true);
         PersonCamera.SetActive(false);
@@ -96,7 +84,11 @@ public class ChangeCamera : MonoBehaviour
         personCameraController.mouseLook.Init(PersonCamera.transform, PersonCamera1.transform);
 
         bool checkFreeRain = freeCameraController.RainToggle.isOn;
-        personCameraSetting.rainInit(checkFreeRain);
+
+        if (checkFreeRain)
+            personCameraSetting.rainDelay();
+        else
+            personCameraSetting.rainStop();
 
         FreeCamera.SetActive(false);
         PersonCamera.SetActive(true);
