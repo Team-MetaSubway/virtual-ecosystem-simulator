@@ -37,7 +37,6 @@ public class ChangeCamera : MonoBehaviour
             if (change == false)
             {
           
-                
                 change = true;
                 
                 FreeCameraChange();
@@ -70,6 +69,10 @@ public class ChangeCamera : MonoBehaviour
         else
             freeCameraController.rainStop();
 
+        freeCameraController.changeCheck = true;
+        freeCameraController.startDay = personCameraSetting.startDay;
+        freeCameraController.finishDay = personCameraSetting.finishDay;
+
         FreeCamera.SetActive(true);
         PersonCamera.SetActive(false);
     }
@@ -89,6 +92,10 @@ public class ChangeCamera : MonoBehaviour
             personCameraSetting.rainDelay();
         else
             personCameraSetting.rainStop();
+
+        personCameraSetting.changeCheck = true;
+        personCameraSetting.startDay = freeCameraController.startDay;
+        personCameraSetting.finishDay = freeCameraController.finishDay;
 
         FreeCamera.SetActive(false);
         PersonCamera.SetActive(true);
