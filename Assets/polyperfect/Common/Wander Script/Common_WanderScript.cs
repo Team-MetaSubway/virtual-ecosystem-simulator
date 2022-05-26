@@ -126,8 +126,8 @@ namespace Polyperfect.Common
         private Color awarnessColor = new Color(1f, 0f, 1f, 1f);
         private Color scentColor = new Color(1f, 0f, 0f, 1f);
         private Animator animator;
-        [HideInInspector]
-        public CharacterController characterController;
+
+        protected CharacterController characterController;
         private Vector3 origin;
 
         private Vector3 targetLocation = Vector3.zero;
@@ -219,7 +219,11 @@ namespace Polyperfect.Common
         private string objectTag;
 
         protected static int deadBodyLayer;
-        protected static int animalLayer; 
+        protected static int animalLayer;
+
+        protected float growthFactor;
+
+        static float growthFactorEpsilon = 0.01f;
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -542,9 +546,17 @@ namespace Polyperfect.Common
             stamina = maxStamina/2f;
             toughness = maxToughness/2f;
             hunger = maxHunger / 2f;
+            growthFactor = 1f;
+
             SetState(WanderState.Walking);
             StartCoroutine(HungerCoroutine());
             StartCoroutine(HpCoroutine());
+#if ENABLE_RESPAWN //ENABLE_RESPAWN 은 강화학습 용 세팅. 동물이 죽으면 자동 스폰. 강화학습할 때는 번식 코루틴을 실행하지 않는다.
+            //nothing
+#else
+            StartCoroutine(ReproduceCoroutine());
+#endif
+
             //StartCoroutine(RandomStartingDelay());
         }
 
@@ -696,7 +708,7 @@ namespace Polyperfect.Common
         public virtual void SetMoveFast()
         {
             turnSpeed = runningState.turnSpeed;
-            moveSpeed = runningState.moveSpeed;
+            moveSpeed = runningState.moveSpeed*growthFactor;
             ClearAnimatorBools();
             TrySetBool(runningState.animationBool, true);
         }
@@ -704,7 +716,7 @@ namespace Polyperfect.Common
         public virtual void SetMoveSlow()
         {
             turnSpeed = walkingState.turnSpeed;
-            moveSpeed = walkingState.moveSpeed;
+            moveSpeed = walkingState.moveSpeed*growthFactor;
             ClearAnimatorBools();
             TrySetBool(walkingState.animationBool, true);
         }
@@ -834,10 +846,58 @@ namespace Polyperfect.Common
                 yield return new WaitForSeconds(1.0f); //1초 후에 다시 실행.
             }
         }
+
+        public virtual IEnumerator ReproduceCoroutine()
+        {
+            bool isHappy = false;
+            while(true)
+            {
+                yield return new WaitForSeconds(DayNightSystem.instance.fullDayLength); //하루 기다린다.
+                if (toughness >= 0.75f * maxToughness && hunger >= 0.75f * maxHunger) //조건 만족했을 경우
+                {
+                    if (isHappy == false) //처음 조건을 만족한 경우
+                    {
+                        isHappy = true;
+                    }
+                    else //두번 연속으로 조건을 만족한 경우 = 번식.
+                    {
+                        RandomObjectGenerator.instance.ReproduceAnimal(gameObject);//번식 코드 삽입
+                        isHappy = false;
+                    }
+                }
+                else continue;
+            }
+        }
+
         public virtual void CalculateHungerAndHp(Common_WanderScript target)
         {
             hunger = Mathf.Clamp(hunger + hungerFactor * (1 + target.MaxToughness / maxToughness), 0, maxHunger);
             toughness = Mathf.Clamp(toughness + 0.05f * maxToughness, 0, maxToughness);
+        }
+
+       
+        public IEnumerator ChildGrowthCoroutine(GameObject parentObject)
+        {
+            growthFactor = 0.5f;
+            
+            maxToughness = growthFactor * stats.toughness; //최대 체력 반 까고
+            toughness = maxToughness; //풀피 맞춰줌.
+            power = growthFactor * stats.power; //공격력 반 깜.
+            transform.localScale = new Vector3(growthFactor,growthFactor,growthFactor); //크기 반으로 줄임.
+
+            while (true)
+            {
+                yield return new WaitForSeconds(DayNightSystem.instance.fullDayLength * 0.5f); //반나절 기다리고
+                growthFactor += 0.1f; //성장.
+
+                maxToughness = growthFactor*stats.toughness;
+                power = growthFactor * stats.power;
+                //이동속도는 매번 바뀌어서, 여기서 안 바꾸고 부득이하게 SetMoveSlow, SetMoveFast에서 growthFactor 곱해줌.
+                transform.localScale = new Vector3(growthFactor, growthFactor, growthFactor);
+
+                if (growthFactor >= 1.0f - growthFactorEpsilon) break;
+                else continue;
+            }
         }
     }
 }

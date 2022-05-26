@@ -179,7 +179,7 @@ namespace DigitalRuby.RainMaker
 
             //MouseLookToggle.isOn = true;
 
-            DayNightTime = DayNight.GetComponent<DayNightSystem>();
+            //DayNightTime = DayNight.GetComponent<DayNightSystem>();
 
             
             Rain(false);
@@ -194,7 +194,8 @@ namespace DigitalRuby.RainMaker
                 Debug.Break();
             }
             
-            if ( startDay <= DayNightTime.Day && DayNightTime.Day <= finishDay)
+            //if ( startDay <= DayNightTime.Day && DayNightTime.Day <= finishDay)
+            if(startDay <=DayNightSystem.instance.Day&&DayNightSystem.instance.Day<=finishDay)
             {
                 if (!changeCheck)
                 {
@@ -207,7 +208,8 @@ namespace DigitalRuby.RainMaker
                     Invoke("rainInit", 0.2f);
                 }
             }
-            else if( DayNightTime.Day == (finishDay + 1) && DayNightTime.time == 0.0f)
+            //else if( DayNightTime.Day == (finishDay + 1) && DayNightTime.time == 0.0f)
+            else if(DayNightSystem.instance.Day==(finishDay+1)&&DayNightSystem.instance.time==0.0f)
             {
                 Rain(false);
                 RainChanged();

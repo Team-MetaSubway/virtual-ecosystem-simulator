@@ -40,14 +40,13 @@ public class RandomObjectGenerator : MonoBehaviour
 		mapWidth *= 0.95f;
 		mapLength *= 0.95f;
 		terrainLayer = LayerMask.GetMask("Terrain");
-		instance = this;
 
 		float value = 0;
 		foreach (string animal in System.Enum.GetNames(typeof(Animal)))
 		{
 			animalTagSet.Add(animal, value++ / (float)Animal.NumOfAnimals);
 		}
-
+		instance = this;
 	}
 
 	public void Start()
@@ -56,12 +55,12 @@ public class RandomObjectGenerator : MonoBehaviour
 	    StartCoroutine(RespawnFood());
 
 #if ENABLE_RESPAWN
-		StartCoroutine(RespawnAnimals());
+		StartCoroutine(RespawnAnimals()); //강화학습용 세팅. 동물 무한 부활.
 #endif
 
 	}
 
-	IEnumerator GenerateObject()
+	IEnumerator GenerateObject() //초기 식물, 동물 스폰.
     {
 		yield return new WaitForSeconds(1.0f);
 
@@ -73,7 +72,7 @@ public class RandomObjectGenerator : MonoBehaviour
 
 	}
 
-	IEnumerator RespawnAnimals() //동물 자동 리스폰.
+	IEnumerator RespawnAnimals() //동물 자동 부활.
     {
 		while(true)
         {
@@ -86,7 +85,7 @@ public class RandomObjectGenerator : MonoBehaviour
 			yield return new WaitForSeconds(5.0f);
         }
     }
-	IEnumerator RespawnFood() // 먹이 자동 리스폰.
+	IEnumerator RespawnFood() // 먹이 자동 리스폰. 항상 On.
     {
 		while(true)
         {
@@ -143,6 +142,13 @@ public class RandomObjectGenerator : MonoBehaviour
 			plantGameObjects.Add(instance);
 		}
     }
+
+	public void ReproduceAnimal(GameObject animalObject)
+    {
+		GameObject instance = Instantiate(animalObject, transform);
+		StartCoroutine(instance.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(gameObject));
+		animalGameObjects.Add(instance);
+	}
 
 	[System.Serializable]
 	public struct PFinfo

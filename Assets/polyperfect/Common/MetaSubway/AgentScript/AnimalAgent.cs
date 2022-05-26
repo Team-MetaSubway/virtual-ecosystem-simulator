@@ -106,7 +106,7 @@ public class AnimalAgent : Agent
                                                         Mathf.Atan2(localSpaceDirection.x,localSpaceDirection.z)/Mathf.PI,
                                                         RandomObjectGenerator.instance.animalTagSet[closestAnimals[idx].tag]
                                                     };
-            //Debug.Log("거리" + animalObservation[0]*animalState.DetectionRange + "각도" + animalObservation[1]*Mathf.PI + "태그" + animalObservation[2]);
+            Debug.Log("거리" + animalObservation[0]*animalState.DetectionRange + "각도" + animalObservation[1]*Mathf.PI + "태그" + animalObservation[2]);
             bufferSensor.AppendObservation(animalObservation);
         }
         

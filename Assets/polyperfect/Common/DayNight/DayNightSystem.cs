@@ -32,7 +32,13 @@ public class DayNightSystem : MonoBehaviour
     public bool showUI;
     public int Day = 0;
     private string AMPM;
-    
+
+    public static DayNightSystem instance = null;
+
+    private void Awake()
+    {
+        instance = this;
+    }
 
     // Start is called before the first frame update
     void Start()
