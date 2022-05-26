@@ -9,7 +9,15 @@ namespace DigitalRuby.RainMaker
         public UnityEngine.UI.Toggle FlashlightToggle;
         public Light Flashlight;
         public UnityEngine.UI.Toggle RainToggle;
-  
+        //
+        public GameObject DayNight;
+        [Header("비오는 날짜")]
+        public float startDay;
+        public float finishDay;
+        public bool changeCheck;
+
+        private DayNightSystem DayNightTime;
+        //
         public void FlashlightChanged(bool val)
         {
             FlashlightToggle.isOn = val;
@@ -51,12 +59,33 @@ namespace DigitalRuby.RainMaker
         {
         
             RainScript.EnableWind = true;
-
+            DayNightTime = DayNight.GetComponent<DayNightSystem>();
+            changeCheck = false;
         }
 
         // Update is called once per frame
         private void Update()
         {
+            if (startDay <= DayNightTime.Day && DayNightTime.Day <= finishDay)
+            {
+                if (!changeCheck)
+                {
+                    Rain(true);
+                    RainChanged();
+                }
+                else
+                {
+                    changeCheck = false;
+                    Rain(false);
+                    Invoke("rainInit", 0.2f);
+                }
+            }
+            else if (DayNightTime.Day == (finishDay + 1) && DayNightTime.time == 0.0f)
+            {
+                Rain(false);
+                RainChanged();
+            }
+
             RainChanged();
             FlashlightStart();
         }

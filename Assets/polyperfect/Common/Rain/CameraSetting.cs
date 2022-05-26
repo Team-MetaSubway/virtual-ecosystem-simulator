@@ -6,14 +6,18 @@ namespace DigitalRuby.RainMaker
     public class CameraSetting: MonoBehaviour
     {
         public RainScript RainScript;
-        public UnityEngine.UI.Toggle MouseLookToggle;
+        //public UnityEngine.UI.Toggle MouseLookToggle;
         public UnityEngine.UI.Toggle FlashlightToggle;
         public UnityEngine.UI.Toggle RainToggle;
         public Light Flashlight;
        
-        //public GameObject DayNight;
         //
-        //private DayNightSystem DayNightTime;
+        public GameObject DayNight;
+        [Header("비오는 날짜")]
+        public float startDay;
+        public float finishDay;
+        private DayNightSystem DayNightTime;
+        public bool changeCheck;
         //
         private enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
         private RotationAxes axes = RotationAxes.MouseXAndY;
@@ -175,10 +179,11 @@ namespace DigitalRuby.RainMaker
 
             //MouseLookToggle.isOn = true;
 
-            //DayNightTime = DayNight.GetComponent<DayNightSystem>();
+            DayNightTime = DayNight.GetComponent<DayNightSystem>();
 
             
             Rain(false);
+            changeCheck = false;
         }
 
         // Update is called once per frame
@@ -188,18 +193,26 @@ namespace DigitalRuby.RainMaker
             {
                 Debug.Break();
             }
-            /*
-            if ( -1 < DayNightTime.Day && DayNightTime.Day < 3)
+            
+            if ( startDay <= DayNightTime.Day && DayNightTime.Day <= finishDay)
             {
-                Rain(true);
-                RainChanged();
+                if (!changeCheck)
+                {
+                    Rain(true);
+                    RainChanged();
+                }
+                else {
+                    changeCheck = false;
+                    Rain(false);
+                    Invoke("rainInit", 0.2f);
+                }
             }
-            else
+            else if( DayNightTime.Day == (finishDay + 1) && DayNightTime.time == 0.0f)
             {
                 Rain(false);
                 RainChanged();
             }
-            */
+            
    
 
             RainChanged();
