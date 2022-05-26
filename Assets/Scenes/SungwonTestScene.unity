@@ -1125,6 +1125,54 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: mapWidth
+      value: 188
+      objectReference: {fileID: 0}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: mapLength
+      value: 188
+      objectReference: {fileID: 0}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: enableStatusBar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: enableRespawnHerbivore
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: plantPrefabs.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: animalPrefabs.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: plantPrefabs.Array.data[0].count
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: animalPrefabs.Array.data[0].count
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: animalPrefabs.Array.data[1].count
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: plantPrefabs.Array.data[0].prefab
+      value: 
+      objectReference: {fileID: 1573628690202234, guid: 9d4d39397bb3e4df98ac838ef29e39a1, type: 3}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: animalPrefabs.Array.data[0].prefab
+      value: 
+      objectReference: {fileID: 177514091468783657, guid: 554436490099c464b821152d8edcd9dc, type: 3}
+    - target: {fileID: 5059313553056059713, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
+      propertyPath: animalPrefabs.Array.data[1].prefab
+      value: 
+      objectReference: {fileID: 6833189228233191510, guid: 563654b22bc35154986d1f3ca1466ff8, type: 3}
     - target: {fileID: 5059313554024853493, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
       propertyPath: m_LocalPosition.x
       value: 32.01
@@ -1180,7 +1228,7 @@ PrefabInstance:
     - target: {fileID: 5059313555052255068, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
       propertyPath: m_Mesh
       value: 
-      objectReference: {fileID: 1940887295}
+      objectReference: {fileID: 1948291794}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f32aeeef898130140bac97984c8b6e42, type: 3}
 --- !u!1 &1648871825
@@ -1360,7 +1408,7 @@ MonoBehaviour:
           m_BoolArgument: 0
         m_CallState: 2
   m_IsOn: 0
---- !u!43 &1940887295
+--- !u!43 &1948291794
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

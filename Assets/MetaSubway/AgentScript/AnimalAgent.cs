@@ -17,15 +17,9 @@ public enum Animal
 public class AnimalAgent : Agent
 {
     Polyperfect.Common.Common_WanderScript animalState;
-    BehaviorParameters behaviorParameters;
-    LearningEnvController learningEnv;
-    float mapWidth;
-    float mapLength;
-    float mapMaxHeight;
-    Transform transformOfParent;
     float staminaThreshold;
     Animal animalType;
-
+    public static Transform transformOfParent;
     float maxStamina;
     float maxToughness;
     float maxHunger;
@@ -39,15 +33,11 @@ public class AnimalAgent : Agent
     public override void Initialize()
     {
         animalState = GetComponent<Polyperfect.Common.Common_WanderScript>();
-        behaviorParameters = GetComponent<BehaviorParameters>();
-        learningEnv = transform.parent.GetComponent<LearningEnvController>();
-        transformOfParent = transform.parent.transform;
 
-        animalType = (Animal)behaviorParameters.TeamId;
-        mapWidth = learningEnv.mapWidth*0.95f; //맵의 최대 가로 길이(x축으로), 너무 구석에 스폰되는 것을 방지하기 위해 0.8 곱함.
-        mapLength = learningEnv.mapLength*0.95f; //맵의 최대 세로 길이(z축으로), 너무 구석에 스폰되는 것을 방지하기 위해 0.8 곱함.
-        mapMaxHeight = learningEnv.mapMaxHeight; //맵의 최대 높이(y축으로)
+        animalType = (Animal)GetComponent<BehaviorParameters>().TeamId;
         staminaThreshold = animalState.StaminaThreshold;
+
+        transformOfParent = transform.parent.transform;
 
         maxStamina = 1f/animalState.MaxStamina;
         maxHunger = 1f/animalState.MaxHunger;
@@ -56,22 +46,18 @@ public class AnimalAgent : Agent
     public override void OnEpisodeBegin()
     {
         animalState.enabled = true;
-        animalState.SetState(Polyperfect.Common.Common_WanderScript.WanderState.Walking);
 
-        Vector3 pos = new Vector3(Random.value * mapWidth - mapWidth / 2, mapMaxHeight, Random.value * mapLength - mapLength / 2); //로컬 좌표 랜덤하게 생성.
-        Ray ray= new Ray(transformOfParent.TransformPoint(pos), Vector3.down); //월드 좌표로 변경해서 삽입.
-        RaycastHit hitData;
-        Physics.Raycast(ray, out hitData); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
-        pos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
-        animalState.transform.localPosition = pos;
-        animalState.transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
-        canRunning = true;
-        animalState.SetStart();
+        animalState.characterController.enabled = false;
+        transform.localPosition = RandomObjectGenerator.instance.GetRandomPosition();
+        transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
+        animalState.characterController.enabled = true;
+
         killCnt = 0;
         wallCollideFactor = -0.001f;
         previousReward = 0f;
         previousToughness = animalState.Toughness;
         previousHunger = animalState.Hunger;
+        canRunning = true;
     }
     public override void OnActionReceived(ActionBuffers actions)
     {
@@ -126,7 +112,11 @@ public class AnimalAgent : Agent
         {
             SetReward(-1f);
             animalState.enabled = false;
+#if ENABLE_RESPAWN
             EndEpisode();
+#else
+            enabled = false;
+#endif
         }
         else if(animalState.HasKilled)
         {
@@ -150,8 +140,9 @@ public class AnimalAgent : Agent
         {
             canRunning = true;
         }
-
+#if ENABLE_RESPAWN
         if (killCnt >= 3) EndEpisode();
+#endif
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
