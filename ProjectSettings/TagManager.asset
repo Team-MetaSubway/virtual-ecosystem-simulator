@@ -11,6 +11,7 @@ TagManager:
   - User
   - DeadBody
   - Rabbit
+  - Giraffe
   layers:
   - Default
   - TransparentFX
