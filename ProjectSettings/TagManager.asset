@@ -14,6 +14,8 @@ TagManager:
   - Giraffe
   - Elephant
   - Boar
+  - Wolf
+  - Lion
   layers:
   - Default
   - TransparentFX
