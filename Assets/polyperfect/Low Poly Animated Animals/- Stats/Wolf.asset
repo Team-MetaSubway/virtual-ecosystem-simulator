@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38025e9300822a146ac1328021446430, type: 3}
   m_Name: Wolf
   m_EditorClassIdentifier: 
-  dominance: 10
+  dominance: 6
   stamina: 30
   power: 25
   toughness: 50

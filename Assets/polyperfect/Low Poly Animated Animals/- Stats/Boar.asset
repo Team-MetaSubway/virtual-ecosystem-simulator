@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38025e9300822a146ac1328021446430, type: 3}
   m_Name: Boar
   m_EditorClassIdentifier: 
-  dominance: 8
-  stamina: 10
-  power: 40
+  dominance: 6
+  stamina: 30
+  power: 25
   toughness: 100
   agression: 99
   attackSpeed: 1.5

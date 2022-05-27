@@ -17,6 +17,7 @@ public class RandomObjectGenerator : MonoBehaviour
 		Boar,
 		Wolf,
 		Lion,
+		Deer,
 		NumOfAnimals
 	}
 
