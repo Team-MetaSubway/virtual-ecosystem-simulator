@@ -7,75 +7,51 @@ using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using System.Linq;
 
-public enum Animal
-{
-    EmptyAnimal = 0,
-    Bear,
-    Beaver,
-    NumOfAnimals
-}
-
-
 public class AnimalAgent : Agent
 {
     Polyperfect.Common.Common_WanderScript animalState;
-    float staminaThreshold;
-    Animal animalType;
-    float maxStamina;
+    
     float maxToughness;
     float maxHunger;
+    float maxStamina;
+
     float toughnessThreshold;
     float hungerThreshold;
-    int killCnt;
-    bool canRunning;
-    float wallCollideFactor;
-    float previousReward;
+    float staminaThreshold;
+    
     float previousHunger;
     float previousToughness;
+    float wallCollideFactor;
+    
+    bool canRunning;
+
     BufferSensorComponent bufferSensor;
     static LayerMask animalLayerMask;
-    int idx;
+    
     int maxBufferSize;
-
-    Dictionary<string, float> animalTagSet = new Dictionary<string, float>();
 
     public override void Initialize()
     {
         animalState = GetComponent<Polyperfect.Common.Common_WanderScript>();
         bufferSensor = GetComponent<BufferSensorComponent>();
-        animalType = (Animal)GetComponent<BehaviorParameters>().TeamId;
 
         animalLayerMask = LayerMask.GetMask("Animal");
+
+        maxToughness = 1f/animalState.MaxToughness;
+        maxHunger = 1f/animalState.MaxHunger;
+        maxStamina = 1f/animalState.MaxStamina;
+
+        toughnessThreshold = 0.68f * animalState.MaxToughness; //원래는 0.95. 성공 조건이 과하다고 판단, 0.68 으로 재조정.
+        hungerThreshold = 0.68f * animalState.MaxHunger; //원래는 0.95. 성공 조건이 과하다고 판단, 0.68 으로 재조정.
         staminaThreshold = animalState.StaminaThreshold;
 
-
-        maxStamina = 1f/animalState.MaxStamina;
-        maxHunger = 1f/animalState.MaxHunger;
-        maxToughness = 1f/animalState.MaxToughness;
-
-        hungerThreshold = 0.95f * animalState.MaxHunger;
-        toughnessThreshold = 0.95f * animalState.MaxToughness;
-
         maxBufferSize = bufferSensor.MaxNumObservables + 1;
-
-        float value = 0;
-        foreach (string animal in System.Enum.GetNames(typeof(Animal)))
-        {
-            animalTagSet.Add(animal, value++/(float)Animal.NumOfAnimals);
-        }
+        wallCollideFactor = -0.1f;
     }
     public override void OnEpisodeBegin()
     {
         animalState.enabled = true;
 
-        animalState.characterController.enabled = false;
-        transform.localPosition = RandomObjectGenerator.instance.GetRandomPosition();
-        transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
-        animalState.characterController.enabled = true;
-
-        killCnt = 0;
-        wallCollideFactor = -0.1f;
-        previousReward = 0f;
         previousToughness = animalState.Toughness;
         previousHunger = animalState.Hunger;
         canRunning = true;
@@ -105,8 +81,7 @@ public class AnimalAgent : Agent
                 break;
         }
         transform.Rotate(rotateDir, animalState.TurnSpeed*Time.deltaTime);
-        animalState.UpdateAnimalState( 
-            dirToGo, actions.DiscreteActions[2]); //z
+        animalState.UpdateAnimalState(dirToGo, actions.DiscreteActions[2]);
         Evaluate();
     }
 
@@ -122,14 +97,14 @@ public class AnimalAgent : Agent
         var closestAnimals = listOfAnimals.OrderBy(c => (c.transform.position - nowPosition).sqrMagnitude).ToArray();
         int len = Mathf.Min(maxBufferSize, closestAnimals.Length);
         //Debug.Log("현재 접촉 동물 수:" + closestAnimals.Length);
-        for (idx=1; idx<len; ++idx)
+        for (int idx=1; idx<len; ++idx)
         {
             Vector3 targetPosition = closestAnimals[idx].transform.position;
             Vector3 localSpaceDirection = transform.InverseTransformDirection(targetPosition - nowPosition);
             float[] animalObservation = new float[] {
                                                         (targetPosition-nowPosition).magnitude/animalState.DetectionRange,
                                                         Mathf.Atan2(localSpaceDirection.x,localSpaceDirection.z)/Mathf.PI,
-                                                        animalTagSet[closestAnimals[idx].tag]
+                                                        RandomObjectGenerator.instance.animalTagSet[closestAnimals[idx].tag]
                                                     };
             //Debug.Log("거리" + animalObservation[0]*animalState.DetectionRange + "각도" + animalObservation[1]*Mathf.PI + "태그" + animalObservation[2]);
             bufferSensor.AppendObservation(animalObservation);
@@ -141,11 +116,6 @@ public class AnimalAgent : Agent
     {
         actionMask.SetActionEnabled(2, 1, canRunning);
     }
-    /*
-    usage: 
-    actionMask.SetActionEnabled(0, 1, false);
-    actionMask.SetActionEnabled(0, 2, false);
-    */
 
     private void Evaluate()
     {
@@ -180,6 +150,9 @@ public class AnimalAgent : Agent
 #if ENABLE_RESPAWN
         if (animalState.Toughness >= toughnessThreshold && animalState.Hunger >= hungerThreshold)
         {
+            //성공시 조건을 조금 더 까다롭게?
+            toughnessThreshold = Mathf.Clamp(toughnessThreshold + 0.01f * animalState.MaxToughness, 0, 0.95f * animalState.MaxToughness); //1% 조건 어렵게. 95%까지 증가.
+            hungerThreshold = Mathf.Clamp(hungerThreshold + 0.01f * animalState.MaxHunger, 0, 0.95f * animalState.MaxHunger); //''
             Debug.Log("완벽.");
             animalState.enabled = false;
             EndEpisode();

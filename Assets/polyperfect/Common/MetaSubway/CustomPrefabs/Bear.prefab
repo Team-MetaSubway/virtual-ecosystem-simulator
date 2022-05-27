@@ -226,10 +226,10 @@ CapsuleCollider:
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1
-  m_Radius: 2
-  m_Height: 1
+  m_Radius: 2.3
+  m_Height: 2
   m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0.7, z: 0}
 --- !u!1 &6833189228233191510
 GameObject:
   m_ObjectHideFlags: 0
@@ -303,7 +303,7 @@ CharacterController:
   m_Enabled: 1
   serializedVersion: 2
   m_Height: 2
-  m_Radius: 1.06
+  m_Radius: 1.1
   m_SlopeLimit: 45
   m_StepOffset: 0.3
   m_SkinWidth: 0.08
@@ -479,7 +479,6 @@ MonoBehaviour:
   movementEvent:
     m_PersistentCalls:
       m_Calls: []
-  characterController: {fileID: 0}
   CurrentState: 0
   moveSpeed: 0
   animalType: 0
@@ -522,11 +521,11 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 5022602860645237092, guid: c4acb18ed6bdfd34ea0daa61fb9169e4, type: 3}
+  m_Model: {fileID: 5022602860645237092, guid: 20eec503cbd92964fb127a6db2f70991, type: 3}
   m_InferenceDevice: 0
-  m_BehaviorType: 2
+  m_BehaviorType: 0
   m_BehaviorName: Bear
-  TeamId: 1
+  TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_DeterministicInference: 0
@@ -546,7 +545,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 100000
+  MaxStep: 3000
 --- !u!114 &6832308148783200213
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -10,6 +10,13 @@ TagManager:
   - Env
   - User
   - DeadBody
+  - Rabbit
+  - Giraffe
+  - Elephant
+  - Boar
+  - Wolf
+  - Lion
+  - Deer
   layers:
   - Default
   - TransparentFX

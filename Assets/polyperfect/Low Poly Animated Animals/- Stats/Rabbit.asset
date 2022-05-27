@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Rabbit
   m_EditorClassIdentifier: 
   dominance: 1
-  stamina: 25
+  stamina: 10
   power: 1
   toughness: 6
   agression: 1

@@ -13,9 +13,9 @@ MonoBehaviour:
   m_Name: Deer
   m_EditorClassIdentifier: 
   dominance: 2
-  stamina: 35
+  stamina: 10
   power: 4
-  toughness: 60
+  toughness: 30
   agression: 1
   attackSpeed: 1
   territorial: 0

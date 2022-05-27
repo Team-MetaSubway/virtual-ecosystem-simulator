@@ -23,6 +23,7 @@ namespace Polyperfect.Animals
         Common_WanderScript targetChaser;
         static LayerMask foodLayer;
         private float detectionRangeSquare;
+        bool isStaminaRemain = false;
 
         public override void Awake()
         {
@@ -32,24 +33,7 @@ namespace Polyperfect.Animals
             var detectionRange = GetComponentInChildren<CapsuleCollider>().radius;
             detectionRangeSquare = detectionRange * detectionRange;
         }
-        bool started = false;
-        public override void OnEnable()
-        {
-            base.OnEnable();
-            characterController.enabled = false;
-            transform.position = RandomObjectGenerator.instance.GetRandomPosition();
-            transform.rotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0);
-            characterController.enabled = true;
-        }
 
-        public override void OnDisable()
-        {
-            base.OnDisable();
-            started = false;
-        }
-        // Update is called once per frame
-
-        bool isStaminaRemain = false;
         void Update() //base class의 UpdateAnimalState 함수를 여기에 구현. 적절히 수정.
         {
             
@@ -216,7 +200,7 @@ namespace Polyperfect.Animals
         void EatFood() //먹이를 먹고 허기를 채우는 함수.
         {
             Destroy(targetFood);
-            hunger = Mathf.Clamp(hunger + hungerFactor * 2, 0, maxHunger);
+            hunger = Mathf.Clamp(hunger + hungerFactor * 2, 0, maxHunger); //현재 약 60.
         }
         IEnumerator EatFoodCoroutine() //2초 마다 먹이를 먹어야하는지 판단하는 코루틴.
         {
