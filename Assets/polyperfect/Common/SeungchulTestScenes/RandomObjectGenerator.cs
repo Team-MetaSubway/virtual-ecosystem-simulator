@@ -10,8 +10,14 @@ public class RandomObjectGenerator : MonoBehaviour
 	public enum Animal
 	{
 		EmptyAnimal = 0,
+		Rabbit,
+		Deer,
+		Giraffe,
+		Elephant,
+		Boar,
+		Wolf,
+		Lion,
 		Bear,
-		Beaver,
 		NumOfAnimals
 	}
 
