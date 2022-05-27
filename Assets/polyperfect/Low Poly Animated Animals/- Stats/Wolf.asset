@@ -20,3 +20,4 @@ MonoBehaviour:
   attackSpeed: 2
   territorial: 0
   stealthy: 0
+  detectionRange: 40
