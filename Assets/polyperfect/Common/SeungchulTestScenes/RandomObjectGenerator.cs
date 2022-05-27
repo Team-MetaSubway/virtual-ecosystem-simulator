@@ -13,6 +13,7 @@ public class RandomObjectGenerator : MonoBehaviour
 		Bear,
 		Rabbit,
 		Giraffe,
+		Elephant,
 		NumOfAnimals
 	}
 
