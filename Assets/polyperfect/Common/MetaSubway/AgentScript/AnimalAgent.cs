@@ -41,8 +41,8 @@ public class AnimalAgent : Agent
         maxHunger = 1f/animalState.MaxHunger;
         maxStamina = 1f/animalState.MaxStamina;
 
-        toughnessThreshold = 0.95f * animalState.MaxToughness;
-        hungerThreshold = 0.95f * animalState.MaxHunger;
+        toughnessThreshold = 0.68f * animalState.MaxToughness; //원래는 0.95. 성공 조건이 과하다고 판단, 0.68 으로 재조정.
+        hungerThreshold = 0.68f * animalState.MaxHunger; //원래는 0.95. 성공 조건이 과하다고 판단, 0.68 으로 재조정.
         staminaThreshold = animalState.StaminaThreshold;
 
         maxBufferSize = bufferSensor.MaxNumObservables + 1;
@@ -150,6 +150,9 @@ public class AnimalAgent : Agent
 #if ENABLE_RESPAWN
         if (animalState.Toughness >= toughnessThreshold && animalState.Hunger >= hungerThreshold)
         {
+            //성공시 조건을 조금 더 까다롭게?
+            toughnessThreshold = Mathf.Clamp(toughnessThreshold + 0.01f * animalState.MaxToughness, 0, 0.95f * animalState.MaxToughness); //1% 조건 어렵게. 95%까지 증가.
+            hungerThreshold = Mathf.Clamp(hungerThreshold + 0.01f * animalState.MaxHunger, 0, 0.95f * animalState.MaxHunger); //''
             Debug.Log("완벽.");
             animalState.enabled = false;
             EndEpisode();

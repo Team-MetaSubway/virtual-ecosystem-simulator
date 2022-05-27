@@ -287,7 +287,7 @@ MonoBehaviour:
   - stateName: Run
     animationBool: isRunning
     maxStateTime: 5
-    moveSpeed: 3
+    moveSpeed: 1.1
     turnSpeed: 200
   attackingStates: []
   deathStates:

@@ -1990,7 +1990,7 @@ MonoBehaviour:
   - stateName: Walking
     animationBool: isWalking
     maxStateTime: 10
-    moveSpeed: 1
+    moveSpeed: 4
     turnSpeed: 100
   - stateName: Running
     animationBool: isRunning
@@ -2070,11 +2070,11 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 20eec503cbd92964fb127a6db2f70991, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Wolf
-  TeamId: 6
+  TeamId: 3
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_DeterministicInference: 0

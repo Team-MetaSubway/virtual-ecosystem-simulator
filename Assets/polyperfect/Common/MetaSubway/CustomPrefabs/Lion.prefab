@@ -229,8 +229,8 @@ MonoBehaviour:
   deathStates:
   - stateName: Death
     animationBool: isDead
-  species: Chimpanzee
-  stats: {fileID: 11400000, guid: fb5b295c26be5384186694d0a0e46379, type: 2}
+  species: Lion
+  stats: {fileID: 11400000, guid: c0be91e8efcbda04d8a78af9c1c8bea5, type: 2}
   wanderZone: 25
   awareness: 30
   scent: 30
@@ -296,11 +296,11 @@ MonoBehaviour:
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
     hasUpgradedBrainParametersWithActionSpec: 1
-  m_Model: {fileID: 0}
+  m_Model: {fileID: 5022602860645237092, guid: 20eec503cbd92964fb127a6db2f70991, type: 3}
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Lion
-  TeamId: 7
+  TeamId: 2
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_DeterministicInference: 0

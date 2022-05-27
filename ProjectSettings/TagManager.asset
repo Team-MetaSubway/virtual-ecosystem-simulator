@@ -16,6 +16,7 @@ TagManager:
   - Boar
   - Wolf
   - Lion
+  - Deer
   layers:
   - Default
   - TransparentFX

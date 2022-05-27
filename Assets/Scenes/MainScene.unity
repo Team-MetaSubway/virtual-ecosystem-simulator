@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -895,10 +895,22 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animalPrefabs:
+  - prefab: {fileID: 8461150494005232356, guid: 60ff0204dcad6244aad205d425dff146, type: 3}
+    count: 120
+  - prefab: {fileID: 3991535566645085736, guid: 1fcb992d5ae5579449bc38906166c38a, type: 3}
+    count: 60
+  - prefab: {fileID: 697983188770281175, guid: f19124b1b743dc747833acfca6757d28, type: 3}
+    count: 30
+  - prefab: {fileID: 4612222865115070566, guid: 4fb704efb7740b748924dba93c1a1678, type: 3}
+    count: 15
+  - prefab: {fileID: 6272286494750318971, guid: f14719b4ff1efd14397660c1a5ac8ea1, type: 3}
+    count: 30
+  - prefab: {fileID: 4898175940001779086, guid: 5513b3356f0d1b144967501762cc9541, type: 3}
+    count: 20
+  - prefab: {fileID: 8286589729466264646, guid: 5e2e94bdb8aa40f4b9eac3102c3df0ea, type: 3}
+    count: 10
   - prefab: {fileID: 6833189228233191510, guid: 563654b22bc35154986d1f3ca1466ff8, type: 3}
-    count: 50
-  - prefab: {fileID: 177514091468783657, guid: 554436490099c464b821152d8edcd9dc, type: 3}
-    count: 300
+    count: 5
   plantPrefabs:
   - prefab: {fileID: 1573628690202234, guid: 9d4d39397bb3e4df98ac838ef29e39a1, type: 3}
     count: 1000
@@ -942,7 +954,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 482dbe3fce980af40b6c0d5010eb5dcf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!43 &289060017
+--- !u!43 &352219597
 Mesh:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2503,7 +2515,7 @@ MeshFilter:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 629637044}
-  m_Mesh: {fileID: 289060017}
+  m_Mesh: {fileID: 352219597}
 --- !u!23 &629637047
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5317,7 +5329,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   time: 0
-  fullDayLength: 30
+  fullDayLength: 100
   startTime: 0.4
   noon: {x: 90, y: 0, z: 0}
   StarDome: {fileID: 1737733153}
