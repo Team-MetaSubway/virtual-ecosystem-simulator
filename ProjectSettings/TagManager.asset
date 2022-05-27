@@ -10,6 +10,7 @@ TagManager:
   - Env
   - User
   - DeadBody
+  - Rabbit
   layers:
   - Default
   - TransparentFX

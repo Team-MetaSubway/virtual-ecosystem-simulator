@@ -11,7 +11,7 @@ public class RandomObjectGenerator : MonoBehaviour
 	{
 		EmptyAnimal = 0,
 		Bear,
-		Beaver,
+		Rabbit,
 		NumOfAnimals
 	}
 
