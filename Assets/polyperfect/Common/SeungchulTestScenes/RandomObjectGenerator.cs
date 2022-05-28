@@ -1,11 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class RandomObjectGenerator : MonoBehaviour
 {
 	public PFinfo[] animalPrefabs;
+	const int TotalAnimal = 8;
+	static int[] animalCount = new int [8];
 	public PFinfo[] plantPrefabs;
+
+	bool waitFlag = true;
 
 	public enum Animal
 	{
@@ -56,13 +62,14 @@ public class RandomObjectGenerator : MonoBehaviour
 			animalTagSet.Add(animal, value++ / (float)Animal.NumOfAnimals);
 		}
 		instance = this;
+		//////
+		DontDestroyOnLoad(gameObject);
 	}
 
 	public void Start()
 	{
 		StartCoroutine(GenerateObject());
-	    StartCoroutine(RespawnFood());
-
+		StartCoroutine(RespawnFood());
 #if ENABLE_RESPAWN
 		StartCoroutine(RespawnAnimals()); //강화학습용 세팅. 동물 자동 부활.
 #endif
@@ -75,10 +82,18 @@ public class RandomObjectGenerator : MonoBehaviour
 
 		//식물 생성
 		foreach (var plant in plantPrefabs) SpawnPlant(plant);
-		
-		//동물 생성
-		foreach (var animal in animalPrefabs) SpawnAnimal(animal);
 
+		//동물 생성
+		//foreach (var animal in animalPrefabs) SpawnAnimal(animal);
+		while(waitFlag)
+		{
+			if (SceneManager.GetActiveScene().name == "MainScene2")
+			{
+				waitFlag = false;
+			}
+		}
+		for (int i = 0; i < TotalAnimal; i++)
+			SpawnAnimal(animalPrefabs[i], animalCount[i]);
 	}
 
 	IEnumerator RespawnAnimals() //동물 자동 부활.
@@ -115,10 +130,11 @@ public class RandomObjectGenerator : MonoBehaviour
 		return spawnPos;
 	}
 
-	private void SpawnAnimal(PFinfo animal)
+	private void SpawnAnimal(PFinfo animal, int animalCount)
 	{
 
-		int cnt = animal.count;
+		//int cnt = animal.count;
+		int cnt = animalCount;
 		GameObject animalPrefab = animal.prefab;
 
 		if (enableStatusBar == true) //GetComponentInChildren<>() 은 cost 가 높다. 가독성이 안좋더라도 if 문으로 최적화. default 는 true.
@@ -179,6 +195,36 @@ public class RandomObjectGenerator : MonoBehaviour
 
 		StartCoroutine(childAnimalInstance.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
 		animalGameObjects.Add(childAnimalInstance);
+	}
+
+	//start 버튼 누르면 동물의 이름을 이용해서 animalPrefabs의 idx를 찾고 동일한 idx의 animalCount에 count를 저장함
+	public void OnClickStartbtn()
+	{
+		GameObject Contents = GameObject.Find("Contents");
+		Text []texts = Contents.GetComponentsInChildren<Text>();
+		int i = 0;
+		int idx = 0;
+		foreach (Text j in texts)
+		{
+			if (i % 2 == 0)
+			{
+				for(int a = 0; a < animalPrefabs.Length; a++)
+				{
+					if (animalPrefabs[a].prefab.name == j.text)
+					{
+						idx = a;
+						Debug.Log(animalPrefabs[a].prefab.name);
+					}
+				}
+			
+			}
+			else
+			{
+				animalCount[idx] = int.Parse(j.text);
+				Debug.Log(animalCount[idx]);
+			}
+			i++;
+		}
 	}
 
 	[System.Serializable]

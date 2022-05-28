@@ -1933,6 +1933,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
+      - m_Target: {fileID: 1446696039}
+        m_TargetAssemblyTypeName: RandomObjectGenerator, Polyperfect.Common
+        m_MethodName: OnClickStartbtn
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
       - m_Target: {fileID: 487038055}
         m_TargetAssemblyTypeName: BtnType, Assembly-CSharp
         m_MethodName: OnBtnClick
@@ -4069,6 +4081,73 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1445534181}
   m_CullTransparentMesh: 1
+--- !u!1 &1446696038
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1446696040}
+  - component: {fileID: 1446696039}
+  m_Layer: 0
+  m_Name: ObjectGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1446696039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446696038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8038ef3afb4824149a86b881905468b9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animalPrefabs:
+  - prefab: {fileID: 8461150494005232356, guid: 60ff0204dcad6244aad205d425dff146, type: 3}
+    count: 180
+  - prefab: {fileID: 3991535566645085736, guid: 1fcb992d5ae5579449bc38906166c38a, type: 3}
+    count: 90
+  - prefab: {fileID: 697983188770281175, guid: f19124b1b743dc747833acfca6757d28, type: 3}
+    count: 30
+  - prefab: {fileID: 4612222865115070566, guid: 4fb704efb7740b748924dba93c1a1678, type: 3}
+    count: 15
+  - prefab: {fileID: 6272286494750318971, guid: f14719b4ff1efd14397660c1a5ac8ea1, type: 3}
+    count: 30
+  - prefab: {fileID: 4898175940001779086, guid: 5513b3356f0d1b144967501762cc9541, type: 3}
+    count: 20
+  - prefab: {fileID: 8286589729466264646, guid: 5e2e94bdb8aa40f4b9eac3102c3df0ea, type: 3}
+    count: 10
+  - prefab: {fileID: 6833189228233191510, guid: 563654b22bc35154986d1f3ca1466ff8, type: 3}
+    count: 5
+  plantPrefabs:
+  - prefab: {fileID: 1573628690202234, guid: 9d4d39397bb3e4df98ac838ef29e39a1, type: 3}
+    count: 1000
+  mapWidth: 600
+  mapLength: 600
+  mapMaxHeight: 100
+  enableStatusBar: 0
+--- !u!4 &1446696040
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1446696038}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1514588441
 GameObject:
   m_ObjectHideFlags: 0
@@ -4764,9 +4843,9 @@ CanvasGroup:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1667365200}
   m_Enabled: 1
-  m_Alpha: 0
-  m_Interactable: 0
-  m_BlocksRaycasts: 0
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
 --- !u!222 &1667365203
 CanvasRenderer:
@@ -5094,7 +5173,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1741398657
 RectTransform:
   m_ObjectHideFlags: 0
