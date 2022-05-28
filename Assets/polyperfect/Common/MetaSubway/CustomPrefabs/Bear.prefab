@@ -201,7 +201,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6bb6b867a41448888c1cd4f99643ad71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: RayPerceptionSensor
+  m_SensorName: BearRayPerceptionSensor
   m_DetectableTags:
   - Env
   m_RaysPerDirection: 0
@@ -525,7 +525,7 @@ MonoBehaviour:
   m_InferenceDevice: 0
   m_BehaviorType: 0
   m_BehaviorName: Bear
-  TeamId: 0
+  TeamId: 3
   m_UseChildSensors: 1
   m_UseChildActuators: 1
   m_DeterministicInference: 0
@@ -572,7 +572,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd8012d5925524537b27131fef517017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SensorName: BufferSensor
+  m_SensorName: BearBufferSensor
   m_ObservableSize: 3
   m_MaxNumObservables: 5
 --- !u!1 &6833208212048306818

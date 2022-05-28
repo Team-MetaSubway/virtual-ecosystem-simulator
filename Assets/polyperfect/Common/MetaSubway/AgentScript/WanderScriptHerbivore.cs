@@ -121,6 +121,7 @@ namespace Polyperfect.Animals
                     {
                         if(target.animalType==AnimalType.Calnivore) // 1-1-2.
                         {
+                            StopCoroutine(WanderCoroutine());
                             targetChaser = target; //타겟 설정하는 코드 삽입 필요.
                             SetState(WanderState.Running);
                             isStaminaRemain = true;
@@ -153,6 +154,7 @@ namespace Polyperfect.Animals
                 {
                     case WanderState.Walking: //2-1
                         {
+                            StopCoroutine(WanderCoroutine());
                             targetFood = other.gameObject;//먹이 설정
                             directionToGo = Vector3.ProjectOnPlane((targetFood.transform.position - transform.position),Vector3.up).normalized; //초식동물이 먹이를 바라보는 방향.
                             SetState(WanderState.FoundFood);

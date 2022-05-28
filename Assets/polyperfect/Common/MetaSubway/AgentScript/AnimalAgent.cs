@@ -18,7 +18,10 @@ public class AnimalAgent : Agent
     float toughnessThreshold;
     float hungerThreshold;
     float staminaThreshold;
-    
+
+    float toughnessFactor;
+    float hungerFactor;
+
     float previousHunger;
     float previousToughness;
     float wallCollideFactor;
@@ -47,6 +50,11 @@ public class AnimalAgent : Agent
 
         maxBufferSize = bufferSensor.MaxNumObservables + 1;
         wallCollideFactor = -0.1f;
+
+        toughnessFactor = 1.5f;
+        hungerFactor = 0.5f;
+
+        Debug.Log("탐지 범위:" + animalState.DetectionRange);
     }
     public override void OnEpisodeBegin()
     {
@@ -106,7 +114,7 @@ public class AnimalAgent : Agent
                                                         Mathf.Atan2(localSpaceDirection.x,localSpaceDirection.z)/Mathf.PI,
                                                         RandomObjectGenerator.instance.animalTagSet[closestAnimals[idx].tag]
                                                     };
-            //Debug.Log("거리" + animalObservation[0]*animalState.DetectionRange + "각도" + animalObservation[1]*Mathf.PI + "태그" + animalObservation[2]);
+            //Debug.Log("거리" + animalObservation[0]*animalState.DetectionRange + "각도" + animalObservation[1]*Mathf.PI + "태그" + closestAnimals[idx].tag + "태그 숫자" + animalObservation[2]);
             bufferSensor.AppendObservation(animalObservation);
         }
         
@@ -130,7 +138,7 @@ public class AnimalAgent : Agent
 #endif
         }
         
-        AddReward((animalState.Toughness-previousToughness)*maxToughness+(animalState.Hunger-previousHunger)*maxHunger);
+        AddReward((animalState.Toughness-previousToughness)*maxToughness*toughnessFactor+(animalState.Hunger-previousHunger)*maxHunger*hungerFactor);
         previousToughness = animalState.Toughness;
         previousHunger = animalState.Hunger;
         if (animalState.IsCollidedWithWall)
@@ -151,9 +159,9 @@ public class AnimalAgent : Agent
         if (animalState.Toughness >= toughnessThreshold && animalState.Hunger >= hungerThreshold)
         {
             //성공시 조건을 조금 더 까다롭게?
-            toughnessThreshold = Mathf.Clamp(toughnessThreshold + 0.01f * animalState.MaxToughness, 0, 0.95f * animalState.MaxToughness); //1% 조건 어렵게. 95%까지 증가.
-            hungerThreshold = Mathf.Clamp(hungerThreshold + 0.01f * animalState.MaxHunger, 0, 0.95f * animalState.MaxHunger); //''
-            Debug.Log("완벽.");
+            toughnessThreshold = Mathf.Clamp(toughnessThreshold + 0.01f * animalState.MaxToughness, 0, 0.90f * animalState.MaxToughness); //1% 조건 어렵게. 95%까지 증가.
+            hungerThreshold = Mathf.Clamp(hungerThreshold + 0.01f * animalState.MaxHunger, 0, 0.85f * animalState.MaxHunger); //1% 조건 어렵게. 85%까지 증가.
+            Debug.Log("통과. 나는 " + gameObject.tag + " 체력은 " + toughnessThreshold + " 배고픔은 " + hungerThreshold);
             animalState.enabled = false;
             EndEpisode();
         }
