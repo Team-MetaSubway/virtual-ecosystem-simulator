@@ -25,7 +25,7 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 				CanvasGroupOff(currGroup);
 				break;
 			case BTNType.Start:
-				SceneLoader.LoadSceneHandle("Play", 0);
+				SceneLoader.LoadSceneHandle("Play");
 				break;
 			case BTNType.Animal:
 				CanvasGroupOn(nextGroup);
@@ -46,7 +46,7 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 				}
 				isSound = !isSound;
 				break;
-			case BTNType.Back:
+			case BTNType.AnimalBack:
 				CanvasGroupOn(nextGroup);
 				CanvasGroupOff(currGroup);
 				break;
