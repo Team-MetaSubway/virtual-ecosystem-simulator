@@ -3,30 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using System.Linq;
 
 public class RandomObjectGenerator : MonoBehaviour
 {
-	public PFinfo[] animalPrefabs;
-	const int TotalAnimal = 8;
-	static int[] animalCount = new int [8];
-	public PFinfo[] plantPrefabs;
-
-	bool waitFlag = true;
-
-	public enum Animal
-	{
-		EmptyAnimal = 0,
-		Rabbit,
-		Deer,
-		Giraffe,
-		Elephant,
-		Boar,
-		Wolf,
-		Lion,
-		Bear,
-		NumOfAnimals
-	}
-
+	public ObjectInfo[] animalLists; 
+	public ObjectInfo[] plantLists;
 
 	[Tooltip("size x of the map, x value")]
 	public float mapWidth=180f;
@@ -40,6 +22,7 @@ public class RandomObjectGenerator : MonoBehaviour
 
 	private List<GameObject> animalGameObjects = new List<GameObject>();
 	private List<GameObject> plantGameObjects = new List<GameObject>();
+
 
 	private int terrainLayer;
 	private float childSpawnRange;
@@ -57,13 +40,13 @@ public class RandomObjectGenerator : MonoBehaviour
 		childSpawnRange = 7f;
 
 		float value = 0;
-		foreach (string animal in System.Enum.GetNames(typeof(Animal)))
+		foreach (string animal in System.Enum.GetNames(typeof(AnimalList.Animal)))
 		{
-			animalTagSet.Add(animal, value++ / (float)Animal.NumOfAnimals);
+			animalTagSet.Add(animal, value++ / (float)AnimalList.Animal.NumOfAnimals);
 		}
+		DownloadAnimalData();
+		PlayerPrefs.DeleteAll();
 		instance = this;
-		//////
-		DontDestroyOnLoad(gameObject);
 	}
 
 	public void Start()
@@ -81,19 +64,10 @@ public class RandomObjectGenerator : MonoBehaviour
 		yield return new WaitForSeconds(1.0f);
 
 		//식물 생성
-		foreach (var plant in plantPrefabs) SpawnPlant(plant);
+		foreach (var plant in plantLists) SpawnPlant(plant);
 
 		//동물 생성
-		//foreach (var animal in animalPrefabs) SpawnAnimal(animal);
-		while(waitFlag)
-		{
-			if (SceneManager.GetActiveScene().name == "MainScene2")
-			{
-				waitFlag = false;
-			}
-		}
-		for (int i = 0; i < TotalAnimal; i++)
-			SpawnAnimal(animalPrefabs[i], animalCount[i]);
+		foreach (var animal in animalLists) SpawnAnimal(animal);
 	}
 
 	IEnumerator RespawnAnimals() //동물 자동 부활.
@@ -113,7 +87,7 @@ public class RandomObjectGenerator : MonoBehaviour
     {
 		while(true)
         {
-			Instantiate(plantPrefabs[0].prefab, GetRandomPosition(), Quaternion.identity, transform);
+			Instantiate(plantLists[0].prefab, GetRandomPosition(), Quaternion.identity, transform);
 			yield return new WaitForSeconds(5.0f);
 		}
     }
@@ -130,11 +104,10 @@ public class RandomObjectGenerator : MonoBehaviour
 		return spawnPos;
 	}
 
-	private void SpawnAnimal(PFinfo animal, int animalCount)
+	private void SpawnAnimal(ObjectInfo animal)
 	{
 
-		//int cnt = animal.count;
-		int cnt = animalCount;
+		int cnt = animal.count;
 		GameObject animalPrefab = animal.prefab;
 
 		if (enableStatusBar == true) //GetComponentInChildren<>() 은 cost 가 높다. 가독성이 안좋더라도 if 문으로 최적화. default 는 true.
@@ -156,7 +129,7 @@ public class RandomObjectGenerator : MonoBehaviour
 		}
 	}
 
-	private void SpawnPlant(PFinfo plant)
+	private void SpawnPlant(ObjectInfo plant)
     {
 		int cnt = plant.count;
 		GameObject plantPrefab = plant.prefab;
@@ -197,42 +170,27 @@ public class RandomObjectGenerator : MonoBehaviour
 		animalGameObjects.Add(childAnimalInstance);
 	}
 
-	//start 버튼 누르면 동물의 이름을 이용해서 animalPrefabs의 idx를 찾고 동일한 idx의 animalCount에 count를 저장함
-	public void OnClickStartbtn()
-	{
-		GameObject Contents = GameObject.Find("Contents");
-		Text []texts = Contents.GetComponentsInChildren<Text>();
-		int i = 0;
-		int idx = 0;
-		foreach (Text j in texts)
-		{
-			if (i % 2 == 0)
-			{
-				for(int a = 0; a < animalPrefabs.Length; a++)
-				{
-					if (animalPrefabs[a].prefab.name == j.text)
-					{
-						idx = a;
-						Debug.Log(animalPrefabs[a].prefab.name);
-					}
-				}
-			
-			}
-			else
-			{
-				animalCount[idx] = int.Parse(j.text);
-				Debug.Log(animalCount[idx]);
-			}
-			i++;
-		}
-	}
-
 	[System.Serializable]
-	public struct PFinfo
+	public struct ObjectInfo
 	{
-		//게임 오브젝트
+		//게임 오브젝트 이름
+		public string name;
+
+		//게임 오브젝트 프리팹
 		public GameObject prefab;
+
 		//게임 오브젝트 갯수
 		public int count;
+	}
+
+
+	void DownloadAnimalData()
+	{
+		for(int i=0; i<animalLists.Length; ++i)
+        {
+			var animal = animalLists[i];
+			animal.count = PlayerPrefs.GetInt(animal.name, animal.count); //이름에 해당하는 업로드가 있었으면 받아오고, 업로드가 없었으면 그대로 현재 count 사용.
+			animalLists[i] = animal;
+        }
 	}
 }
