@@ -1793,7 +1793,7 @@ GameObject:
   - component: {fileID: 1455415186714026319}
   - component: {fileID: 8486266123786262236}
   m_Layer: 6
-  m_Name: Wolf Grey
+  m_Name: Wolf
   m_TagString: Wolf
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
