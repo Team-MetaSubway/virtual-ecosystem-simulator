@@ -40,7 +40,7 @@ public class AnimalContents : MonoBehaviour
 		Text count = animalContent.transform.Find("Count").gameObject.GetComponent<Text>();
 		count.text = int.Parse(CntInputField.textComponent.text).ToString();
 
-		animalSelection[name.text] = int.Parse(count.text);
+		animalSelection[name.text] += int.Parse(count.text);
 
 		Button remove =	animalContent.transform.transform.Find("Remove").GetComponent<Button>();
 		remove.onClick.AddListener(OnRemoveClick);
@@ -50,7 +50,13 @@ public class AnimalContents : MonoBehaviour
 
 	public void OnRemoveClick()
 	{
-		Destroy(EventSystem.current.currentSelectedGameObject.transform.parent.gameObject);
+		var removeObject = EventSystem.current.currentSelectedGameObject.transform.parent.gameObject;
+		var removeName = removeObject.transform.Find("Name").gameObject.GetComponent<Text>();
+		var removeCount = removeObject.transform.Find("Count").gameObject.GetComponent<Text>();
+
+		animalSelection[removeName.text] -= int.Parse(removeCount.text);
+
+		Destroy(removeObject);
 	}
 
 	public void UploadAnimalData()
