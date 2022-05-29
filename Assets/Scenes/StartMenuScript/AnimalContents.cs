@@ -18,10 +18,11 @@ public class AnimalContents : MonoBehaviour
 
 	private void Start()
 	{
-		foreach(var animal in AnimalList.animalList)
+		foreach (string animal in System.Enum.GetNames(typeof(AnimalList.Animal)))
 		{
-			animalSelection.Add(animal.Key, 0);
-			AnimalDropDown.options.Add(new Dropdown.OptionData(animal.Key));
+			if (animal.Equals("EmptyAnimal") || animal.Equals("NumOfAnimals")) continue;
+			animalSelection.Add(animal, 0);
+			AnimalDropDown.options.Add(new Dropdown.OptionData(animal));
 		}
 	}
 
