@@ -9,26 +9,19 @@ public class AnimalContents : MonoBehaviour
 	public Dropdown AnimalDropDown;
 	public InputField CntInputField;
 	public GameObject animalInfo;
-	string[] initAnimal = { "Rabbit Brown", "Deer", "Giraffe", "Elephant", "Wolf Grey", "Boar", "Lion", "Bear" };
-	int[] initCount = { 180, 90, 30, 15, 30, 20, 20, 5 };
+
+	private Dictionary<string, int> animalSelection = new Dictionary<string, int>();
+	public Dictionary<string, int> AnimalSelection
+    {
+        get { return animalSelection; }
+    }
+
 	private void Start()
 	{
-		for (int i = 0; i < 8; i++)
+		foreach(var animal in AnimalList.animalList)
 		{
-			GameObject animalContent = Instantiate(animalInfo);
-			animalContent.transform.position = new Vector3(920, -120, 0);
-			animalContent.transform.SetParent(transform);
-
-			Text name = animalContent.transform.Find("Name").gameObject.GetComponent<Text>();
-			name.text = initAnimal[i];
-
-			Text count = animalContent.transform.Find("Count").gameObject.GetComponent<Text>();
-			count.text = initCount[i].ToString();
-
-			Button remove = animalContent.transform.transform.Find("Remove").GetComponent<Button>();
-			remove.onClick.AddListener(OnRemoveClick);
-
-			animalContent.SetActive(true);
+			animalSelection.Add(animal.Key, 0);
+			AnimalDropDown.options.Add(new Dropdown.OptionData(animal.Key));
 		}
 	}
 
@@ -45,6 +38,8 @@ public class AnimalContents : MonoBehaviour
 
 		Text count = animalContent.transform.Find("Count").gameObject.GetComponent<Text>();
 		count.text = int.Parse(CntInputField.textComponent.text).ToString();
+
+		animalSelection[name.text] = int.Parse(count.text);
 
 		Button remove =	animalContent.transform.transform.Find("Remove").GetComponent<Button>();
 		remove.onClick.AddListener(OnRemoveClick);
