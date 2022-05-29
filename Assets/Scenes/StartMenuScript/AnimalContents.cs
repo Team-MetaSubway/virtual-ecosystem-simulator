@@ -51,4 +51,12 @@ public class AnimalContents : MonoBehaviour
 	{
 		Destroy(EventSystem.current.currentSelectedGameObject.transform.parent.gameObject);
 	}
+
+	public void UploadAnimalData()
+	{
+		foreach(var animal in animalSelection)
+        {
+			PlayerPrefs.SetInt(animal.Key, animal.Value); //동물의 이름과, 해당하는 개체수를 PlayerPrefs 사용해서 업로드.
+        }
+	}
 }
