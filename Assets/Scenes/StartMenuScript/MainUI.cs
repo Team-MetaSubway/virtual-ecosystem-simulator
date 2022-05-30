@@ -9,7 +9,7 @@ public enum BTNType
 	Animal,
 	Weather,
 	Sound,
-	Back,
+	AnimalBack,
 	Quit
 }
 

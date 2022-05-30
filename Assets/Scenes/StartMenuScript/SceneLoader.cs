@@ -19,10 +19,9 @@ public class SceneLoader : MonoBehaviour
 		//SceneManager.LoadScene("MainScene2");
 		StartCoroutine(LoadScene());
 	}
-	public static void LoadSceneHandle(string _name, int _loadType)
+	public static void LoadSceneHandle(string _name)
 	{
 		loadScene = _name;
-		loadType = _loadType;
 		SceneManager.LoadScene("LoadingScene");
 	}
 	IEnumerator LoadScene()
@@ -33,10 +32,7 @@ public class SceneLoader : MonoBehaviour
 		while(!operation.isDone)
 		{
 			yield return null;
-			if (loadType == 0)
-				Debug.Log("새게임");
-			else if (loadType == 1)
-				Debug.Log("이어하기");
+
 			if (progressbar.value < 0.9f)
 			{
 				progressbar.value = Mathf.MoveTowards(progressbar.value, 0.9f, Time.deltaTime);

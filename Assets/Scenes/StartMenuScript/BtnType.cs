@@ -25,7 +25,9 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 				CanvasGroupOff(currGroup);
 				break;
 			case BTNType.Start:
-				SceneLoader.LoadSceneHandle("Play", 0);
+				//Contents라는 오브젝트의 AnimalContents 컴포넌트 찾아서 동물 데이터(개체수)업로드.
+				GameObject.Find("Contents").GetComponent<AnimalContents>().UploadAnimalData();
+				SceneLoader.LoadSceneHandle("Play");
 				break;
 			case BTNType.Animal:
 				CanvasGroupOn(nextGroup);
@@ -46,7 +48,7 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 				}
 				isSound = !isSound;
 				break;
-			case BTNType.Back:
+			case BTNType.AnimalBack:
 				CanvasGroupOn(nextGroup);
 				CanvasGroupOff(currGroup);
 				break;

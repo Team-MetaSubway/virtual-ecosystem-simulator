@@ -200,7 +200,7 @@ GameObject:
   - component: {fileID: 6234455240572880343}
   - component: {fileID: 6913093007263473695}
   m_Layer: 6
-  m_Name: Rabbit Brown
+  m_Name: Rabbit
   m_TagString: Rabbit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
