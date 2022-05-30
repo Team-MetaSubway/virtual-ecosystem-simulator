@@ -45,7 +45,6 @@ public class RandomObjectGenerator : MonoBehaviour
 			animalTagSet.Add(animal, value++ / (float)AnimalList.Animal.NumOfAnimals);
 		}
 		DownloadAnimalData();
-		PlayerPrefs.DeleteAll();
 		instance = this;
 	}
 
@@ -190,6 +189,7 @@ public class RandomObjectGenerator : MonoBehaviour
         {
 			var animal = animalLists[i];
 			animal.count = PlayerPrefs.GetInt(animal.name, animal.count); //이름에 해당하는 업로드가 있었으면 받아오고, 업로드가 없었으면 그대로 현재 count 사용.
+			PlayerPrefs.DeleteKey(animal.name);
 			animalLists[i] = animal;
         }
 	}

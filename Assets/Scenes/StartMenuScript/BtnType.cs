@@ -15,7 +15,6 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 	{
 		defaultScale = buttonScale.localScale;
 	}
-	bool isSound;
 	public void OnBtnClick()
 	{
 		switch (currentType)
@@ -27,28 +26,18 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 			case BTNType.Start:
 				//Contents라는 오브젝트의 AnimalContents 컴포넌트 찾아서 동물 데이터(개체수)업로드.
 				GameObject.Find("Contents").GetComponent<AnimalContents>().UploadAnimalData();
-				SceneLoader.LoadSceneHandle("Play");
+				GameObject.Find("DayText").GetComponent<Day>().UploadDay();
+				SceneLoader.LoadSceneHandle("MainScene2");
 				break;
 			case BTNType.Animal:
 				CanvasGroupOn(nextGroup);
 				CanvasGroupOff(currGroup);
 				break;
-			case BTNType.Weather:
+			case BTNType.Day:
 				CanvasGroupOn(nextGroup);
 				CanvasGroupOff(currGroup);
 				break;
-			case BTNType.Sound:
-				if (isSound)
-				{
-					Debug.Log("사운드 Off");
-				}
-				else
-				{
-					Debug.Log("사운드 ON");
-				}
-				isSound = !isSound;
-				break;
-			case BTNType.AnimalBack:
+			case BTNType.Back:
 				CanvasGroupOn(nextGroup);
 				CanvasGroupOff(currGroup);
 				break;

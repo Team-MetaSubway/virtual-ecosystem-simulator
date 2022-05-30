@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DayNightSystem : MonoBehaviour
 {
@@ -31,14 +32,16 @@ public class DayNightSystem : MonoBehaviour
     
     public bool showUI;
     public int Day = 0;
+	int DayLimit = 10;
     private string AMPM;
 
     public static DayNightSystem instance = null;
 
     private void Awake()
     {
-        instance = this;
-    }
+		instance = this;
+		DownloadDay();
+	}
 
     // Start is called before the first frame update
     void Start()
@@ -68,6 +71,12 @@ public class DayNightSystem : MonoBehaviour
             Day++;
             time = 0.0f;
         }
+
+		//제한된 날짜가 되면
+		if (Day >= DayLimit)
+		{
+			SceneManager.LoadScene("ScoreBoard");
+		}
 
         //해와 달 움직이기
         sun.transform.eulerAngles = (time - 0.25f) * noon * 4.0f;
@@ -136,5 +145,10 @@ public class DayNightSystem : MonoBehaviour
             GUILayout.Box(AMPM);
         }
     }
-    
+
+	void DownloadDay()
+	{
+		DayLimit = PlayerPrefs.GetInt("DayLimit");
+		PlayerPrefs.DeleteKey("DayLimit");
+	}
 }
