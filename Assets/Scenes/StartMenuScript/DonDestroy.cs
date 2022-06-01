@@ -2,11 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DontDestroyObject : MonoBehaviour
+public class DonDestroy : MonoBehaviour
 {
-	int aa;
-
-	void Awake()
+	private void Awake()
 	{
 		DontDestroyOnLoad(gameObject);
 	}

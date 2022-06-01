@@ -32,7 +32,7 @@ public class DayNightSystem : MonoBehaviour
     
     public bool showUI;
     public int Day = 0;
-	int DayLimit = 10;
+	int DayLimit = 0;
     private string AMPM;
 
     public static DayNightSystem instance = null;
@@ -73,7 +73,7 @@ public class DayNightSystem : MonoBehaviour
         }
 
 		//제한된 날짜가 되면
-		if (Day >= DayLimit)
+		if (DayLimit != 0 && Day >= DayLimit)
 		{
 			SceneManager.LoadScene("ScoreBoard");
 		}

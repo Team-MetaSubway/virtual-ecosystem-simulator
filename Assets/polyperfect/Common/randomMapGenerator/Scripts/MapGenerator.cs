@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class MapGenerator : MonoBehaviour {
 
@@ -25,6 +26,8 @@ public class MapGenerator : MonoBehaviour {
 	public bool autoUpdate;
 
 	float[,] falloffMap;
+
+	bool flag = true;
 
 	Queue<MapThreadInfo<MapData>> mapDataThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
 	Queue<MapThreadInfo<MeshData>> meshDataThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
@@ -100,6 +103,11 @@ public class MapGenerator : MonoBehaviour {
 	}
 
 	void Update() {
+		if (SceneManager.GetActiveScene().name == "MainScene2" && flag)
+		{
+			textureData.ApplyToMaterial(terrainMaterial);
+			flag = false;
+		}
 		if (mapDataThreadInfoQueue.Count > 0) {
 			for (int i = 0; i < mapDataThreadInfoQueue.Count; i++) {
 				MapThreadInfo<MapData> threadInfo = mapDataThreadInfoQueue.Dequeue ();

@@ -7,6 +7,10 @@ public class Day : MonoBehaviour
 {
 	public void UploadDay()
 	{
-		PlayerPrefs.SetInt("DayLimit", int.Parse(gameObject.GetComponent<Text>().text));
+		int day;
+		if (gameObject.GetComponent<Text>().text.Length == 0)
+			day = 0;
+		else day = int.Parse(gameObject.GetComponent<Text>().text);
+		PlayerPrefs.SetInt("DayLimit", day);
 	}
 }
