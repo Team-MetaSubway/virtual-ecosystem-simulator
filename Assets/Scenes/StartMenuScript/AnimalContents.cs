@@ -31,6 +31,7 @@ public class AnimalContents : MonoBehaviour
 		if (CntInputField.textComponent.text.Length == 0 || int.Parse(CntInputField.textComponent.text) == 0)
 			return;
 		GameObject animalContent = Instantiate(animalInfo);
+		animalContent.transform.position = new Vector3(920, -120, 0);
 		animalContent.transform.SetParent(transform);
 
 		Text name = animalContent.transform.Find("Name").gameObject.GetComponent<Text>();
