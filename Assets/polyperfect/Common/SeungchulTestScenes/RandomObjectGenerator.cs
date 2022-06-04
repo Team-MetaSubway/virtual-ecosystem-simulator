@@ -84,9 +84,11 @@ public class RandomObjectGenerator : MonoBehaviour
     }
 	IEnumerator RespawnFood() // 먹이 자동 리스폰. 항상 On.
     {
-		while(true)
+		GameObject plantParent = new GameObject(plantLists[0].name);
+		plantParent.transform.parent = transform;
+		while (true)
         {
-			Instantiate(plantLists[0].prefab, GetRandomPosition(), Quaternion.identity, transform);
+			Instantiate(plantLists[0].prefab, GetRandomPosition(), Quaternion.identity, transform).transform.parent = plantParent.transform;
 			yield return new WaitForSeconds(5.0f);
 		}
     }
@@ -119,11 +121,15 @@ public class RandomObjectGenerator : MonoBehaviour
 		}
 		else
         {
+			GameObject animalParent = new GameObject(animalPrefab.name);
+			animalParent.transform.parent = transform;
+
 			while (cnt-- > 0)
 			{
 				GameObject animalInstance = Instantiate(animalPrefab, transform);
 				animalInstance.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
 				animalGameObjects.Add(animalInstance);
+				animalInstance.transform.parent = animalParent.transform;
 			}
 		}
 	}
@@ -132,10 +138,11 @@ public class RandomObjectGenerator : MonoBehaviour
     {
 		int cnt = plant.count;
 		GameObject plantPrefab = plant.prefab;
-
-		while(cnt-->0)
+		GameObject plantParent = GameObject.Find(plant.name);
+		while (cnt-->0)
         {
 			GameObject plantInstance = Instantiate(plantPrefab, GetRandomPosition(), Quaternion.identity, transform);
+			plantInstance.transform.parent = plantParent.transform;
 			plantGameObjects.Add(plantInstance);
 		}
     }
@@ -192,5 +199,10 @@ public class RandomObjectGenerator : MonoBehaviour
 			PlayerPrefs.DeleteKey(animal.name);
 			animalLists[i] = animal;
         }
+	}
+
+	public void SaveAnimalCount()
+	{
+
 	}
 }
