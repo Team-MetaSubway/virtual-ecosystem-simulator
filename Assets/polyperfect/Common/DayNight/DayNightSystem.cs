@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class DayNightSystem : MonoBehaviour
 {
@@ -31,14 +32,19 @@ public class DayNightSystem : MonoBehaviour
     
     public bool showUI;
     public int Day = 0;
+	int DayLimit = 0;
     private string AMPM;
 
     public static DayNightSystem instance = null;
+	RecordInformation RecordInformation;
 
-    private void Awake()
+	bool SceneFlag = true;
+
+	private void Awake()
     {
-        instance = this;
-    }
+		instance = this;
+		DownloadDay();
+	}
 
     // Start is called before the first frame update
     void Start()
@@ -46,15 +52,18 @@ public class DayNightSystem : MonoBehaviour
         timeRate = 1.0f / fullDayLength;
         time = startTime;
 
-        
         //starDome 초기값
         starMat = StarDome.GetComponentInChildren<MeshRenderer>().material;
         starMat.color = new Color(1f, 1f, 1f, 0f);
-        
-    }
+		if (SceneManager.GetActiveScene().name == "MainScene2")
+		{
+			RecordInformation = GameObject.Find("RecObject").GetComponent<RecordInformation>();
+			SceneFlag = false;
+		}
+	}
 
-    // Update is called once per frame
-    void Update()
+	// Update is called once per frame
+	void Update()
     {
         //스타돔이 천천히 회전하게 
         StarDome.transform.Rotate(new Vector3(0, 2f * Time.deltaTime, 0));
@@ -65,9 +74,17 @@ public class DayNightSystem : MonoBehaviour
         //날짜 증가,시간 초기화
         if (time >= 1.0f)
         {
-            Day++;
+			if(!SceneFlag)
+				RecordInformation.SaveAnimalCount();
+			Day++;
             time = 0.0f;
         }
+
+		//제한된 날짜가 되면
+		if (DayLimit != 0 && Day >= DayLimit)
+		{
+			SceneManager.LoadScene("ScoreBoard");
+		}
 
         //해와 달 움직이기
         sun.transform.eulerAngles = (time - 0.25f) * noon * 4.0f;
@@ -136,5 +153,10 @@ public class DayNightSystem : MonoBehaviour
             GUILayout.Box(AMPM);
         }
     }
-    
+
+	void DownloadDay()
+	{
+		DayLimit = PlayerPrefs.GetInt("DayLimit");
+		PlayerPrefs.DeleteKey("DayLimit");
+	}
 }

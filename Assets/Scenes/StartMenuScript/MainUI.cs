@@ -7,9 +7,8 @@ public enum BTNType
 	Press,
 	Start,
 	Animal,
-	Weather,
-	Sound,
-	AnimalBack,
+	Day,
+	Back,
 	Quit
 }
 
