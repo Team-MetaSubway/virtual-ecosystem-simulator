@@ -86,6 +86,7 @@ public class RandomObjectGenerator : MonoBehaviour
     {
 		GameObject plantParent = new GameObject(plantLists[0].name);
 		plantParent.transform.parent = transform;
+		plantParent.tag = "Plant";
 		while (true)
         {
 			Instantiate(plantLists[0].prefab, GetRandomPosition(), Quaternion.identity, transform).transform.parent = plantParent.transform;
@@ -123,7 +124,7 @@ public class RandomObjectGenerator : MonoBehaviour
         {
 			GameObject animalParent = new GameObject(animalPrefab.name);
 			animalParent.transform.parent = transform;
-
+			animalParent.tag = "Animal";
 			while (cnt-- > 0)
 			{
 				GameObject animalInstance = Instantiate(animalPrefab, transform);
@@ -201,8 +202,16 @@ public class RandomObjectGenerator : MonoBehaviour
         }
 	}
 
-	public void SaveAnimalCount()
+	public int[] SaveAnimalCount()
 	{
-
+		int[] count = new int[(int)AnimalList.Animal.NumOfAnimals - 1];
+		int idx = 0;
+		foreach(Transform child in transform)
+		{
+			if (child.tag == "Plant")
+				continue;
+			count[idx++] = child.childCount;
+		}
+		return count;
 	}
 }

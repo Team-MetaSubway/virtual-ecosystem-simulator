@@ -65,5 +65,4 @@ public class AnimalContents : MonoBehaviour
 			PlayerPrefs.SetInt(animal.Key, animal.Value); //동물의 이름과, 해당하는 개체수를 PlayerPrefs 사용해서 업로드.
         }
 	}
-
 }

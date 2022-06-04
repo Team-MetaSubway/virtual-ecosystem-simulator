@@ -36,8 +36,11 @@ public class DayNightSystem : MonoBehaviour
     private string AMPM;
 
     public static DayNightSystem instance = null;
+	RecordInformation RecordInformation;
 
-    private void Awake()
+	bool StartSceneFlag = true;
+
+	private void Awake()
     {
 		instance = this;
 		DownloadDay();
@@ -49,15 +52,18 @@ public class DayNightSystem : MonoBehaviour
         timeRate = 1.0f / fullDayLength;
         time = startTime;
 
-        
         //starDome 초기값
         starMat = StarDome.GetComponentInChildren<MeshRenderer>().material;
         starMat.color = new Color(1f, 1f, 1f, 0f);
-        
-    }
+		if (SceneManager.GetActiveScene().name != "StartScene")
+		{
+			RecordInformation = GameObject.Find("RecObject").GetComponent<RecordInformation>();
+			StartSceneFlag = false;
+		}
+	}
 
-    // Update is called once per frame
-    void Update()
+	// Update is called once per frame
+	void Update()
     {
         //스타돔이 천천히 회전하게 
         StarDome.transform.Rotate(new Vector3(0, 2f * Time.deltaTime, 0));
@@ -68,7 +74,9 @@ public class DayNightSystem : MonoBehaviour
         //날짜 증가,시간 초기화
         if (time >= 1.0f)
         {
-            Day++;
+			if(!StartSceneFlag)
+				RecordInformation.SaveAnimalCount();
+			Day++;
             time = 0.0f;
         }
 
