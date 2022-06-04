@@ -19,6 +19,7 @@ public class NoiseData : UpdatableData {
 	#if UNITY_EDITOR
 
 	protected override void OnValidate() {
+		seed = Random.Range(0, 10000);
 		if (lacunarity < 1) {
 			lacunarity = 1;
 		}

@@ -38,7 +38,7 @@ public class DayNightSystem : MonoBehaviour
     public static DayNightSystem instance = null;
 	RecordInformation RecordInformation;
 
-	bool StartSceneFlag = true;
+	bool SceneFlag = true;
 
 	private void Awake()
     {
@@ -55,10 +55,10 @@ public class DayNightSystem : MonoBehaviour
         //starDome 초기값
         starMat = StarDome.GetComponentInChildren<MeshRenderer>().material;
         starMat.color = new Color(1f, 1f, 1f, 0f);
-		if (SceneManager.GetActiveScene().name != "StartScene")
+		if (SceneManager.GetActiveScene().name == "MainScene2")
 		{
 			RecordInformation = GameObject.Find("RecObject").GetComponent<RecordInformation>();
-			StartSceneFlag = false;
+			SceneFlag = false;
 		}
 	}
 
@@ -74,7 +74,7 @@ public class DayNightSystem : MonoBehaviour
         //날짜 증가,시간 초기화
         if (time >= 1.0f)
         {
-			if(!StartSceneFlag)
+			if(!SceneFlag)
 				RecordInformation.SaveAnimalCount();
 			Day++;
             time = 0.0f;
