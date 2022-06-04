@@ -7,21 +7,19 @@ public class ActiveObject : MonoBehaviour
 {
 	bool flag = true;
 
-	private void Start()
-	{
-		
-	}
-
 	void Update()
     {
-		if (SceneManager.GetActiveScene().name == "MainScene2" && flag)
+		GameObject MapGenerator = gameObject.transform.Find("MapGenerator").gameObject;
+		string Scenename = SceneManager.GetActiveScene().name;
+		if (flag && Scenename != "LoadingScene")
 		{
-			GameObject MapGenerator = gameObject.transform.Find("MapGenerator").gameObject;
 			MapGenerator.SetActive(true);
-			SceneManager.MoveGameObjectToScene(gameObject, SceneManager.GetActiveScene());
-			MapGenerator.transform.parent = null;
-			Destroy(gameObject);
 			flag = false;
 		}
-    }
+		if (!flag && Scenename == "LoadingScene")
+		{
+			MapGenerator.SetActive(false);
+			flag = true;
+		}
+	}
 }

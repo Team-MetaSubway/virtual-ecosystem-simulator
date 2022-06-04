@@ -37,6 +37,15 @@ public class MapGenerator : MonoBehaviour {
 		textureData.ApplyToMaterial (terrainMaterial);
 		textureData.UpdateMeshHeights (terrainMaterial, terrainData.minHeight, terrainData.maxHeight);
 	}
+	private void Start()
+	{
+		SceneManager.sceneLoaded += LoadedsceneEvent;
+	}
+
+	private void LoadedsceneEvent(Scene scene, LoadSceneMode mode)
+	{
+		flag = true;
+	}
 
 	void OnValuesUpdated() {
 		if (!Application.isPlaying) {
@@ -103,11 +112,14 @@ public class MapGenerator : MonoBehaviour {
 	}
 
 	void Update() {
-		if (SceneManager.GetActiveScene().name == "MainScene2" && flag)
+		string Scenename = SceneManager.GetActiveScene().name;
+
+		if (flag && (Scenename == "MainScene2" || Scenename == "ScoreBoard"))
 		{
 			textureData.ApplyToMaterial(terrainMaterial);
 			flag = false;
 		}
+
 		if (mapDataThreadInfoQueue.Count > 0) {
 			for (int i = 0; i < mapDataThreadInfoQueue.Count; i++) {
 				MapThreadInfo<MapData> threadInfo = mapDataThreadInfoQueue.Dequeue ();
