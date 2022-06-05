@@ -28,23 +28,31 @@ namespace Polyperfect.Animals
         public override void Awake()
         {
             base.Awake();
+            weatherFactor = 0f;//강화학습용 임시
+            attackRange = characterController.radius;
+            attackRangeSquare = attackRange * attackRange;
             animalType = AnimalType.Herbivore;
             foodLayer = LayerMask.NameToLayer("Food");
             var detectionRange = GetComponentInChildren<CapsuleCollider>().radius;
             detectionRangeSquare = detectionRange * detectionRange;
         }
 
-        void Update() //base class의 UpdateAnimalState 함수를 여기에 구현. 적절히 수정.
+        public override void OnEnable()
         {
-            
+            weatherFactor = Mathf.Clamp(weatherFactor + 0.01f, 0, 1.0f); //강화학습용 임시
+            base.OnEnable();
+        }
+
+        public override void FixedUpdate()
+        {
             if (CurrentState == WanderState.Dead) return;
             if (Toughness <= 0)
             {
                 Die();
                 return;
             }
-            
-            switch(CurrentState)
+
+            switch (CurrentState)
             {
                 case WanderState.Walking:
                     stamina = Mathf.MoveTowards(stamina, MaxStamina, Time.deltaTime);
@@ -52,8 +60,8 @@ namespace Polyperfect.Animals
                 case WanderState.Running:
                     if (isStaminaRemain)
                     {
-                        stamina -= 0.5f * Time.deltaTime;
-                        if(stamina<=0)
+                        stamina -= Time.deltaTime;
+                        if (stamina <= 0)
                         {
                             SetMoveSlow();
                             isStaminaRemain = false;
@@ -65,12 +73,11 @@ namespace Polyperfect.Animals
 
                 default: break;
             }
-            
+
             FaceDirection(directionToGo);
             characterController.SimpleMove(moveSpeed * directionToGo);
-            
         }
-        
+
         public override void OnTriggerEnter(Collider other)
         {
             //collider 는 detector이고 현재 food, Terrain, animal 레이어 감지.

@@ -214,12 +214,12 @@ MonoBehaviour:
   - stateName: Walking
     animationBool: isWalking
     maxStateTime: 100
-    moveSpeed: 1
+    moveSpeed: 2
     turnSpeed: 100
   - stateName: Running
     animationBool: isRunning
     maxStateTime: 1
-    moveSpeed: 1.1
+    moveSpeed: 3.5
     turnSpeed: 200
   attackingStates: []
   deathStates:
@@ -227,17 +227,7 @@ MonoBehaviour:
     animationBool: isDead
   species: Deer
   stats: {fileID: 11400000, guid: 38c997fc806244f40a3bbda6818c0de9, type: 2}
-  wanderZone: 10
-  awareness: 30
-  scent: 30
-  nonAgressiveTowards: []
-  matchSurfaceRotation: 1
-  surfaceRotationSpeed: 2
-  logChanges: 0
   showGizmos: 0
-  drawWanderRange: 1
-  drawScentRange: 1
-  drawAwarenessRange: 1
   deathEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -695,7 +685,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4781693367473112252}
-  m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -1071,7 +1061,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4781693367473112270}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:

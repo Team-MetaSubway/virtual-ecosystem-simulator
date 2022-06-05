@@ -1599,12 +1599,12 @@ MonoBehaviour:
   - stateName: Walking
     animationBool: isWalking
     maxStateTime: 100
-    moveSpeed: 1
+    moveSpeed: 2.5
     turnSpeed: 100
   - stateName: Running
     animationBool: isRunning
     maxStateTime: 1
-    moveSpeed: 1.1
+    moveSpeed: 4
     turnSpeed: 200
   attackingStates:
   - stateName: Attack
@@ -1614,17 +1614,7 @@ MonoBehaviour:
     animationBool: isDead
   species: Elephant
   stats: {fileID: 11400000, guid: 75d498707d7abb34e9b0d76b6a71fb43, type: 2}
-  wanderZone: 10
-  awareness: 30
-  scent: 30
-  nonAgressiveTowards: []
-  matchSurfaceRotation: 1
-  surfaceRotationSpeed: 2
-  logChanges: 0
   showGizmos: 0
-  drawWanderRange: 1
-  drawScentRange: 1
-  drawAwarenessRange: 1
   deathEvent:
     m_PersistentCalls:
       m_Calls: []
