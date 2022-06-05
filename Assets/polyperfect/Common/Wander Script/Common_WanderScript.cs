@@ -899,5 +899,11 @@ namespace Polyperfect.Common
                 else continue;
             }
         }
+
+        public void RainImpact()
+        {
+            growthFactor = 0.2f;
+            SetState(CurrentState);
+        }
     }
 }
