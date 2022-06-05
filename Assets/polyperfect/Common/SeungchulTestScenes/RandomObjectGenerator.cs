@@ -45,7 +45,6 @@ public class RandomObjectGenerator : MonoBehaviour
 			animalTagSet.Add(animal, value++ / (float)AnimalList.Animal.NumOfAnimals);
 		}
 		DownloadAnimalData();
-		PlayerPrefs.DeleteAll();
 		instance = this;
 	}
 
@@ -85,9 +84,12 @@ public class RandomObjectGenerator : MonoBehaviour
     }
 	IEnumerator RespawnFood() // 먹이 자동 리스폰. 항상 On.
     {
-		while(true)
+		GameObject plantParent = new GameObject(plantLists[0].name);
+		plantParent.transform.parent = transform;
+		plantParent.tag = "Plant";
+		while (true)
         {
-			Instantiate(plantLists[0].prefab, GetRandomPosition(), Quaternion.identity, transform);
+			Instantiate(plantLists[0].prefab, GetRandomPosition(), Quaternion.identity, transform).transform.parent = plantParent.transform;
 			yield return new WaitForSeconds(5.0f);
 		}
     }
@@ -120,11 +122,15 @@ public class RandomObjectGenerator : MonoBehaviour
 		}
 		else
         {
+			GameObject animalParent = new GameObject(animalPrefab.name);
+			animalParent.transform.parent = transform;
+			animalParent.tag = "Animal";
 			while (cnt-- > 0)
 			{
 				GameObject animalInstance = Instantiate(animalPrefab, transform);
 				animalInstance.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
 				animalGameObjects.Add(animalInstance);
+				animalInstance.transform.parent = animalParent.transform;
 			}
 		}
 	}
@@ -133,10 +139,11 @@ public class RandomObjectGenerator : MonoBehaviour
     {
 		int cnt = plant.count;
 		GameObject plantPrefab = plant.prefab;
-
-		while(cnt-->0)
+		GameObject plantParent = GameObject.Find(plant.name);
+		while (cnt-->0)
         {
 			GameObject plantInstance = Instantiate(plantPrefab, GetRandomPosition(), Quaternion.identity, transform);
+			plantInstance.transform.parent = plantParent.transform;
 			plantGameObjects.Add(plantInstance);
 		}
     }
@@ -190,7 +197,21 @@ public class RandomObjectGenerator : MonoBehaviour
         {
 			var animal = animalLists[i];
 			animal.count = PlayerPrefs.GetInt(animal.name, animal.count); //이름에 해당하는 업로드가 있었으면 받아오고, 업로드가 없었으면 그대로 현재 count 사용.
+			PlayerPrefs.DeleteKey(animal.name);
 			animalLists[i] = animal;
         }
+	}
+
+	public int[] SaveAnimalCount()
+	{
+		int[] count = new int[(int)AnimalList.Animal.NumOfAnimals - 1];
+		int idx = 0;
+		foreach(Transform child in transform)
+		{
+			if (child.tag == "Plant")
+				continue;
+			count[idx++] = child.childCount;
+		}
+		return count;
 	}
 }

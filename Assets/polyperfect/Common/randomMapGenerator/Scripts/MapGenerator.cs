@@ -3,6 +3,7 @@ using System.Collections;
 using System;
 using System.Threading;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class MapGenerator : MonoBehaviour {
 
@@ -26,6 +27,8 @@ public class MapGenerator : MonoBehaviour {
 
 	float[,] falloffMap;
 
+	bool flag = true;
+
 	Queue<MapThreadInfo<MapData>> mapDataThreadInfoQueue = new Queue<MapThreadInfo<MapData>>();
 	Queue<MapThreadInfo<MeshData>> meshDataThreadInfoQueue = new Queue<MapThreadInfo<MeshData>>();
 
@@ -33,6 +36,15 @@ public class MapGenerator : MonoBehaviour {
 	void Awake() {
 		textureData.ApplyToMaterial (terrainMaterial);
 		textureData.UpdateMeshHeights (terrainMaterial, terrainData.minHeight, terrainData.maxHeight);
+	}
+	private void Start()
+	{
+		SceneManager.sceneLoaded += LoadedsceneEvent;
+	}
+
+	private void LoadedsceneEvent(Scene scene, LoadSceneMode mode)
+	{
+		flag = true;
 	}
 
 	void OnValuesUpdated() {
@@ -100,6 +112,14 @@ public class MapGenerator : MonoBehaviour {
 	}
 
 	void Update() {
+		string Scenename = SceneManager.GetActiveScene().name;
+
+		if (flag && (Scenename == "MainScene2" || Scenename == "ScoreBoard"))
+		{
+			textureData.ApplyToMaterial(terrainMaterial);
+			flag = false;
+		}
+
 		if (mapDataThreadInfoQueue.Count > 0) {
 			for (int i = 0; i < mapDataThreadInfoQueue.Count; i++) {
 				MapThreadInfo<MapData> threadInfo = mapDataThreadInfoQueue.Dequeue ();
