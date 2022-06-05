@@ -905,5 +905,10 @@ namespace Polyperfect.Common
             growthFactor = 0.2f;
             SetState(CurrentState);
         }
+        public void RainUnimpact()
+        {
+            growthFactor = 1.0f;
+            SetState(CurrentState);
+        }
     }
 }
