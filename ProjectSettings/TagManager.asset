@@ -17,6 +17,7 @@ TagManager:
   - Wolf
   - Lion
   - Deer
+  - Plant
   layers:
   - Default
   - TransparentFX
