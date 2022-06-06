@@ -55,7 +55,6 @@ public class RandomObjectGenerator : MonoBehaviour
 #if ENABLE_RESPAWN
 		StartCoroutine(RespawnAnimals()); //강화학습용 세팅. 동물 자동 부활.
 #endif
-
 	}
 
 	IEnumerator GenerateObject() //초기 식물, 동물 스폰.
@@ -67,6 +66,8 @@ public class RandomObjectGenerator : MonoBehaviour
 
 		//동물 생성
 		foreach (var animal in animalLists) SpawnAnimal(animal);
+
+		GameObject.Find("RecObject").GetComponent<RecordInformation>().SaveAnimalCount();
 	}
 
 	IEnumerator RespawnAnimals() //동물 자동 부활.
@@ -151,6 +152,9 @@ public class RandomObjectGenerator : MonoBehaviour
 	public void ReproduceAnimal(GameObject parentAnimalInstance)
     {
 		GameObject childAnimalInstance = Instantiate(parentAnimalInstance, transform);
+
+		childAnimalInstance.transform.parent = parentAnimalInstance.transform.parent;
+
 		//부모의 반경 7 안에 스폰되게 하드코딩. 랜덤위치가 지형 밖일 수도 있다. 랜덤위치가 지형 안쪽일때까지 랜덤위치 찾기 반복.
 		var transformOfParent = parentAnimalInstance.transform.position;
 
@@ -210,7 +214,14 @@ public class RandomObjectGenerator : MonoBehaviour
 		{
 			if (child.tag == "Plant")
 				continue;
-			count[idx++] = child.childCount;
+			int cnt = 0;
+			foreach(Transform curr in child)
+			{
+				if (curr.tag == "DeadBody")
+					continue;
+				cnt++;
+			}
+			count[idx++] = cnt;
 		}
 		return count;
 	}

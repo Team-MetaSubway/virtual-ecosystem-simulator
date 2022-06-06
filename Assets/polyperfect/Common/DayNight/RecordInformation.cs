@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -8,21 +10,12 @@ public class RecordInformation : MonoBehaviour
 	RandomObjectGenerator RandomObjectGenerator;
 	List<int[]> DayAnimalCount = new List<int[]>();
 	bool flag = true;
+	public static RecordInformation instance = null;
 
 	private void Awake()
 	{
 		RandomObjectGenerator = GameObject.Find("ObjectGenerator").GetComponent<RandomObjectGenerator>();
-	}
-
-	private void Update()
-	{
-	
-		string Scenename = SceneManager.GetActiveScene().name;
-		if (Scenename == "ScoreBoard" && flag)
-		{
-			flag = false;
-			PrintCount();
-		}
+		instance = this;
 	}
 
 	public void SaveAnimalCount()
@@ -30,14 +23,42 @@ public class RecordInformation : MonoBehaviour
 		DayAnimalCount.Add(RandomObjectGenerator.SaveAnimalCount());
 	}
 
-	public void PrintCount()
+	public double CalDeviation()
 	{
+		int[] sum = Enumerable.Repeat<int>(0, (int)AnimalList.Animal.NumOfAnimals - 1).ToArray<int>();
+		int cnt = 0;
 		foreach(var curlist in DayAnimalCount)
 		{
+			cnt++;
 			for (int i = 0; i < (int)AnimalList.Animal.NumOfAnimals - 1; i++) 
 			{
-				Debug.Log(RandomObjectGenerator.animalLists[i].name + " " + curlist[i]);
+				sum[i] += curlist[i];
 			}
 		}
+
+		double[] average = Enumerable.Repeat<double>(0, (int)AnimalList.Animal.NumOfAnimals - 1).ToArray<double>();
+		for (int i = 0; i < (int)AnimalList.Animal.NumOfAnimals - 1; i++)
+		{
+			average[i] = (double)sum[i] / cnt;
+		}
+
+		double[] deviation = Enumerable.Repeat<double>(0, (int)AnimalList.Animal.NumOfAnimals - 1).ToArray<double>();
+		foreach (var curlist in DayAnimalCount)
+		{
+			for (int i = 0; i < (int)AnimalList.Animal.NumOfAnimals - 1; i++)
+			{
+				deviation[i] += (curlist[i] - average[i]) * (curlist[i] - average[i]);
+			}
+		}
+
+		double deviationAver = 0;
+		for (int i = 0; i < (int)AnimalList.Animal.NumOfAnimals - 1; i++)
+		{
+			deviation[i] = Math.Sqrt(deviation[i] / cnt);
+			deviationAver += deviation[i];
+		}
+		deviationAver /= (int)AnimalList.Animal.NumOfAnimals - 1;
+
+		return deviationAver;
 	}
 }
