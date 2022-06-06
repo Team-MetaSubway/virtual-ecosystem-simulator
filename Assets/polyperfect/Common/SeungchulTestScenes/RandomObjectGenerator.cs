@@ -214,4 +214,28 @@ public class RandomObjectGenerator : MonoBehaviour
 		}
 		return count;
 	}
+
+	public void RainEffect()
+    {
+		foreach (var animal in animalGameObjects)
+		{
+			
+			animal.GetComponent<Polyperfect.Common.Common_WanderScript>().RainImpact();
+			
+		}
+	
+		
+
+		//Debug.Log("연결 완료");
+    }
+
+	public void RainEffect2()
+	{
+		foreach (var animal in animalGameObjects)
+		{
+
+			animal.GetComponent<Polyperfect.Common.Common_WanderScript>().RainUnimpact();
+
+		}
+	}
 }
