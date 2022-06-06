@@ -28,7 +28,7 @@ namespace Polyperfect.Animals
         public override void Awake()
         {
             base.Awake();
-            //weatherFactor = 0f;//강화학습용 임시
+            weatherFactor = 0f;//강화학습용 임시
             attackRange = characterController.radius;
             attackRangeSquare = attackRange * attackRange;
             animalType = AnimalType.Herbivore;
@@ -126,7 +126,7 @@ namespace Polyperfect.Animals
                 {
                     case WanderState.Walking: //1-1
                     {
-                        if(target.animalType==AnimalType.Calnivore) // 1-1-2.
+                        if(target.animalType==AnimalType.Calnivore&&target.Dominance>dominance) // 1-1-2.
                         {
                             StopCoroutine(WanderCoroutine());
                             targetChaser = target; //타겟 설정하는 코드 삽입 필요.
@@ -144,7 +144,7 @@ namespace Polyperfect.Animals
                     }
                     case WanderState.FoundFood: //1-3.
                     {
-                        if (target.animalType == AnimalType.Calnivore) // 1-3-2.
+                        if (target.animalType == AnimalType.Calnivore&& target.Dominance > dominance) // 1-3-2.
                         {
                             targetChaser = target; //타겟 설정하는 코드 삽입 필요.
                             SetState(WanderState.Running);

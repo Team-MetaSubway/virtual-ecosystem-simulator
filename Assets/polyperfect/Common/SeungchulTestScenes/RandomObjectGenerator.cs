@@ -28,10 +28,10 @@ public class RandomObjectGenerator : MonoBehaviour
 	
 	public Dictionary<string, float> animalTagSet = new Dictionary<string, float>();
 
+	private int wolfTeamId = 10;
 
 	public static RandomObjectGenerator instance = null;
 
-	private int wolfTeamId = 10;
 
 	private void Awake()
 	{
@@ -97,12 +97,18 @@ public class RandomObjectGenerator : MonoBehaviour
 
 	public Vector3 GetRandomPosition()
 	{
-		Vector3 spawnPos = new Vector3(Random.Range(-mapWidth*0.5f, mapWidth*0.5f),
-									   mapMaxHeight, 
-									   Random.Range(-mapLength*0.5f, mapLength*0.5f));
-		Ray ray = new Ray(spawnPos, Vector3.down); //월드 좌표로 변경해서 삽입.
+		Vector3 spawnPos;
+		Ray ray;
 		RaycastHit hitData;
-		Physics.Raycast(ray, out hitData, 2*mapMaxHeight, terrainLayer); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
+		while (true)
+		{
+			spawnPos = new Vector3(Random.Range(-mapWidth * 0.5f, mapWidth * 0.5f),
+									   mapMaxHeight,
+									   Random.Range(-mapLength * 0.5f, mapLength * 0.5f));
+			ray = new Ray(spawnPos, Vector3.down); //월드 좌표로 변경해서 삽입.
+			Physics.Raycast(ray, out hitData, 2 * mapMaxHeight, terrainLayer); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
+			if (hitData.distance < mapMaxHeight) break; // == y좌표 0 이상이면 통과.
+		}
 		spawnPos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
 		return spawnPos;
 	}
@@ -356,8 +362,8 @@ public class RandomObjectGenerator : MonoBehaviour
 
 	IEnumerator WolfGroupRewardCoroutine(WolfGroup group)
     {
-		float negativeReward = 0.03f;
-		float positiveReward = -0.03f;
+		float negativeReward = -0.03f;
+		float positiveReward = 0.03f;
 		while (true)
 		{
 			yield return new WaitForSeconds(1.0f);
@@ -365,8 +371,8 @@ public class RandomObjectGenerator : MonoBehaviour
 			Vector3 pos2 = group.agents[1].transform.position;
 			Vector3 pos3 = group.agents[2].transform.position;
 
-			float distance = (pos1 - pos2).sqrMagnitude + (pos2 - pos3).sqrMagnitude + (pos3 - pos1).sqrMagnitude;
-			if (distance < 2000f)
+			float distance = (pos1 - pos2).sqrMagnitude + (pos2 - pos3).sqrMagnitude + (pos3 - pos1).sqrMagnitude; //20f, 20f, 20f 정도 기준
+			if (distance < 1500f)
 			{
 				group.wolfGroup.AddGroupReward(positiveReward);
 			}

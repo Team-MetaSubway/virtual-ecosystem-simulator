@@ -29,8 +29,13 @@ namespace Polyperfect.Common
         public AIStats stats;
 
         // [SerializeField, Tooltip("How dominent this animal is in the food chain, agressive animals will attack less dominant animals.")]
-        private int dominance = 1;
+        protected int dominance = 1;
         private int originalDominance = 0;
+
+        public int Dominance
+        {
+            get { return dominance; }
+        }
 
         // [SerializeField, Tooltip("How many seconds this animal can run for before it gets tired.")]
         protected float stamina = 10f;

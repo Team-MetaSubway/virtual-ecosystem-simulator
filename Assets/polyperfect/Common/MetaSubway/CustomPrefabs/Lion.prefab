@@ -244,6 +244,7 @@ MonoBehaviour:
   movementEvent:
     m_PersistentCalls:
       m_Calls: []
+  characterController: {fileID: 0}
   CurrentState: 0
   moveSpeed: 0
   animalType: 0
@@ -288,7 +289,7 @@ MonoBehaviour:
     hasUpgradedBrainParametersWithActionSpec: 1
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
-  m_BehaviorType: 1
+  m_BehaviorType: 0
   m_BehaviorName: Lion
   TeamId: 2
   m_UseChildSensors: 1
