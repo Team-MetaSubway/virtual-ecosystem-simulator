@@ -28,7 +28,7 @@ namespace Polyperfect.Animals
         public override void Awake()
         {
             base.Awake();
-            weatherFactor = 0f;//강화학습용 임시
+            //weatherFactor = 0f;//강화학습용 임시
             attackRange = characterController.radius;
             attackRangeSquare = attackRange * attackRange;
             animalType = AnimalType.Herbivore;
