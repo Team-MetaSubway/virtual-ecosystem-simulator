@@ -1604,7 +1604,7 @@ MonoBehaviour:
   - stateName: Running
     animationBool: isRunning
     maxStateTime: 1
-    moveSpeed: 4
+    moveSpeed: 5
     turnSpeed: 200
   attackingStates:
   - stateName: Attack
@@ -1627,6 +1627,7 @@ MonoBehaviour:
   movementEvent:
     m_PersistentCalls:
       m_Calls: []
+  characterController: {fileID: 0}
   CurrentState: 0
   moveSpeed: 0
   animalType: 0
