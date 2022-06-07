@@ -86,13 +86,13 @@ public class RandomObjectGenerator : MonoBehaviour
     }
 	IEnumerator RespawnFood() // 먹이 자동 리스폰. 항상 On.
     {
-		yield return new WaitForSeconds(1.0f);
+		yield return new WaitForSeconds(5f);
 		GameObject plantParent = GameObject.Find(plantLists[0].name);
 		
 		while (true)
         {
 			Instantiate(plantLists[0].prefab, GetRandomPosition(), Quaternion.identity, transform).transform.parent = plantParent.transform;
-			yield return new WaitForSeconds(1.0f);
+			yield return new WaitForSeconds(0.1f);
 		}
     }
 
@@ -108,7 +108,7 @@ public class RandomObjectGenerator : MonoBehaviour
 									   Random.Range(-mapLength * 0.5f, mapLength * 0.5f));
 			ray = new Ray(spawnPos, Vector3.down); //월드 좌표로 변경해서 삽입.
 			Physics.Raycast(ray, out hitData, 2 * mapMaxHeight, terrainLayer); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
-			if (hitData.distance < mapMaxHeight) break; // == y좌표 0 이상이면 통과.
+			if (hitData.distance < mapMaxHeight-10) break; // == y좌표 10 이상이면 통과.
 		}
 		spawnPos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
 		return spawnPos;
@@ -141,6 +141,7 @@ public class RandomObjectGenerator : MonoBehaviour
 				}
 			}
 		}
+		/*
 		else
         {
 			if (animal.prefab.CompareTag("Wolf"))
@@ -158,7 +159,7 @@ public class RandomObjectGenerator : MonoBehaviour
 					animalInstance.transform.parent = animalParent.transform;
 				}
 			}
-		}
+		}*/
 	}
 
 	private void SpawnPlant(ObjectInfo plant)
@@ -335,13 +336,14 @@ public class RandomObjectGenerator : MonoBehaviour
 		GameObject wolfInstance1 = Instantiate(wolfPrefab, transform);
 		GameObject wolfInstance2 = Instantiate(wolfPrefab, transform);
 		GameObject wolfInstance3 = Instantiate(wolfPrefab, transform);
-
+		/*
 		if (enableStatusBar == false)
 		{
 			wolfInstance1.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
 			wolfInstance2.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
 			wolfInstance3.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
 		}
+		*/
 		nowWolfGroup.agents = new List<WolfAgent>();
 
 		nowWolfGroup.agents.Add(wolfInstance1.GetComponent<WolfAgent>());
@@ -369,6 +371,22 @@ public class RandomObjectGenerator : MonoBehaviour
 		//StartCoroutine(WolfGroupRewardCoroutine(nowWolfGroup));
 		wolfGroups.Add(nowWolfGroup);
 	}
-
-	
+	private int wolfReproduceNumber = 0;
+	public void AriseWolfNumber(GameObject wolfInstance)
+    {
+		++wolfReproduceNumber;
+		if(wolfReproduceNumber>=2)
+        {
+			wolfReproduceNumber = 0;
+			ReproduceWolf(wolfInstance);
+        }
+    }
+	public void ReproduceWolf(GameObject parentAnimalInstance)
+    {
+		CreateWolfGroup(parentAnimalInstance);
+		var nowWolfGroup = wolfGroups[wolfGroups.Count - 1].agents;
+		StartCoroutine(nowWolfGroup[0].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
+		StartCoroutine(nowWolfGroup[1].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
+		StartCoroutine(nowWolfGroup[2].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
+	}
 }

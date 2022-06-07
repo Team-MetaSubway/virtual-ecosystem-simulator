@@ -192,6 +192,8 @@ namespace Polyperfect.Common
             get { return Direction; }
             set { direction = value; }
         }
+
+        float duration = 2f;
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -423,6 +425,8 @@ namespace Polyperfect.Common
 
 
             //성원 추가
+            if (gameObject.CompareTag("Wolf")) duration = 8f;
+
             weatherFactor = 1.0f;
             detectionRange = stats.detectionRange;
 
@@ -808,7 +812,7 @@ namespace Polyperfect.Common
             while (true)
             {
                 if (hunger > 0) hunger -= 1.0f; //배고픔이 0 이상일 경우 1 감소
-                yield return new WaitForSeconds(1.0f); //1초 후에 다시 실행
+                yield return new WaitForSeconds(duration); //1초 후에 다시 실행
             }
         }
         public virtual IEnumerator HpCoroutine()
@@ -819,7 +823,7 @@ namespace Polyperfect.Common
                 if (hunger > maxHunger * 0.5f) toughness = Mathf.Clamp(toughness + hpFactor, 0, maxToughness);
                 else if (hunger <= 0) toughness -= hpFactor;
                 
-                yield return new WaitForSeconds(1.0f); //1초 후에 다시 실행.
+                yield return new WaitForSeconds(duration); //1초 후에 다시 실행.
             }
         }
 
@@ -829,7 +833,7 @@ namespace Polyperfect.Common
             while(true)
             {
                 yield return new WaitForSeconds(DayNightSystem.instance.fullDayLength); //하루 기다린다.
-                if (toughness >= 0.75f * maxToughness && hunger >= 0.75f * maxHunger) //조건 만족했을 경우
+                if (toughness >= 0.65f * maxToughness && hunger >= 0.65f * maxHunger) //조건 만족했을 경우
                 {
                     if (isHappy == false) //처음 조건을 만족한 경우
                     {
@@ -837,7 +841,8 @@ namespace Polyperfect.Common
                     }
                     else //두번 연속으로 조건을 만족한 경우 = 번식.
                     {
-                        RandomObjectGenerator.instance.ReproduceAnimal(gameObject);//번식 코드 삽입
+                        if (gameObject.CompareTag("Wolf")) RandomObjectGenerator.instance.AriseWolfNumber(gameObject);
+                        else RandomObjectGenerator.instance.ReproduceAnimal(gameObject);//번식 코드 삽입
                         isHappy = false;
                     }
                 }

@@ -1604,7 +1604,7 @@ MonoBehaviour:
   - stateName: Running
     animationBool: isRunning
     maxStateTime: 1
-    moveSpeed: 4
+    moveSpeed: 5
     turnSpeed: 200
   attackingStates:
   - stateName: Attack
@@ -1627,6 +1627,7 @@ MonoBehaviour:
   movementEvent:
     m_PersistentCalls:
       m_Calls: []
+  characterController: {fileID: 0}
   CurrentState: 0
   moveSpeed: 0
   animalType: 0
@@ -2351,6 +2352,10 @@ PrefabInstance:
     - target: {fileID: 8385085920362759874, guid: 35f9dfba25dbb8649a8bf6989158b14a, type: 3}
       propertyPath: m_Name
       value: status-bar
+      objectReference: {fileID: 0}
+    - target: {fileID: 8385085920362759874, guid: 35f9dfba25dbb8649a8bf6989158b14a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 35f9dfba25dbb8649a8bf6989158b14a, type: 3}
