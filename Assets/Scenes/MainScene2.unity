@@ -3342,7 +3342,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   time: 0
-  fullDayLength: 10
+  fullDayLength: 100
   startTime: 0.4
   noon: {x: 90, y: 0, z: 0}
   StarDome: {fileID: 381683477}
@@ -5605,7 +5605,7 @@ MonoBehaviour:
   Flashlight: {fileID: 1986783393}
   DayNight: {fileID: 1209843332}
   startDay: 1
-  finishDay: 2
+  finishDay: -1
   changeCheck: 0
 --- !u!81 &1741312026
 AudioListener:

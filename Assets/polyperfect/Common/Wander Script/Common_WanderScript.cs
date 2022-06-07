@@ -193,7 +193,7 @@ namespace Polyperfect.Common
             set { direction = value; }
         }
 
-        float duration = 1f;
+        float duration = 2f;
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -425,7 +425,7 @@ namespace Polyperfect.Common
 
 
             //성원 추가
-            if (gameObject.CompareTag("Wolf")) duration = 5f;
+            if (gameObject.CompareTag("Wolf")) duration = 8f;
 
             weatherFactor = 1.0f;
             detectionRange = stats.detectionRange;
@@ -833,7 +833,7 @@ namespace Polyperfect.Common
             while(true)
             {
                 yield return new WaitForSeconds(DayNightSystem.instance.fullDayLength); //하루 기다린다.
-                if (toughness >= 0.75f * maxToughness && hunger >= 0.75f * maxHunger) //조건 만족했을 경우
+                if (toughness >= 0.65f * maxToughness && hunger >= 0.65f * maxHunger) //조건 만족했을 경우
                 {
                     if (isHappy == false) //처음 조건을 만족한 경우
                     {
