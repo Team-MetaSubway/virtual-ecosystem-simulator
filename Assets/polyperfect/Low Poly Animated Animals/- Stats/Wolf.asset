@@ -13,11 +13,12 @@ MonoBehaviour:
   m_Name: Wolf
   m_EditorClassIdentifier: 
   dominance: 6
-  stamina: 30
-  power: 25
+  stamina: 50
+  power: 30
   toughness: 50
   agression: 60
-  attackSpeed: 2
+  attackSpeed: 1.5
+  hunger: 100
   territorial: 0
   stealthy: 0
   detectionRange: 40

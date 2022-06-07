@@ -68,7 +68,7 @@ public class RandomObjectGenerator : MonoBehaviour
 		//동물 생성
 		foreach (var animal in animalLists) SpawnAnimal(animal);
 
-		GameObject.Find("RecObject").GetComponent<RecordInformation>().SaveAnimalCount();
+		//GameObject.Find("RecObject").GetComponent<RecordInformation>().SaveAnimalCount();
 	}
 
 	IEnumerator RespawnAnimals() //동물 자동 부활.
@@ -208,8 +208,7 @@ public class RandomObjectGenerator : MonoBehaviour
 		childAnimalInstance.transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0); //바라보는 방향 랜덤하게
 		childAnimalInstance.GetComponent<CharacterController>().enabled = true;
 
-		GameObject parentObject = GameObject.Find(parentAnimalInstance.tag); //부모 오브젝트 찾고 집어넣음(개체수 세는 빈 오브젝트)
-		childAnimalInstance.transform.parent = parentObject.transform;
+		    
 
 		StartCoroutine(childAnimalInstance.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
 		animalGameObjects.Add(childAnimalInstance);
@@ -367,30 +366,9 @@ public class RandomObjectGenerator : MonoBehaviour
 		nowWolfGroup.agents[1].SetGroup(nowWolfGroup, 1);
 		nowWolfGroup.agents[2].SetGroup(nowWolfGroup, 2);
 
-		StartCoroutine(WolfGroupRewardCoroutine(nowWolfGroup));
+		//StartCoroutine(WolfGroupRewardCoroutine(nowWolfGroup));
 		wolfGroups.Add(nowWolfGroup);
 	}
 
-	IEnumerator WolfGroupRewardCoroutine(WolfGroup group)
-    {
-		float negativeReward = -0.03f;
-		float positiveReward = 0.03f;
-		while (true)
-		{
-			yield return new WaitForSeconds(1.0f);
-			Vector3 pos1 = group.agents[0].transform.position;
-			Vector3 pos2 = group.agents[1].transform.position;
-			Vector3 pos3 = group.agents[2].transform.position;
-
-			float distance = (pos1 - pos2).sqrMagnitude + (pos2 - pos3).sqrMagnitude + (pos3 - pos1).sqrMagnitude; //20f, 20f, 20f 정도 기준
-			if (distance < 1500f)
-			{
-				group.wolfGroup.AddGroupReward(positiveReward);
-			}
-			else
-            {
-				group.wolfGroup.AddGroupReward(negativeReward);
-            }
-		}
-    }
+	
 }

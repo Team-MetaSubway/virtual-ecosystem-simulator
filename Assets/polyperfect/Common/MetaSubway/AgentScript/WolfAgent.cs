@@ -122,22 +122,6 @@ public class WolfAgent : Agent
         sensor.AddObservation(animalState.Hunger * maxHunger);
         sensor.AddObservation(animalState.Stamina * maxStamina);
 
-        Vector3 friend1Vector = friendWolf1.transform.position - transform.position;
-        Vector3 friend2Vector = friendWolf2.transform.position - transform.position;
-
-        float distance1 = friend1Vector.sqrMagnitude;
-        float distance2 = friend2Vector.sqrMagnitude;
-
-        Vector3 friend1Dir = transform.InverseTransformDirection(friend1Vector);
-        Vector3 friend2Dir = transform.InverseTransformDirection(friend2Vector);
-
-
-        sensor.AddObservation(distance1);
-        sensor.AddObservation(Mathf.Atan2(friend1Dir.x, friend1Dir.z) / Mathf.PI);
-        sensor.AddObservation(distance2);
-        sensor.AddObservation(Mathf.Atan2(friend2Dir.x, friend2Dir.z) / Mathf.PI);
-
-
         //buffer process
         Vector3 nowPosition = transform.position;
         var listOfAnimals = Physics.OverlapSphere(nowPosition, animalState.DetectionRange, animalLayerMask);
@@ -166,6 +150,17 @@ public class WolfAgent : Agent
 
     private void Evaluate()
     {
+        float reward = (animalState.Toughness - previousToughness) * maxToughness * toughnessFactor + (animalState.Hunger - previousHunger) * maxHunger * hungerFactor;
+        AddReward(reward);
+        //myGroup.wolfGroup.AddGroupReward(reward);
+        previousToughness = animalState.Toughness;
+        previousHunger = animalState.Hunger;
+        if (animalState.IsCollidedWithWall)
+        {
+            AddReward(wallCollideFactor);
+            animalState.IsCollidedWithWall = false;
+        }
+
         if (animalState.CurrentState == Polyperfect.Common.Common_WanderScript.WanderState.Dead)
         {
 #if ENABLE_RESPAWN
@@ -179,14 +174,6 @@ public class WolfAgent : Agent
 #endif
         }
 
-        AddReward((animalState.Toughness - previousToughness) * maxToughness * toughnessFactor + (animalState.Hunger - previousHunger) * maxHunger * hungerFactor);
-        previousToughness = animalState.Toughness;
-        previousHunger = animalState.Hunger;
-        if (animalState.IsCollidedWithWall)
-        {
-            AddReward(wallCollideFactor);
-            animalState.IsCollidedWithWall = false;
-        }
 
         if (canRunning == true && animalState.Stamina <= 0.0f)
         {
@@ -203,7 +190,7 @@ public class WolfAgent : Agent
             toughnessThreshold = Mathf.Clamp(toughnessThreshold + 0.01f * animalState.MaxToughness, 0, 0.90f * animalState.MaxToughness); //1% 조건 어렵게. 95%까지 증가.
             hungerThreshold = Mathf.Clamp(hungerThreshold + 0.01f * animalState.MaxHunger, 0, 0.85f * animalState.MaxHunger); //1% 조건 어렵게. 85%까지 증가.
             Debug.Log("통과. 나는 " + gameObject.tag + " 체력은 " + toughnessThreshold + " 배고픔은 " + hungerThreshold);
-            myGroup.wolfGroup.AddGroupReward(0.5f);
+            myGroup.wolfGroup.AddGroupReward(0.1f);
             myGroup.EndGroup();
         }
 #endif
@@ -256,8 +243,16 @@ public class WolfAgent : Agent
 
     public void EatTogether()
     {
-        myGroup.wolfGroup.AddGroupReward(0.1f);
-        friendWolf1.animalState.Hunger += 0.15f/maxHunger;
-        friendWolf2.animalState.Hunger += 0.15f/maxHunger;
+        myGroup.wolfGroup.AddGroupReward(0.05f);
+        if ((friendWolf1.transform.position - transform.position).sqrMagnitude < 1000f)
+        {
+            myGroup.wolfGroup.AddGroupReward(0.05f);
+            friendWolf1.animalState.Hunger += 0.15f / maxHunger;
+        }
+        if ((friendWolf2.transform.position - transform.position).sqrMagnitude < 1000f)
+        {
+            myGroup.wolfGroup.AddGroupReward(0.05f);
+            friendWolf2.animalState.Hunger += 0.15f / maxHunger;
+        }
     }
 }
