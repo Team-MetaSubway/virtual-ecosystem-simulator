@@ -108,7 +108,7 @@ public class RandomObjectGenerator : MonoBehaviour
 									   Random.Range(-mapLength * 0.5f, mapLength * 0.5f));
 			ray = new Ray(spawnPos, Vector3.down); //월드 좌표로 변경해서 삽입.
 			Physics.Raycast(ray, out hitData, 2 * mapMaxHeight, terrainLayer); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
-			if (hitData.distance < mapMaxHeight) break; // == y좌표 0 이상이면 통과.
+			if (hitData.distance < mapMaxHeight-10) break; // == y좌표 10 이상이면 통과.
 		}
 		spawnPos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
 		return spawnPos;

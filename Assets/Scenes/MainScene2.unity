@@ -458,10 +458,22 @@ MonoBehaviour:
   - name: carrot
     prefab: {fileID: 1573628690202234, guid: 9d4d39397bb3e4df98ac838ef29e39a1, type: 3}
     count: 500
+  - name: TreeDead
+    prefab: {fileID: 1130959867764666, guid: 81bce50924cffc644ae62c5a3c5c4192, type: 3}
+    count: 500
+  - name: TreeTrunk
+    prefab: {fileID: 1493096403118852, guid: 1ab418e4a3c7c4e7cb30ea72dcaadb75, type: 3}
+    count: 200
+  - name: Rock
+    prefab: {fileID: 1000013781281258, guid: 0f6c3c2b59a164fdaa30536d7278dc0a, type: 3}
+    count: 150
+  - name: TreeDead
+    prefab: {fileID: 1069101916615702, guid: dc5363e4f96074139a5af2e1df6a8928, type: 3}
+    count: 100
   mapWidth: 600
   mapLength: 600
   mapMaxHeight: 100
-  enableStatusBar: 0
+  enableStatusBar: 1
 --- !u!4 &92671123
 Transform:
   m_ObjectHideFlags: 0
