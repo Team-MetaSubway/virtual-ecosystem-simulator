@@ -86,7 +86,7 @@ public class RandomObjectGenerator : MonoBehaviour
     }
 	IEnumerator RespawnFood() // 먹이 자동 리스폰. 항상 On.
     {
-		yield return new WaitForSeconds(0.1f);
+		yield return new WaitForSeconds(5f);
 		GameObject plantParent = GameObject.Find(plantLists[0].name);
 		
 		while (true)
@@ -141,6 +141,7 @@ public class RandomObjectGenerator : MonoBehaviour
 				}
 			}
 		}
+		/*
 		else
         {
 			if (animal.prefab.CompareTag("Wolf"))
@@ -158,7 +159,7 @@ public class RandomObjectGenerator : MonoBehaviour
 					animalInstance.transform.parent = animalParent.transform;
 				}
 			}
-		}
+		}*/
 	}
 
 	private void SpawnPlant(ObjectInfo plant)
@@ -335,13 +336,14 @@ public class RandomObjectGenerator : MonoBehaviour
 		GameObject wolfInstance1 = Instantiate(wolfPrefab, transform);
 		GameObject wolfInstance2 = Instantiate(wolfPrefab, transform);
 		GameObject wolfInstance3 = Instantiate(wolfPrefab, transform);
-
+		/*
 		if (enableStatusBar == false)
 		{
 			wolfInstance1.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
 			wolfInstance2.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
 			wolfInstance3.GetComponentInChildren<StatBarController>().gameObject.SetActive(false);
 		}
+		*/
 		nowWolfGroup.agents = new List<WolfAgent>();
 
 		nowWolfGroup.agents.Add(wolfInstance1.GetComponent<WolfAgent>());
@@ -369,6 +371,22 @@ public class RandomObjectGenerator : MonoBehaviour
 		//StartCoroutine(WolfGroupRewardCoroutine(nowWolfGroup));
 		wolfGroups.Add(nowWolfGroup);
 	}
-
-	
+	private int wolfReproduceNumber = 0;
+	public void AriseWolfNumber(GameObject wolfInstance)
+    {
+		++wolfReproduceNumber;
+		if(wolfReproduceNumber>=2)
+        {
+			wolfReproduceNumber = 0;
+			ReproduceWolf(wolfInstance);
+        }
+    }
+	public void ReproduceWolf(GameObject parentAnimalInstance)
+    {
+		CreateWolfGroup(parentAnimalInstance);
+		var nowWolfGroup = wolfGroups[wolfGroups.Count - 1].agents;
+		StartCoroutine(nowWolfGroup[0].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
+		StartCoroutine(nowWolfGroup[1].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
+		StartCoroutine(nowWolfGroup[2].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
+	}
 }

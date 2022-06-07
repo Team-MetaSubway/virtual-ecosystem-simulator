@@ -841,7 +841,8 @@ namespace Polyperfect.Common
                     }
                     else //두번 연속으로 조건을 만족한 경우 = 번식.
                     {
-                        RandomObjectGenerator.instance.ReproduceAnimal(gameObject);//번식 코드 삽입
+                        if (gameObject.CompareTag("Wolf")) RandomObjectGenerator.instance.AriseWolfNumber(gameObject);
+                        else RandomObjectGenerator.instance.ReproduceAnimal(gameObject);//번식 코드 삽입
                         isHappy = false;
                     }
                 }
