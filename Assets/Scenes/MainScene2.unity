@@ -426,32 +426,38 @@ MonoBehaviour:
   animalLists:
   - name: Rabbit
     prefab: {fileID: 8461150494005232356, guid: 60ff0204dcad6244aad205d425dff146, type: 3}
-    count: 10
+    count: 0
   - name: Deer
     prefab: {fileID: 3991535566645085736, guid: 1fcb992d5ae5579449bc38906166c38a, type: 3}
-    count: 6
+    count: 0
   - name: Giraffe
     prefab: {fileID: 697983188770281175, guid: f19124b1b743dc747833acfca6757d28, type: 3}
-    count: 4
+    count: 0
   - name: Elephant
     prefab: {fileID: 4612222865115070566, guid: 4fb704efb7740b748924dba93c1a1678, type: 3}
-    count: 2
+    count: 0
   - name: Wolf
     prefab: {fileID: 6272286494750318971, guid: f14719b4ff1efd14397660c1a5ac8ea1, type: 3}
-    count: 3
+    count: 0
   - name: Boar
     prefab: {fileID: 4898175940001779086, guid: 5513b3356f0d1b144967501762cc9541, type: 3}
-    count: 1
+    count: 0
   - name: Lion
     prefab: {fileID: 8286589729466264646, guid: 5e2e94bdb8aa40f4b9eac3102c3df0ea, type: 3}
-    count: 1
+    count: 0
   - name: Bear
     prefab: {fileID: 6833189228233191510, guid: 563654b22bc35154986d1f3ca1466ff8, type: 3}
-    count: 1
+    count: 0
+  - name: Cat
+    prefab: {fileID: 3744403814991165259, guid: 04d64a10fc8e0474d990f8f93f2fd335, type: 3}
+    count: 0
+  - name: Goose
+    prefab: {fileID: 8110224771805546644, guid: 3174f7936446eb44d95c661a4c6e4307, type: 3}
+    count: 0
   plantLists:
   - name: carrot
     prefab: {fileID: 1573628690202234, guid: 9d4d39397bb3e4df98ac838ef29e39a1, type: 3}
-    count: 100
+    count: 500
   mapWidth: 600
   mapLength: 600
   mapMaxHeight: 100

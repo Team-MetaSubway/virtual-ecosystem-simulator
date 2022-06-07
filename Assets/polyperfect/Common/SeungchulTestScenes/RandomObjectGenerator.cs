@@ -86,13 +86,13 @@ public class RandomObjectGenerator : MonoBehaviour
     }
 	IEnumerator RespawnFood() // 먹이 자동 리스폰. 항상 On.
     {
-		yield return new WaitForSeconds(1.0f);
+		yield return new WaitForSeconds(0.1f);
 		GameObject plantParent = GameObject.Find(plantLists[0].name);
 		
 		while (true)
         {
 			Instantiate(plantLists[0].prefab, GetRandomPosition(), Quaternion.identity, transform).transform.parent = plantParent.transform;
-			yield return new WaitForSeconds(1.0f);
+			yield return new WaitForSeconds(0.1f);
 		}
     }
 

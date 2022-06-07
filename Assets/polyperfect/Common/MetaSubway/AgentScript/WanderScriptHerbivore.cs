@@ -206,6 +206,7 @@ namespace Polyperfect.Animals
         }
         IEnumerator EatFoodCoroutine() //2초 마다 먹이를 먹어야하는지 판단하는 코루틴.
         {
+            float timeCount = 0;
             while(true)
             {
                 if (CurrentState != WanderState.FoundFood) break;
@@ -214,12 +215,13 @@ namespace Polyperfect.Animals
                     SetState(WanderState.Walking);
                     break;
                 }
-                if((targetFood.transform.position-transform.position).sqrMagnitude < 16.0f)
+                if((targetFood.transform.position-transform.position).sqrMagnitude < 16.0f|| timeCount > 10f)
                 {
                     EatFood();
                     SetState(WanderState.Walking);
                     break;
                 }
+                timeCount += 2.0f;
                 yield return new WaitForSeconds(2.0f);
             }
         }
@@ -228,7 +230,7 @@ namespace Polyperfect.Animals
             while(true)
             {
                 if (CurrentState != WanderState.Running) break;
-                if(targetChaser==null)
+                if(targetChaser.enabled ==false)
                 {
                     SetState(WanderState.Walking);
                     break;
@@ -250,7 +252,7 @@ namespace Polyperfect.Animals
                 if (CurrentState != WanderState.Walking) break;
                 directionToGo = Quaternion.Euler(0, Random.Range(0, 359f), 0) * Vector3.forward; //길이 1, 방향 0~359도로 랜덤한 벡터.
 
-                yield return new WaitForSeconds(Random.Range(50f, 100f));
+                yield return new WaitForSeconds(Random.Range(30f, 60f));
             }
         }
         public override void HandleBeginWalking()
