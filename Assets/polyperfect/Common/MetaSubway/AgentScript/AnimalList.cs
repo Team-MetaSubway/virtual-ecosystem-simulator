@@ -8,9 +8,11 @@ public static class AnimalList
     {
         EmptyAnimal = 0,
         Rabbit,
+        Goose,
         Deer,
         Giraffe,
         Elephant,
+        Cat,
         Boar,
         Wolf,
         Lion,

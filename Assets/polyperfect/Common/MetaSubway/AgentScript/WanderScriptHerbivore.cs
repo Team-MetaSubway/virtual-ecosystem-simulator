@@ -28,23 +28,24 @@ namespace Polyperfect.Animals
         public override void Awake()
         {
             base.Awake();
+            attackRange = characterController.radius;
+            attackRangeSquare = attackRange * attackRange;
             animalType = AnimalType.Herbivore;
             foodLayer = LayerMask.NameToLayer("Food");
             var detectionRange = GetComponentInChildren<CapsuleCollider>().radius;
             detectionRangeSquare = detectionRange * detectionRange;
         }
 
-        void Update() //base class의 UpdateAnimalState 함수를 여기에 구현. 적절히 수정.
+        public override void FixedUpdate()
         {
-            
             if (CurrentState == WanderState.Dead) return;
             if (Toughness <= 0)
             {
                 Die();
                 return;
             }
-            
-            switch(CurrentState)
+
+            switch (CurrentState)
             {
                 case WanderState.Walking:
                     stamina = Mathf.MoveTowards(stamina, MaxStamina, Time.deltaTime);
@@ -52,8 +53,8 @@ namespace Polyperfect.Animals
                 case WanderState.Running:
                     if (isStaminaRemain)
                     {
-                        stamina -= 0.5f * Time.deltaTime;
-                        if(stamina<=0)
+                        stamina -= Time.deltaTime;
+                        if (stamina <= 0)
                         {
                             SetMoveSlow();
                             isStaminaRemain = false;
@@ -65,12 +66,11 @@ namespace Polyperfect.Animals
 
                 default: break;
             }
-            
+
             FaceDirection(directionToGo);
             characterController.SimpleMove(moveSpeed * directionToGo);
-            
         }
-        
+
         public override void OnTriggerEnter(Collider other)
         {
             //collider 는 detector이고 현재 food, Terrain, animal 레이어 감지.
@@ -119,8 +119,9 @@ namespace Polyperfect.Animals
                 {
                     case WanderState.Walking: //1-1
                     {
-                        if(target.animalType==AnimalType.Calnivore) // 1-1-2.
+                        if(target.animalType==AnimalType.Calnivore&&target.Dominance>dominance) // 1-1-2.
                         {
+                            StopCoroutine(WanderCoroutine());
                             targetChaser = target; //타겟 설정하는 코드 삽입 필요.
                             SetState(WanderState.Running);
                             isStaminaRemain = true;
@@ -136,7 +137,7 @@ namespace Polyperfect.Animals
                     }
                     case WanderState.FoundFood: //1-3.
                     {
-                        if (target.animalType == AnimalType.Calnivore) // 1-3-2.
+                        if (target.animalType == AnimalType.Calnivore&& target.Dominance > dominance) // 1-3-2.
                         {
                             targetChaser = target; //타겟 설정하는 코드 삽입 필요.
                             SetState(WanderState.Running);
@@ -153,6 +154,7 @@ namespace Polyperfect.Animals
                 {
                     case WanderState.Walking: //2-1
                         {
+                            StopCoroutine(WanderCoroutine());
                             targetFood = other.gameObject;//먹이 설정
                             directionToGo = Vector3.ProjectOnPlane((targetFood.transform.position - transform.position),Vector3.up).normalized; //초식동물이 먹이를 바라보는 방향.
                             SetState(WanderState.FoundFood);
@@ -204,6 +206,7 @@ namespace Polyperfect.Animals
         }
         IEnumerator EatFoodCoroutine() //2초 마다 먹이를 먹어야하는지 판단하는 코루틴.
         {
+            float timeCount = 0;
             while(true)
             {
                 if (CurrentState != WanderState.FoundFood) break;
@@ -212,12 +215,13 @@ namespace Polyperfect.Animals
                     SetState(WanderState.Walking);
                     break;
                 }
-                if((targetFood.transform.position-transform.position).sqrMagnitude < 16.0f)
+                if((targetFood.transform.position-transform.position).sqrMagnitude < 16.0f|| timeCount > 10f)
                 {
                     EatFood();
                     SetState(WanderState.Walking);
                     break;
                 }
+                timeCount += 2.0f;
                 yield return new WaitForSeconds(2.0f);
             }
         }
@@ -226,7 +230,7 @@ namespace Polyperfect.Animals
             while(true)
             {
                 if (CurrentState != WanderState.Running) break;
-                if(targetChaser==null)
+                if(targetChaser.enabled ==false)
                 {
                     SetState(WanderState.Walking);
                     break;
@@ -248,7 +252,7 @@ namespace Polyperfect.Animals
                 if (CurrentState != WanderState.Walking) break;
                 directionToGo = Quaternion.Euler(0, Random.Range(0, 359f), 0) * Vector3.forward; //길이 1, 방향 0~359도로 랜덤한 벡터.
 
-                yield return new WaitForSeconds(Random.Range(50f, 100f));
+                yield return new WaitForSeconds(Random.Range(30f, 60f));
             }
         }
         public override void HandleBeginWalking()

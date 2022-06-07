@@ -13,10 +13,12 @@ MonoBehaviour:
   m_Name: Cat
   m_EditorClassIdentifier: 
   dominance: 3
-  stamina: 50
-  power: 5
+  stamina: 30
+  power: 10
   toughness: 35
   agression: 20
   attackSpeed: 1
+  hunger: 100
   territorial: 0
   stealthy: 0
+  detectionRange: 30
