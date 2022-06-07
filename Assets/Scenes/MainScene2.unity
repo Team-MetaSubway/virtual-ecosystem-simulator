@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641258, b: 0.5748172, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -438,7 +438,7 @@ MonoBehaviour:
     count: 2
   - name: Wolf
     prefab: {fileID: 6272286494750318971, guid: f14719b4ff1efd14397660c1a5ac8ea1, type: 3}
-    count: 1
+    count: 3
   - name: Boar
     prefab: {fileID: 4898175940001779086, guid: 5513b3356f0d1b144967501762cc9541, type: 3}
     count: 1
