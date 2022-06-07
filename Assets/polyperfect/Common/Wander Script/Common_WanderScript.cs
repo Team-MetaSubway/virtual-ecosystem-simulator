@@ -192,6 +192,8 @@ namespace Polyperfect.Common
             get { return Direction; }
             set { direction = value; }
         }
+
+        float duration = 1f;
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -423,6 +425,8 @@ namespace Polyperfect.Common
 
 
             //성원 추가
+            if (gameObject.CompareTag("Wolf")) duration = 5f;
+
             weatherFactor = 1.0f;
             detectionRange = stats.detectionRange;
 
@@ -808,7 +812,7 @@ namespace Polyperfect.Common
             while (true)
             {
                 if (hunger > 0) hunger -= 1.0f; //배고픔이 0 이상일 경우 1 감소
-                yield return new WaitForSeconds(1.0f); //1초 후에 다시 실행
+                yield return new WaitForSeconds(duration); //1초 후에 다시 실행
             }
         }
         public virtual IEnumerator HpCoroutine()
@@ -819,7 +823,7 @@ namespace Polyperfect.Common
                 if (hunger > maxHunger * 0.5f) toughness = Mathf.Clamp(toughness + hpFactor, 0, maxToughness);
                 else if (hunger <= 0) toughness -= hpFactor;
                 
-                yield return new WaitForSeconds(1.0f); //1초 후에 다시 실행.
+                yield return new WaitForSeconds(duration); //1초 후에 다시 실행.
             }
         }
 

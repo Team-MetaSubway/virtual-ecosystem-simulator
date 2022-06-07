@@ -244,12 +244,12 @@ public class WolfAgent : Agent
     public void EatTogether()
     {
         myGroup.wolfGroup.AddGroupReward(0.05f);
-        if ((friendWolf1.transform.position - transform.position).sqrMagnitude < 1000f)
+        //if ((friendWolf1.transform.position - transform.position).sqrMagnitude < 1000f)
         {
             myGroup.wolfGroup.AddGroupReward(0.05f);
             friendWolf1.animalState.Hunger += 0.15f / maxHunger;
         }
-        if ((friendWolf2.transform.position - transform.position).sqrMagnitude < 1000f)
+        //if ((friendWolf2.transform.position - transform.position).sqrMagnitude < 1000f)
         {
             myGroup.wolfGroup.AddGroupReward(0.05f);
             friendWolf2.animalState.Hunger += 0.15f / maxHunger;

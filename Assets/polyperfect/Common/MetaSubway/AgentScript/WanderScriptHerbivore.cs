@@ -28,19 +28,12 @@ namespace Polyperfect.Animals
         public override void Awake()
         {
             base.Awake();
-            weatherFactor = 0f;//강화학습용 임시
             attackRange = characterController.radius;
             attackRangeSquare = attackRange * attackRange;
             animalType = AnimalType.Herbivore;
             foodLayer = LayerMask.NameToLayer("Food");
             var detectionRange = GetComponentInChildren<CapsuleCollider>().radius;
             detectionRangeSquare = detectionRange * detectionRange;
-        }
-
-        public override void OnEnable()
-        {
-            weatherFactor = Mathf.Clamp(weatherFactor + 0.01f, 0, 1.0f); //강화학습용 임시
-            base.OnEnable();
         }
 
         public override void FixedUpdate()
