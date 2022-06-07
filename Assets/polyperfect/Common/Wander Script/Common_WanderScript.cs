@@ -28,32 +28,14 @@ namespace Polyperfect.Common
         [SerializeField, Tooltip("This specific animal stats asset, create a new one from the asset menu under (LowPolyAnimals/NewAnimalStats)")]
         public AIStats stats;
 
-        [SerializeField, Tooltip("How far away from it's origin this animal will wander by itself.")]
-        private float wanderZone = 10f;
-
-        public float MaxDistance
-        {
-            get { return wanderZone; }
-            set
-            {
-#if UNITY_EDITOR
-                SceneView.RepaintAll();
-#endif
-                wanderZone = value;
-            }
-        }
-
         // [SerializeField, Tooltip("How dominent this animal is in the food chain, agressive animals will attack less dominant animals.")]
-        private int dominance = 1;
+        protected int dominance = 1;
         private int originalDominance = 0;
 
-        [SerializeField, Tooltip("How far this animal can sense a predator.")]
-        private float awareness = 30f;
-
-        [SerializeField, Tooltip("How far this animal can sense it's prey.")]
-        private float scent = 30f;
-
-        private float originalScent = 0f;
+        public int Dominance
+        {
+            get { return dominance; }
+        }
 
         // [SerializeField, Tooltip("How many seconds this animal can run for before it gets tired.")]
         protected float stamina = 10f;
@@ -82,39 +64,17 @@ namespace Polyperfect.Common
             get { return maxToughness; }
         }
 
-        // [SerializeField, Tooltip("Chance of this animal attacking another animal."), Range(0f, 100f)]
-        private float aggression = 0f;
-        private float originalAggression = 0f;
-
         // [SerializeField, Tooltip("How quickly the animal does damage to another animal (every 'attackSpeed' seconds will cause 'power' amount of damage).")]
         private float attackSpeed = 0.5f;
 
-        // [SerializeField, Tooltip("If true, this animal will attack other animals of the same specices.")]
-        private bool territorial = false;
-
-        // [SerializeField, Tooltip("Stealthy animals can't be detected by other animals.")]
-        private bool stealthy = false;
-
-        [SerializeField, Tooltip("This animal will be peaceful towards species in this list.")]
-        private string[] nonAgressiveTowards;
-
         //[Space(), Space(5)]
-        [SerializeField, Tooltip("If true, this animal will rotate to match the terrain. Ensure you have set the layer of the terrain as 'Terrain'.")]
         private bool matchSurfaceRotation = true;
 
-        [SerializeField, Tooltip("How fast the animnal rotates to match the surface rotation.")]
         private float surfaceRotationSpeed = 2f;
 
-        //[Space(), Space(5)]
-        [SerializeField, Tooltip("If true, AI changes to this animal will be logged in the console.")]
-        private bool logChanges = false;
 
         [SerializeField, Tooltip("If true, gizmos will be drawn in the editor.")]
         private bool showGizmos = false;
-
-        [SerializeField] private bool drawWanderRange = true;
-        [SerializeField] private bool drawScentRange = true;
-        [SerializeField] private bool drawAwarenessRange = true;
 
         public UnityEngine.Events.UnityEvent deathEvent;
         public UnityEngine.Events.UnityEvent attackingEvent;
@@ -127,7 +87,7 @@ namespace Polyperfect.Common
         private Color scentColor = new Color(1f, 0f, 0f, 1f);
         private Animator animator;
 
-        protected CharacterController characterController;
+        public CharacterController characterController;
         private Vector3 origin;
 
         private Vector3 targetLocation = Vector3.zero;
@@ -160,15 +120,12 @@ namespace Polyperfect.Common
         }
         [HideInInspector]
         public WanderState CurrentState;
-        //Common_WanderScript primaryPrey;
-        //Common_WanderScript primaryPursuer;
-        //Common_WanderScript attackTarget;
         [HideInInspector]
         public float moveSpeed = 0f;
-        float attackReach = 2f;
-        bool forceUpdate = false;
 
         //성원 추가
+
+        private float previousSpeed;
 
         private float detectionRange;
         public float DetectionRange
@@ -197,7 +154,8 @@ namespace Polyperfect.Common
 
         private HashSet<Common_WanderScript> attackTargetBuffer;
         List<Common_WanderScript> targetToErase;
-        
+
+        protected float attackRange;
         protected float attackRangeSquare;
 
         protected float hunger;
@@ -206,6 +164,7 @@ namespace Polyperfect.Common
         public float Hunger
         {
             get { return hunger; }
+            set { hunger = value; }
         }
         public float MaxHunger
         {
@@ -223,14 +182,23 @@ namespace Polyperfect.Common
 
         protected float growthFactor;
 
+        protected float weatherFactor;
+
         static float growthFactorEpsilon = 0.01f;
+
+        private Vector3 direction;
+        public Vector3 Direction
+        {
+            get { return Direction; }
+            set { direction = value; }
+        }
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
         {
             if (!showGizmos)
                 return;
-
+            /*
             if (drawWanderRange)
             {
                 // Draw circle of radius wander zone
@@ -271,7 +239,7 @@ namespace Polyperfect.Common
                 Gizmos.DrawSphere(targetLocation + new Vector3(0f, 0.1f, 0f), 0.2f);
                 Gizmos.DrawLine(transform.position, targetLocation);
             }
-
+            */
         }
 
         public virtual void Awake()
@@ -288,7 +256,7 @@ namespace Polyperfect.Common
             var runtimeController = animator.runtimeAnimatorController;
             if (animator)
                 animatorParameters.UnionWith(animator.parameters.Select(p => p.name));
-
+            /*
             if (logChanges)
             {
                 if (runtimeController == null)
@@ -417,7 +385,7 @@ namespace Polyperfect.Common
                     }
                 }
             }
-
+            */
             origin = transform.position;
             animator.applyRootMotion = false;
             characterController = GetComponent<CharacterController>();
@@ -430,19 +398,13 @@ namespace Polyperfect.Common
             toughness = stats.toughness;
             maxToughness = stats.toughness;
 
-            territorial = stats.territorial;
-
             stamina = stats.stamina;
             maxStamina = stats.stamina;
 
-            originalAggression = stats.agression;
-            aggression = originalAggression;
 
             attackSpeed = stats.attackSpeed;
-            stealthy = stats.stealthy;
 
-            originalScent = scent;
-            scent = originalScent;
+            power = stats.power;
 
             hunger = stats.hunger;
             maxHunger = stats.hunger;
@@ -452,14 +414,16 @@ namespace Polyperfect.Common
 
             animalType = AnimalType.Calnivore;
 
+            //Debug.Log("나는" + gameObject.tag + "조건은" + matchSurfaceRotation + transform.childCount);
             if (matchSurfaceRotation && transform.childCount > 0)
             {
+                //Debug.Log("나는 " + gameObject.tag + " 로테이션 헬퍼 활성화.");
                 transform.GetChild(0).gameObject.AddComponent<Common_SurfaceRotation>().SetRotationSpeed(surfaceRotationSpeed);
             }
 
 
             //성원 추가
-
+            weatherFactor = 1.0f;
             detectionRange = stats.detectionRange;
 
             deadBodyLayer = LayerMask.NameToLayer("Ignore Raycast");
@@ -495,8 +459,8 @@ namespace Polyperfect.Common
 
             UnityEngine.Assertions.Assert.IsNotNull(walkingState, string.Format("{0}'s wander script does not have any movement states.", gameObject.name));
 
-            attackRangeSquare = GetComponentInChildren<CapsuleCollider>().radius;
-            attackRangeSquare *= attackRangeSquare;
+            attackRange = GetComponentInChildren<CapsuleCollider>().radius;
+            attackRangeSquare = attackRange*attackRange;
 
             targetToErase = new List<Common_WanderScript>();
             attackTargetBuffer = new HashSet<Common_WanderScript>();
@@ -562,14 +526,11 @@ namespace Polyperfect.Common
 
         readonly HashSet<string> animatorParameters = new HashSet<string>();
 
-        public virtual void UpdateAnimalState(Vector3 direction, int inputState)
+
+        public virtual void FixedUpdate()
         {
-            if (CurrentState == WanderState.Attack || CurrentState == WanderState.Dead) return;
-            if (CurrentState != (WanderState)inputState)
-            {
-                SetState((WanderState)inputState);
-            }
-            if(toughness<=0)
+            if (CurrentState == WanderState.Dead) return;
+            if (toughness <= 0)
             {
                 Die();
                 return;
@@ -577,14 +538,28 @@ namespace Polyperfect.Common
             switch (CurrentState)
             {
                 case WanderState.Running:
-                    stamina -= 0.5f*Time.deltaTime;
+                    stamina -= Time.deltaTime;
                     break;
                 case WanderState.Walking:
                     stamina = Mathf.MoveTowards(stamina, stats.stamina, Time.deltaTime);
                     break;
             }
-            FaceDirection(direction.normalized);
+            //FaceDirection(direction);
             characterController.SimpleMove(moveSpeed * direction);
+        }
+
+        public virtual void UpdateAnimalState(int inputState)
+        {
+            if (CurrentState == WanderState.Attack || CurrentState == WanderState.Dead) return;
+            if (toughness <= 0)
+            {
+                Die();
+                return;
+            }
+            if (CurrentState != (WanderState)inputState)
+            {
+                SetState((WanderState)inputState);
+            }
         }
 
         public virtual void FaceDirection(Vector3 facePosition)
@@ -614,14 +589,10 @@ namespace Polyperfect.Common
             if (peace)
             {
                 dominance = 0;
-                scent = 0f;
-                aggression = 0f;
             }
             else
             {
                 dominance = originalDominance;
-                scent = originalScent;
-                aggression = originalAggression;
             }
         }
 
@@ -666,7 +637,7 @@ namespace Polyperfect.Common
         {
             if (!string.IsNullOrEmpty(parameterName))
             {
-                if (logChanges || animatorParameters.Contains(parameterName))
+                if (animatorParameters.Contains(parameterName))
                     animator.SetBool(parameterName, value);
             }
         }
@@ -708,7 +679,7 @@ namespace Polyperfect.Common
         public virtual void SetMoveFast()
         {
             turnSpeed = runningState.turnSpeed;
-            moveSpeed = runningState.moveSpeed*growthFactor;
+            moveSpeed = runningState.moveSpeed*growthFactor*weatherFactor;
             ClearAnimatorBools();
             TrySetBool(runningState.animationBool, true);
         }
@@ -716,7 +687,7 @@ namespace Polyperfect.Common
         public virtual void SetMoveSlow()
         {
             turnSpeed = walkingState.turnSpeed;
-            moveSpeed = walkingState.moveSpeed*growthFactor;
+            moveSpeed = walkingState.moveSpeed*growthFactor*weatherFactor;
             ClearAnimatorBools();
             TrySetBool(walkingState.animationBool, true);
         }
@@ -772,6 +743,7 @@ namespace Polyperfect.Common
             
             if(other.CompareTag("Env")) //Terrain의 Env인 경우
             {
+                Debug.Log("벽에 닿았다!");
                 isCollidedWithWall = true;
                 return;
             }
@@ -782,9 +754,9 @@ namespace Polyperfect.Common
 
                 if (targetObject.dominance < dominance) //타겟이 피식자라면 공격 코루틴 시작
                 {
+                    attackTargetBuffer.Add(targetObject);//삽입
                     if (CurrentState == WanderState.Attack) // 내가 현재 공격 중이라면 attackTargetBuffer에 삽입 후 리턴.
                     {
-                        attackTargetBuffer.Add(targetObject);//삽입
                         return;
                     }
                     SetState(WanderState.Attack);
@@ -801,6 +773,10 @@ namespace Polyperfect.Common
                 if (targetObject.TakeDamage(power)) //공격했는데 목표가 죽었다면
                 {
                     CalculateHungerAndHp(targetObject);
+                    if (gameObject.CompareTag("Wolf"))
+                    {
+                        gameObject.GetComponent<WolfAgent>().EatTogether();
+                    }
                 }
             }
             FindOtherTarget(); //사거리에 다른 목표가 있으면 찾고 공격한다. 
@@ -811,9 +787,9 @@ namespace Polyperfect.Common
             Common_WanderScript tmpAttackTarget = null;
             foreach (var target in attackTargetBuffer)
             {
-                targetToErase.Add(target);
-                if (target.CurrentState == WanderState.Dead || (target.transform.position - transform.position).sqrMagnitude > attackRangeSquare) //효율을 위해 제곱 비교.
+                if (target.CurrentState == WanderState.Dead || (target.transform.position - transform.position).sqrMagnitude > (target.attackRange + attackRange) * (target.attackRange + attackRange)) //효율을 위해 제곱 비교.
                 {
+                    targetToErase.Add(target);
                     continue;
                 }
                 else
@@ -902,12 +878,12 @@ namespace Polyperfect.Common
 
         public void RainImpact()
         {
-            growthFactor = 0.2f;
+            weatherFactor = 0.2f;
             SetState(CurrentState);
         }
         public void RainUnimpact()
         {
-            growthFactor = 1.0f;
+            weatherFactor = 1.0f;
             SetState(CurrentState);
         }
     }

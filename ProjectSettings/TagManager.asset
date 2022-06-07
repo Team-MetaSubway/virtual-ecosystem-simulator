@@ -18,6 +18,8 @@ TagManager:
   - Lion
   - Deer
   - Plant
+  - Goose
+  - Cat
   layers:
   - Default
   - TransparentFX

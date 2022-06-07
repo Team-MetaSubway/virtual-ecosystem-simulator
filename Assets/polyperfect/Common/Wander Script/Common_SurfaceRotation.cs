@@ -19,7 +19,7 @@ namespace Polyperfect.Common
     {
       RaycastHit hit;
       Vector3 direction = transform.parent.TransformDirection(Vector3.down);
-
+      
       if (Physics.Raycast(transform.parent.position, direction, out hit, 50f, layer))
       {
         float distance = hit.distance;
