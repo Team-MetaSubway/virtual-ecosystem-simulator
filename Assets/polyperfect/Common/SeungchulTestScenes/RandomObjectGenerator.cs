@@ -231,9 +231,8 @@ public class RandomObjectGenerator : MonoBehaviour
 		childAnimalInstance.transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0); //바라보는 방향 랜덤하게
 		childAnimalInstance.GetComponent<CharacterController>().enabled = true;
 
-		    
 
-		StartCoroutine(childAnimalInstance.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
+		childAnimalInstance.GetComponent<Polyperfect.Common.Common_WanderScript>().startGrowth(parentAnimalInstance);
 		animalGameObjects.Add(childAnimalInstance);
 	}
 
@@ -408,9 +407,12 @@ public class RandomObjectGenerator : MonoBehaviour
     {
 		CreateWolfGroup(parentAnimalInstance);
 		var nowWolfGroup = wolfGroups[wolfGroups.Count - 1].agents;
-		StartCoroutine(nowWolfGroup[0].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
-		StartCoroutine(nowWolfGroup[1].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
-		StartCoroutine(nowWolfGroup[2].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
+		nowWolfGroup[0].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().startGrowth(parentAnimalInstance);
+		nowWolfGroup[1].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().startGrowth(parentAnimalInstance);
+		nowWolfGroup[2].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().startGrowth(parentAnimalInstance);
+		//StartCoroutine(nowWolfGroup[0].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
+		//StartCoroutine(nowWolfGroup[1].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
+		//StartCoroutine(nowWolfGroup[2].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
 	}
 
 	public void DisableAll()
@@ -418,9 +420,12 @@ public class RandomObjectGenerator : MonoBehaviour
 		StopAllCoroutines();
 		foreach (var animal in animalGameObjects)
 		{
-			var animalScript = animal.GetComponent<Polyperfect.Common.Common_WanderScript>();
-			animalScript.endFlag = true;
-			animalScript.enabled = false;
+			if (animal != null)
+			{
+				var animalScript = animal.GetComponent<Polyperfect.Common.Common_WanderScript>();
+				animalScript.endFlag = true;
+				animalScript.enabled = false;
+			}
 		}
 	}
 

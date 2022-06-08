@@ -915,8 +915,13 @@ namespace Polyperfect.Common
         {
             yield return new WaitForSeconds(5.0f);
             gameObject.transform.parent = RandomObjectGenerator.instance.heaven.transform;
-            yield return new WaitForSeconds(3.5f * DayNightSystem.instance.fullDayLength);
+            yield return new WaitForSeconds(5.0f);
             Destroy(gameObject);
+        }
+
+        public void startGrowth(GameObject parentObject)
+        {
+            StartCoroutine(ChildGrowthCoroutine(parentObject));
         }
     }
 }
