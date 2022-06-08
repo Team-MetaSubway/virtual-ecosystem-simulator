@@ -392,4 +392,12 @@ public class RandomObjectGenerator : MonoBehaviour
 		StartCoroutine(nowWolfGroup[1].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
 		StartCoroutine(nowWolfGroup[2].gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().ChildGrowthCoroutine(parentAnimalInstance));
 	}
+
+	public void DisableAll()
+	{
+		foreach (var animal in animalGameObjects)
+		{
+			animal.GetComponent<Polyperfect.Common.Common_WanderScript>().StopAllCoroutines();
+		}
+	}
 }
