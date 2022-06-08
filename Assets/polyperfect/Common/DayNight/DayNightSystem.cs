@@ -74,6 +74,7 @@ public class DayNightSystem : MonoBehaviour
         //날짜 증가,시간 초기화
         if (time >= 1.0f)
         {
+			Debug.Log("Day " + Day + "/////////////////////////");
 			if(!SceneFlag)
 				RecordInformation.SaveAnimalCount();
 			Day++;
@@ -83,6 +84,7 @@ public class DayNightSystem : MonoBehaviour
 		//제한된 날짜가 되면
 		if (DayLimit != 0 && Day >= DayLimit)
 		{
+			RecordInformation.SaveAnimalName();
 			RandomObjectGenerator.instance.DisableAll();
 			SceneManager.LoadScene("ScoreBoard");
 		}

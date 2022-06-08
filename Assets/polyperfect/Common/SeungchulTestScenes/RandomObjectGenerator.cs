@@ -316,6 +316,7 @@ public class RandomObjectGenerator : MonoBehaviour
 					continue;
 				cnt++;
 			}
+			Debug.Log(animalLists[idx].name + " : " + cnt);
 			count[idx++] = cnt;
 		}
 		return count;
@@ -417,5 +418,16 @@ public class RandomObjectGenerator : MonoBehaviour
 		{
 			animal.GetComponent<Polyperfect.Common.Common_WanderScript>().StopAllCoroutines();
 		}
+	}
+
+	public string[] SaveAnimalName()
+	{
+		string[] ret = new string[(int)AnimalList.Animal.NumOfAnimals - 1];
+		for (int i = 0; i < ret.Length; i++)
+		{
+			ret[i] = animalLists[i].name;
+		}
+
+		return ret;
 	}
 }
