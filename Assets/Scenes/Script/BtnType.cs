@@ -27,7 +27,7 @@ public class BtnType : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 				//Contents라는 오브젝트의 AnimalContents 컴포넌트 찾아서 동물 데이터(개체수)업로드.
 				GameObject.Find("Contents").GetComponent<AnimalContents>().UploadAnimalData();
 				GameObject.Find("DayText").GetComponent<Day>().UploadDay();
-				SceneLoader.LoadSceneHandle("MainScene2");
+				SceneLoader.LoadSceneHandle("MainScene");
 				break;
 			case BTNType.Animal:
 				CanvasGroupOn(nextGroup);

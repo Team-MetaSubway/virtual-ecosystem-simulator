@@ -282,12 +282,12 @@ MonoBehaviour:
   - stateName: Hop
     animationBool: isJumping
     maxStateTime: 5
-    moveSpeed: 1
+    moveSpeed: 2
     turnSpeed: 100
   - stateName: Run
     animationBool: isRunning
     maxStateTime: 5
-    moveSpeed: 1.1
+    moveSpeed: 3
     turnSpeed: 200
   attackingStates: []
   deathStates:
@@ -297,17 +297,7 @@ MonoBehaviour:
     animationBool: isDead_1
   species: Rabbit
   stats: {fileID: 11400000, guid: 7c5c1c5c9a5e94647b0e5e541b0b1e6b, type: 2}
-  wanderZone: 10
-  awareness: 30
-  scent: 30
-  nonAgressiveTowards: []
-  matchSurfaceRotation: 1
-  surfaceRotationSpeed: 2
-  logChanges: 0
   showGizmos: 0
-  drawWanderRange: 1
-  drawScentRange: 1
-  drawAwarenessRange: 1
   deathEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -320,6 +310,7 @@ MonoBehaviour:
   movementEvent:
     m_PersistentCalls:
       m_Calls: []
+  characterController: {fileID: 0}
   CurrentState: 0
   moveSpeed: 0
   animalType: 0
@@ -2050,6 +2041,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: status-bar
       objectReference: {fileID: 0}
+    - target: {fileID: 8385085920362759874, guid: 35f9dfba25dbb8649a8bf6989158b14a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 35f9dfba25dbb8649a8bf6989158b14a, type: 3}
 --- !u!4 &5074514801920215949 stripped
@@ -2114,7 +2109,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8655341889375333202, guid: 7d7e9ddf3a8182141a90bb3fb9cee7d4, type: 3}
       propertyPath: m_Radius
-      value: 5
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d7e9ddf3a8182141a90bb3fb9cee7d4, type: 3}

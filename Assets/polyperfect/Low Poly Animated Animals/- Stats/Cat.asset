@@ -12,11 +12,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 38025e9300822a146ac1328021446430, type: 3}
   m_Name: Cat
   m_EditorClassIdentifier: 
-  dominance: 3
-  stamina: 50
-  power: 5
-  toughness: 35
+  dominance: 4
+  stamina: 30
+  power: 20
+  toughness: 40
   agression: 20
   attackSpeed: 1
+  hunger: 100
   territorial: 0
   stealthy: 0
+  detectionRange: 30

@@ -1,0 +1,10 @@
+EmptyAnimal = 0,
+		Rabbit,
+		Deer,
+		Giraffe,
+		Elephant,
+		Boar,
+		Wolf,
+		Lion,
+		Bear,
+		NumOfAnimals
