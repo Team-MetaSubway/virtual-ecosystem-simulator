@@ -501,6 +501,7 @@ namespace Polyperfect.Common
         public virtual void OnDisable()
         {
             StopAllCoroutines();
+            StartCoroutine(ReapDeadBodyCoroutine());
             gameObject.layer = deadBodyLayer;
             gameObject.tag = "DeadBody";
         }
@@ -890,6 +891,15 @@ namespace Polyperfect.Common
         {
             weatherFactor = 1.0f;
             SetState(CurrentState);
+        }
+
+        IEnumerator ReapDeadBodyCoroutine()
+        {
+            yield return new WaitForSeconds(5.0f);
+            gameObject.SetActive(false);
+            yield return new WaitForSeconds(5.0f);
+            gameObject.transform.parent = RandomObjectGenerator.instance.heaven.transform;
+            Destroy(gameObject);
         }
     }
 }
