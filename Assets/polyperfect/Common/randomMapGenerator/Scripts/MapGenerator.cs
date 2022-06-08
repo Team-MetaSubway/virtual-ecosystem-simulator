@@ -37,6 +37,7 @@ public class MapGenerator : MonoBehaviour {
 		textureData.ApplyToMaterial (terrainMaterial);
 		textureData.UpdateMeshHeights (terrainMaterial, terrainData.minHeight, terrainData.maxHeight);
 	}
+
 	private void Start()
 	{
 		SceneManager.sceneLoaded += LoadedsceneEvent;
@@ -114,7 +115,7 @@ public class MapGenerator : MonoBehaviour {
 	void Update() {
 		string Scenename = SceneManager.GetActiveScene().name;
 
-		if (flag && (Scenename == "MainScene2" || Scenename == "ScoreBoard"))
+		if (flag && (Scenename == "MainScene" || Scenename == "ScoreBoard"))
 		{
 			textureData.ApplyToMaterial(terrainMaterial);
 			flag = false;

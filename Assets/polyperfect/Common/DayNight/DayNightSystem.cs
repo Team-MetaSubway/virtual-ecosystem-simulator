@@ -55,7 +55,7 @@ public class DayNightSystem : MonoBehaviour
         //starDome �ʱⰪ
         starMat = StarDome.GetComponentInChildren<MeshRenderer>().material;
         starMat.color = new Color(1f, 1f, 1f, 0f);
-		if (SceneManager.GetActiveScene().name == "MainScene2")
+		if (SceneManager.GetActiveScene().name == "MainScene")
 		{
 			RecordInformation = GameObject.Find("RecObject").GetComponent<RecordInformation>();
 			SceneFlag = false;
