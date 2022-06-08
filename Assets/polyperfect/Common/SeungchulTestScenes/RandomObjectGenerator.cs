@@ -397,7 +397,7 @@ public class RandomObjectGenerator : MonoBehaviour
 	{
 		foreach (var animal in animalGameObjects)
 		{
-			animal.GetComponent<Polyperfect.Common.Common_WanderScript>().enabled = false;
+			animal.GetComponent<Polyperfect.Common.Common_WanderScript>().StopAllCoroutines();
 		}
 	}
 }
