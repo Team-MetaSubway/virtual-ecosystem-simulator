@@ -1902,7 +1902,7 @@ CharacterController:
   m_Height: 0.2
   m_Radius: 0.2
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
+  m_StepOffset: 0.1
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.2, z: 0}
@@ -2074,6 +2074,7 @@ MonoBehaviour:
   characterController: {fileID: 0}
   CurrentState: 0
   moveSpeed: 0
+  endFlag: 0
   animalType: 0
   hungerFactor: 0
 --- !u!54 &3742500811554372703

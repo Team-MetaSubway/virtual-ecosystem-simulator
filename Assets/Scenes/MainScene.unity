@@ -5493,6 +5493,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83516ce0a51c4ff4cbbe5ca0f1581611, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  AnimalNames: []
 --- !u!4 &1662103361
 Transform:
   m_ObjectHideFlags: 0

@@ -28,6 +28,10 @@ namespace Polyperfect.Animals
         public override void Awake()
         {
             base.Awake();
+            growthDuration = DayNightSystem.instance.fullDayLength * 0.3f;
+            reproduceDuration = DayNightSystem.instance.fullDayLength * 0.8f;
+            //if (gameObject.CompareTag("Elephant")) reproduceDuration = DayNightSystem.instance.fullDayLength;
+            if (gameObject.CompareTag("Rabbit") || gameObject.CompareTag("Goose")) reproduceDuration = DayNightSystem.instance.fullDayLength * 0.5f;
             attackRange = characterController.radius;
             attackRangeSquare = attackRange * attackRange;
             animalType = AnimalType.Herbivore;

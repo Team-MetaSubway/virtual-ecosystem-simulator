@@ -124,6 +124,10 @@ namespace Polyperfect.Common
         public float moveSpeed = 0f;
 
         //성원 추가
+        [HideInInspector]
+        public bool endFlag = false;
+
+        protected float growthDuration;
 
         private float previousSpeed;
 
@@ -194,6 +198,8 @@ namespace Polyperfect.Common
         }
 
         float duration = 2f;
+
+        protected float reproduceDuration;
         //성원 추가 끝
 
         public void OnDrawGizmosSelected()
@@ -425,7 +431,16 @@ namespace Polyperfect.Common
 
 
             //성원 추가
-            if (gameObject.CompareTag("Wolf")) duration = 6f;
+
+            endFlag = false;
+
+            growthDuration = DayNightSystem.instance.fullDayLength * 0.7f;
+
+            reproduceDuration = DayNightSystem.instance.fullDayLength;
+
+            if (gameObject.CompareTag("Bear") || gameObject.CompareTag("Lion")) reproduceDuration = DayNightSystem.instance.fullDayLength * 2f;
+
+            if (gameObject.CompareTag("Wolf")) duration = 8f;
 
             weatherFactor = 1.0f;
             detectionRange = stats.detectionRange;
@@ -501,7 +516,10 @@ namespace Polyperfect.Common
         public virtual void OnDisable()
         {
             StopAllCoroutines();
-            StartCoroutine(ReapDeadBodyCoroutine());
+            if (endFlag == false)
+            {
+                StartCoroutine(ReapDeadBodyCoroutine());
+            }
             gameObject.layer = deadBodyLayer;
             gameObject.tag = "DeadBody";
         }
@@ -821,7 +839,7 @@ namespace Polyperfect.Common
             while (true)
             {
                 
-                if (hunger > maxHunger * 0.5f) toughness = Mathf.Clamp(toughness + hpFactor, 0, maxToughness);
+                if (hunger > maxHunger * 0.5f) toughness = Mathf.Clamp(toughness + hpFactor, 0, 1.1f*maxToughness);
                 else if (hunger <= 0) toughness -= hpFactor;
                 
                 yield return new WaitForSeconds(duration); //1초 후에 다시 실행.
@@ -833,7 +851,7 @@ namespace Polyperfect.Common
             bool isHappy = false;
             while(true)
             {
-                yield return new WaitForSeconds(DayNightSystem.instance.fullDayLength); //하루 기다린다.
+                yield return new WaitForSeconds(reproduceDuration*(1 + Random.Range(-0.3f,0.3f))); //하루 기다린다.
                 if (toughness >= 0.65f * maxToughness && hunger >= 0.65f * maxHunger) //조건 만족했을 경우
                 {
                     if (isHappy == false) //처음 조건을 만족한 경우
@@ -853,8 +871,8 @@ namespace Polyperfect.Common
 
         public virtual void CalculateHungerAndHp(Common_WanderScript target)
         {
-            hunger = Mathf.Clamp(hunger + hungerFactor * (1 + target.MaxToughness / maxToughness), 0, maxHunger);
-            toughness = Mathf.Clamp(toughness + 0.05f * maxToughness, 0, maxToughness);
+            hunger = Mathf.Clamp( hunger + hungerFactor * (1 + target.MaxToughness / maxToughness),0,1.1f*maxHunger);
+            toughness = Mathf.Clamp(toughness + 0.05f * maxToughness, 0, 1.1f*maxToughness);
         }
 
        
@@ -869,7 +887,7 @@ namespace Polyperfect.Common
 
             while (true)
             {
-                yield return new WaitForSeconds(DayNightSystem.instance.fullDayLength * 0.5f); //반나절 기다리고
+                yield return new WaitForSeconds(growthDuration); // 1/3일 기다리고
                 growthFactor += 0.1f; //성장.
 
                 maxToughness = growthFactor*stats.toughness;
@@ -896,10 +914,14 @@ namespace Polyperfect.Common
         IEnumerator ReapDeadBodyCoroutine()
         {
             yield return new WaitForSeconds(5.0f);
-            gameObject.SetActive(false);
-            yield return new WaitForSeconds(5.0f);
             gameObject.transform.parent = RandomObjectGenerator.instance.heaven.transform;
+            yield return new WaitForSeconds(5.0f);
             Destroy(gameObject);
+        }
+
+        public void startGrowth(GameObject parentObject)
+        {
+            StartCoroutine(ChildGrowthCoroutine(parentObject));
         }
     }
 }

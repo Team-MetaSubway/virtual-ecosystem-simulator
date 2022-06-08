@@ -7,19 +7,23 @@ using UnityEngine.SceneManagement;
 
 public class RecordInformation : MonoBehaviour
 {
-	RandomObjectGenerator RandomObjectGenerator;
-	List<int[]> DayAnimalCount = new List<int[]>();
+	public List<int[]> DayAnimalCount = new List<int[]>();
+	public string[] AnimalNames;
 	public static RecordInformation instance = null;
 
 	private void Awake()
 	{
-		RandomObjectGenerator = GameObject.Find("ObjectGenerator").GetComponent<RandomObjectGenerator>();
 		instance = this;
 	}
 
 	public void SaveAnimalCount()
 	{
-		DayAnimalCount.Add(RandomObjectGenerator.SaveAnimalCount());
+		DayAnimalCount.Add(RandomObjectGenerator.instance.SaveAnimalCount());
+	}
+
+	public void SaveAnimalName()
+	{
+		AnimalNames = RandomObjectGenerator.instance.SaveAnimalName();
 	}
 
 	public double CalDeviation()
