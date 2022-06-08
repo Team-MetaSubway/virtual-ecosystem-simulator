@@ -211,7 +211,8 @@ public class RandomObjectGenerator : MonoBehaviour
 		//부모의 반경 7 안에 스폰되게 하드코딩. 랜덤위치가 지형 밖일 수도 있다. 랜덤위치가 지형 안쪽일때까지 랜덤위치 찾기 반복.
 		var transformOfParent = parentAnimalInstance.transform.position;
 
-		Vector3 spawnPos;
+		Vector3 spawnPos = GetRandomPosition();
+		/*
 		while (true)
 		{
 			spawnPos = new Vector3(transformOfParent.x + Random.Range(-childSpawnRange, childSpawnRange),
@@ -224,7 +225,7 @@ public class RandomObjectGenerator : MonoBehaviour
 				spawnPos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
 				break;
 			}
-		}
+		}*/
 		childAnimalInstance.GetComponent<CharacterController>().enabled = false;
 		childAnimalInstance.transform.position = spawnPos; //부모 근처, 지형 안 랜덤 좌표로 재지정
 		childAnimalInstance.transform.localRotation = Quaternion.Euler(0, Random.Range(0f, 359f), 0); //바라보는 방향 랜덤하게
@@ -397,7 +398,7 @@ public class RandomObjectGenerator : MonoBehaviour
 	public void AriseWolfNumber(GameObject wolfInstance)
     {
 		++wolfReproduceNumber;
-		if(wolfReproduceNumber>=2)
+		if(wolfReproduceNumber>=1)
         {
 			wolfReproduceNumber = 0;
 			ReproduceWolf(wolfInstance);
@@ -414,9 +415,12 @@ public class RandomObjectGenerator : MonoBehaviour
 
 	public void DisableAll()
 	{
+		StopAllCoroutines();
 		foreach (var animal in animalGameObjects)
 		{
-			animal.GetComponent<Polyperfect.Common.Common_WanderScript>().StopAllCoroutines();
+			var animalScript = animal.GetComponent<Polyperfect.Common.Common_WanderScript>();
+			animalScript.endFlag = true;
+			animalScript.enabled = false;
 		}
 	}
 
