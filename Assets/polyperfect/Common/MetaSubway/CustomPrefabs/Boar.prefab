@@ -816,12 +816,12 @@ MonoBehaviour:
   - stateName: Walking
     animationBool: isWalking
     maxStateTime: 100
-    moveSpeed: 2
+    moveSpeed: 3
     turnSpeed: 200
   - stateName: Running
     animationBool: isRunning
     maxStateTime: 1
-    moveSpeed: 6
+    moveSpeed: 6.5
     turnSpeed: 350
   attackingStates:
   - stateName: isAttacking
