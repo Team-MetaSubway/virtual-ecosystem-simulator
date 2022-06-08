@@ -27,12 +27,12 @@ namespace DigitalRuby.RainMaker
         public void Rain(bool val)
         {
             RainToggle.isOn = val;
-
+            /*
             if (RainToggle.isOn)
                 RandomObjectGenerator.instance.RainEffect();
             else
                 RandomObjectGenerator.instance.RainEffect2();
-
+            */
         }
 
         private void RainChanged()
