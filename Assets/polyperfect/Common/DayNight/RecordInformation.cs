@@ -9,7 +9,6 @@ public class RecordInformation : MonoBehaviour
 {
 	RandomObjectGenerator RandomObjectGenerator;
 	List<int[]> DayAnimalCount = new List<int[]>();
-	bool flag = true;
 	public static RecordInformation instance = null;
 
 	private void Awake()
