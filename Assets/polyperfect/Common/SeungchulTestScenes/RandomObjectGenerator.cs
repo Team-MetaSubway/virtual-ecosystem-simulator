@@ -95,7 +95,7 @@ public class RandomObjectGenerator : MonoBehaviour
 		while (true)
         {
 			Instantiate(plantLists[0].prefab, GetRandomPosition(), Quaternion.identity, transform).transform.parent = plantParent.transform;
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.3f);
 		}
     }
 
