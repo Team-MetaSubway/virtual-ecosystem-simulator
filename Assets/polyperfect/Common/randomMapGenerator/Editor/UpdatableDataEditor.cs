@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
-
+/*
 [CustomEditor (typeof(UpdatableData), true)]
 public class UpdatableDataEditor : Editor {
-
+	
 	public override void OnInspectorGUI ()
 	{
 		base.OnInspectorGUI ();
@@ -18,3 +18,4 @@ public class UpdatableDataEditor : Editor {
 	}
 	
 }
+*/
