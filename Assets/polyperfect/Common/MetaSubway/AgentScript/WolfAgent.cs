@@ -247,12 +247,12 @@ public class WolfAgent : Agent
         //if ((friendWolf1.transform.position - transform.position).sqrMagnitude < 1000f)
         {
             myGroup.wolfGroup.AddGroupReward(0.05f);
-            friendWolf1.animalState.Hunger += 0.15f / maxHunger;
+            friendWolf1.animalState.Hunger += 0.12f / maxHunger;
         }
         //if ((friendWolf2.transform.position - transform.position).sqrMagnitude < 1000f)
         {
             myGroup.wolfGroup.AddGroupReward(0.05f);
-            friendWolf2.animalState.Hunger += 0.15f / maxHunger;
+            friendWolf2.animalState.Hunger += 0.12f / maxHunger;
         }
     }
 }

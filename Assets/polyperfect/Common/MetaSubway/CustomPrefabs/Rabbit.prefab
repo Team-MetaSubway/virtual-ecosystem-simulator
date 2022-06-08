@@ -282,12 +282,12 @@ MonoBehaviour:
   - stateName: Hop
     animationBool: isJumping
     maxStateTime: 5
-    moveSpeed: 1
+    moveSpeed: 1.5
     turnSpeed: 100
   - stateName: Run
     animationBool: isRunning
     maxStateTime: 5
-    moveSpeed: 2
+    moveSpeed: 3
     turnSpeed: 200
   attackingStates: []
   deathStates:
