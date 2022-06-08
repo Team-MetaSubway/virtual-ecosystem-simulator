@@ -83,6 +83,7 @@ public class DayNightSystem : MonoBehaviour
 		//제한된 날짜가 되면
 		if (DayLimit != 0 && Day >= DayLimit)
 		{
+			RandomObjectGenerator.instance.DisableAll();
 			SceneManager.LoadScene("ScoreBoard");
 		}
 
