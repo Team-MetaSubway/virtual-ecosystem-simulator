@@ -100,6 +100,7 @@ public class DayNightSystem : MonoBehaviour
         moon.color = moonColor.Evaluate(time);
 
         //해와 달 사라지게
+        
         if (sun.intensity == 0 && sun.gameObject.activeInHierarchy)
         {
             sun.gameObject.SetActive(false);
@@ -125,6 +126,9 @@ public class DayNightSystem : MonoBehaviour
         if (time > 0.25f && time < 0.75f)
         {
             //낮 (스타돔 안보이게)
+            //sun.gameObject.SetActive(true);
+            //moon.gameObject.SetActive(false);
+
             starMat.color = new Color(1, 1, 1, Mathf.Lerp(0, 1, Time.deltaTime));
             AMPM = "Day";
        
@@ -134,8 +138,11 @@ public class DayNightSystem : MonoBehaviour
             //밤 (스타돔 보이게)
             starMat.color = new Color(1, 1, 1, Mathf.Lerp(1, 0, Time.deltaTime));
             AMPM = "Night";
-         
+
+           // moon.gameObject.SetActive(true);
+           // sun.gameObject.SetActive(false);
         }
+    
 
 
         //빛 반사 밀도 
