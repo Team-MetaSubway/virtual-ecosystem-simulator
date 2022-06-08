@@ -438,6 +438,8 @@ namespace Polyperfect.Common
 
             reproduceDuration = DayNightSystem.instance.fullDayLength;
 
+            if (gameObject.CompareTag("Bear") || gameObject.CompareTag("Lion")) reproduceDuration = DayNightSystem.instance.fullDayLength * 2f;
+
             if (gameObject.CompareTag("Wolf")) duration = 8f;
 
             weatherFactor = 1.0f;
