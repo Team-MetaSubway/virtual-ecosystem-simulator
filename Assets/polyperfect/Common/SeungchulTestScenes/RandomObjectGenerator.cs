@@ -32,6 +32,8 @@ public class RandomObjectGenerator : MonoBehaviour
 
 	public static RandomObjectGenerator instance = null;
 
+	[HideInInspector]
+	public GameObject heaven;
 
 	private void Awake()
 	{
@@ -45,6 +47,7 @@ public class RandomObjectGenerator : MonoBehaviour
 		{
 			animalTagSet.Add(animal, value++ / (float)AnimalList.Animal.NumOfAnimals);
 		}
+		heaven = GameObject.Find("heaven");
 		DownloadAnimalData();
 		instance = this;
 	}
@@ -92,7 +95,7 @@ public class RandomObjectGenerator : MonoBehaviour
 		while (true)
         {
 			Instantiate(plantLists[0].prefab, GetRandomPosition(), Quaternion.identity, transform).transform.parent = plantParent.transform;
-			yield return new WaitForSeconds(0.1f);
+			yield return new WaitForSeconds(0.3f);
 		}
     }
 
