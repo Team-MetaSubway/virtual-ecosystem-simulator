@@ -425,7 +425,7 @@ namespace Polyperfect.Common
 
 
             //성원 추가
-            if (gameObject.CompareTag("Wolf")) duration = 5f;
+            if (gameObject.CompareTag("Wolf")) duration = 6f;
 
             weatherFactor = 1.0f;
             detectionRange = stats.detectionRange;

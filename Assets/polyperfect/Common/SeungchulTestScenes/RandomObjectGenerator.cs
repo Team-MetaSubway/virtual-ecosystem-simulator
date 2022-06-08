@@ -94,10 +94,28 @@ public class RandomObjectGenerator : MonoBehaviour
 		
 		while (true)
         {
-			Instantiate(plantLists[0].prefab, GetRandomPosition(), Quaternion.identity, transform).transform.parent = plantParent.transform;
+			Instantiate(plantLists[0].prefab, GetRandomFoodPosition(), Quaternion.identity, transform).transform.parent = plantParent.transform;
 			yield return new WaitForSeconds(0.3f);
 		}
     }
+
+	public Vector3 GetRandomFoodPosition()
+    {
+		Vector3 spawnPos;
+		Ray ray;
+		RaycastHit hitData;
+		while (true)
+		{
+			spawnPos = new Vector3(Random.Range(-mapWidth * 0.5f, mapWidth * 0.5f),
+									   mapMaxHeight,
+									   Random.Range(-mapLength * 0.5f, mapLength * 0.5f));
+			ray = new Ray(spawnPos, Vector3.down); //월드 좌표로 변경해서 삽입.
+			Physics.Raycast(ray, out hitData, 2 * mapMaxHeight, terrainLayer); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
+			if (hitData.distance < mapMaxHeight - 10 && hitData.distance >= mapMaxHeight - 20) break; // == y좌표 10 이상 20 이하이면 통과.
+		}
+		spawnPos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
+		return spawnPos;
+	}
 
 	public Vector3 GetRandomPosition()
 	{
@@ -111,7 +129,7 @@ public class RandomObjectGenerator : MonoBehaviour
 									   Random.Range(-mapLength * 0.5f, mapLength * 0.5f));
 			ray = new Ray(spawnPos, Vector3.down); //월드 좌표로 변경해서 삽입.
 			Physics.Raycast(ray, out hitData, 2 * mapMaxHeight, terrainLayer); //현재 랜덤으로 정한 위치(Y축은 maxHeight)에서 땅으로 빛을 쏜다.
-			if (hitData.distance < mapMaxHeight-10) break; // == y좌표 10 이상이면 통과.
+			if (hitData.distance < mapMaxHeight-10) break; // == y좌표 10 이상 20 이하이면 통과.
 		}
 		spawnPos.y -= hitData.distance; //땅에 맞은 거리만큼 y에서 뺀다. 동물이 지형 바닥에 딱 맞게 스폰되게끔.
 		return spawnPos;
