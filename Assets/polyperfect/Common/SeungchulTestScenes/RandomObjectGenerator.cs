@@ -397,7 +397,7 @@ public class RandomObjectGenerator : MonoBehaviour
 	public void AriseWolfNumber(GameObject wolfInstance)
     {
 		++wolfReproduceNumber;
-		if(wolfReproduceNumber>=1)
+		if(wolfReproduceNumber>=2)
         {
 			wolfReproduceNumber = 0;
 			ReproduceWolf(wolfInstance);
