@@ -197,7 +197,7 @@ namespace Polyperfect.Common
             set { direction = value; }
         }
 
-        float duration = 2f;
+        protected float duration = 2f;
 
         protected float reproduceDuration;
         //성원 추가 끝

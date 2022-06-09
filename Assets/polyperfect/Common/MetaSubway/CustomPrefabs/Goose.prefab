@@ -442,6 +442,7 @@ MonoBehaviour:
   characterController: {fileID: 0}
   CurrentState: 0
   moveSpeed: 0
+  endFlag: 0
   animalType: 0
   hungerFactor: 0
 --- !u!54 &4751497575323642558
@@ -3103,6 +3104,10 @@ PrefabInstance:
     - target: {fileID: 3797304084431662930, guid: 7d7e9ddf3a8182141a90bb3fb9cee7d4, type: 3}
       propertyPath: m_Name
       value: detectionCollider
+      objectReference: {fileID: 0}
+    - target: {fileID: 8655341889375333202, guid: 7d7e9ddf3a8182141a90bb3fb9cee7d4, type: 3}
+      propertyPath: m_Radius
+      value: 9
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7d7e9ddf3a8182141a90bb3fb9cee7d4, type: 3}
