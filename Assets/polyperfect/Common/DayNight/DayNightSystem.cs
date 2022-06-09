@@ -36,7 +36,6 @@ public class DayNightSystem : MonoBehaviour
     private string AMPM;
 
     public static DayNightSystem instance = null;
-	RecordInformation RecordInformation;
 
 	bool SceneFlag = true;
 
@@ -57,7 +56,6 @@ public class DayNightSystem : MonoBehaviour
         starMat.color = new Color(1f, 1f, 1f, 0f);
 		if (SceneManager.GetActiveScene().name == "MainScene")
 		{
-			RecordInformation = GameObject.Find("RecObject").GetComponent<RecordInformation>();
 			SceneFlag = false;
 		}
 	}
@@ -74,9 +72,9 @@ public class DayNightSystem : MonoBehaviour
         //날짜 증가,시간 초기화
         if (time >= 1.0f)
         {
-			Debug.Log("Day " + Day + "/////////////////////////");
+			Debug.Log("Day " + (Day + 1) + "///////////////////////////////////////////////////");
 			if(!SceneFlag)
-				RecordInformation.SaveAnimalCount();
+				RecordInformation.instance.SaveAnimalCount();
 			Day++;
             time = 0.0f;
         }
@@ -84,7 +82,7 @@ public class DayNightSystem : MonoBehaviour
 		//제한된 날짜가 되면
 		if (DayLimit != 0 && Day >= DayLimit)
 		{
-			RecordInformation.SaveAnimalName();
+			RecordInformation.instance.SaveAnimalName();
 			RandomObjectGenerator.instance.DisableAll();
 			SceneManager.LoadScene("ScoreBoard");
 		}

@@ -30,6 +30,15 @@ public class RecordInformation : MonoBehaviour
 	{
 		int[] sum = Enumerable.Repeat<int>(0, (int)AnimalList.Animal.NumOfAnimals - 1).ToArray<int>();
 		int cnt = 0;
+		int kindofanimal = 0;
+
+		foreach (var c in DayAnimalCount[0])
+		{
+			if (c == 0)
+				continue;
+			kindofanimal++;
+		}
+
 		foreach(var curlist in DayAnimalCount)
 		{
 			cnt++;
@@ -60,7 +69,7 @@ public class RecordInformation : MonoBehaviour
 			deviation[i] = Math.Sqrt(deviation[i] / cnt);
 			deviationAver += deviation[i];
 		}
-		deviationAver /= (int)AnimalList.Animal.NumOfAnimals - 1;
+		deviationAver /= kindofanimal;
 
 		return deviationAver;
 	}

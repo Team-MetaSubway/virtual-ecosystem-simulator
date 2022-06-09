@@ -4707,10 +4707,6 @@ MonoBehaviour:
   detailLevels:
   - lod: 0
     visibleDstThreshold: 200
-  - lod: 1
-    visibleDstThreshold: 200
-  - lod: 4
-    visibleDstThreshold: 200
   viewer: {fileID: 0}
   mapMaterial: {fileID: 2100000, guid: b0872f84cf3c7441d893168677410c73, type: 2}
 --- !u!114 &1334009321

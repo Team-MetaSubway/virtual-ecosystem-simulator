@@ -71,7 +71,7 @@ public class RandomObjectGenerator : MonoBehaviour
 		//동물 생성
 		foreach (var animal in animalLists) SpawnAnimal(animal);
 
-		//GameObject.Find("RecObject").GetComponent<RecordInformation>().SaveAnimalCount();
+		GameObject.Find("RecObject").GetComponent<RecordInformation>().SaveAnimalCount();
 	}
 
 	IEnumerator RespawnAnimals() //동물 자동 부활.

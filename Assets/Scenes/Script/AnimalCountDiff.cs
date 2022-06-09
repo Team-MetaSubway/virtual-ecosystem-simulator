@@ -15,6 +15,9 @@ public class AnimalCountDiff : MonoBehaviour
 
 		for (int i = 0; i < (int)AnimalList.Animal.NumOfAnimals - 1; i++)
 		{
+			if (startcount[i] == 0)
+				continue;
+
 			GameObject animalContent = Instantiate(DiffInfo);
 			animalContent.transform.SetParent(transform);
 
