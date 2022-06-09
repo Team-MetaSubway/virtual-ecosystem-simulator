@@ -29,12 +29,13 @@ namespace Polyperfect.Animals
         {
             base.Awake();
             growthDuration = DayNightSystem.instance.fullDayLength * 0.3f;
-            reproduceDuration = DayNightSystem.instance.fullDayLength * 0.65f;
+            reproduceDuration = DayNightSystem.instance.fullDayLength * 0.8f;
             if (gameObject.CompareTag("Elephant"))
             {
-                reproduceDuration = DayNightSystem.instance.fullDayLength * 1.1f;
+                reproduceDuration = DayNightSystem.instance.fullDayLength * 1.4f;
+                duration = 2.0f;
             }
-            if (gameObject.CompareTag("Goose")|| gameObject.CompareTag("Rabbit")) reproduceDuration = DayNightSystem.instance.fullDayLength * 0.5f;
+            if (gameObject.CompareTag("Rabbit")|| gameObject.CompareTag("Goose")) reproduceDuration = DayNightSystem.instance.fullDayLength * 0.45f;
             attackRange = characterController.radius;
             attackRangeSquare = attackRange * attackRange;
             animalType = AnimalType.Herbivore;

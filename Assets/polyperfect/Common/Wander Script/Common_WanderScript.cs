@@ -440,18 +440,21 @@ namespace Polyperfect.Common
 
             if (gameObject.CompareTag("Lion"))
             {
-                reproduceDuration = DayNightSystem.instance.fullDayLength * 2.6f;
-                duration = 1.7f;
+                reproduceDuration = DayNightSystem.instance.fullDayLength * 2.7f;
+                duration = 1.6f;
             }
             if(gameObject.CompareTag("Bear"))
             {
                 reproduceDuration = DayNightSystem.instance.fullDayLength * 2.4f;
-                duration = 1.85f;
+                duration = 1.9f;
             }
-            if (gameObject.CompareTag("Cat")) duration = 2.4f;
-            if (gameObject.CompareTag("Boar")) duration = 2.2f;
-            if (gameObject.CompareTag("Wolf")) duration = 7.2f;
-
+            if (gameObject.CompareTag("Cat")) duration = 1.8f;
+            if (gameObject.CompareTag("Boar")) duration = 2.1f;
+            if (gameObject.CompareTag("Wolf"))
+            {
+                duration = 10.0f;
+                reproduceDuration = DayNightSystem.instance.fullDayLength;
+            }
             weatherFactor = 1.0f;
             detectionRange = stats.detectionRange;
 
@@ -891,7 +894,8 @@ namespace Polyperfect.Common
             growthFactor = 0.5f;
             
             maxToughness = growthFactor * stats.toughness; //최대 체력 반 까고
-            toughness = maxToughness; //풀피 맞춰줌.
+            toughness = 0.5f*maxToughness; //반피 맞춰줌.
+            hpFactor = 0.01f * maxToughness;
             power = growthFactor * stats.power; //공격력 반 깜.
             transform.localScale = new Vector3(growthFactor,growthFactor,growthFactor); //크기 반으로 줄임.
 
@@ -901,6 +905,8 @@ namespace Polyperfect.Common
                 growthFactor += 0.1f; //성장.
 
                 maxToughness = growthFactor*stats.toughness;
+                hpFactor = 0.01f * maxToughness;
+                toughness += 0.05f * maxToughness;
                 power = growthFactor * stats.power;
                 //이동속도는 매번 바뀌어서, 여기서 안 바꾸고 부득이하게 SetMoveSlow, SetMoveFast에서 growthFactor 곱해줌.
                 transform.localScale = new Vector3(growthFactor, growthFactor, growthFactor);

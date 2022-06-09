@@ -1990,7 +1990,7 @@ MonoBehaviour:
   - stateName: Walking
     animationBool: isWalking
     maxStateTime: 10
-    moveSpeed: 3
+    moveSpeed: 4
     turnSpeed: 100
   - stateName: Running
     animationBool: isRunning
