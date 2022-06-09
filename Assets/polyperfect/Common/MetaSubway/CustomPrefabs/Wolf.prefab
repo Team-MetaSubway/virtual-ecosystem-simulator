@@ -1995,7 +1995,7 @@ MonoBehaviour:
   - stateName: Running
     animationBool: isRunning
     maxStateTime: 10
-    moveSpeed: 8
+    moveSpeed: 8.5
     turnSpeed: 200
   attackingStates:
   - stateName: Attacking

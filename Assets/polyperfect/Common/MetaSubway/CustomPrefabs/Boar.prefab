@@ -821,7 +821,7 @@ MonoBehaviour:
   - stateName: Running
     animationBool: isRunning
     maxStateTime: 1
-    moveSpeed: 6.5
+    moveSpeed: 7.9
     turnSpeed: 350
   attackingStates:
   - stateName: isAttacking
@@ -847,6 +847,7 @@ MonoBehaviour:
   characterController: {fileID: 0}
   CurrentState: 0
   moveSpeed: 0
+  endFlag: 0
   animalType: 0
   hungerFactor: 0
 --- !u!54 &2777733019558767299

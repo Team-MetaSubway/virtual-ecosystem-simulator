@@ -441,12 +441,12 @@ MonoBehaviour:
   - stateName: Walk
     animationBool: isWalking
     maxStateTime: 10
-    moveSpeed: 2
+    moveSpeed: 3
     turnSpeed: 100
   - stateName: Running
     animationBool: isRunning
     maxStateTime: 20
-    moveSpeed: 8
+    moveSpeed: 7
     turnSpeed: 200
   attackingStates:
   - stateName: Attack
@@ -472,6 +472,7 @@ MonoBehaviour:
   characterController: {fileID: 0}
   CurrentState: 0
   moveSpeed: 0
+  endFlag: 0
   animalType: 0
   hungerFactor: 0
 --- !u!54 &4781304278181981743

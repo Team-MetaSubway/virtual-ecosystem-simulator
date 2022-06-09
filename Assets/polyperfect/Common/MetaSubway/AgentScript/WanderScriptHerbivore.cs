@@ -29,8 +29,8 @@ namespace Polyperfect.Animals
         {
             base.Awake();
             growthDuration = DayNightSystem.instance.fullDayLength * 0.3f;
-            reproduceDuration = DayNightSystem.instance.fullDayLength * 0.8f;
-            //if (gameObject.CompareTag("Elephant")) reproduceDuration = DayNightSystem.instance.fullDayLength;
+            reproduceDuration = DayNightSystem.instance.fullDayLength * 0.7f;
+            if (gameObject.CompareTag("Elephant")) reproduceDuration = DayNightSystem.instance.fullDayLength;
             if (gameObject.CompareTag("Rabbit") || gameObject.CompareTag("Goose")) reproduceDuration = DayNightSystem.instance.fullDayLength * 0.5f;
             attackRange = characterController.radius;
             attackRangeSquare = attackRange * attackRange;
@@ -206,7 +206,7 @@ namespace Polyperfect.Animals
         void EatFood() //먹이를 먹고 허기를 채우는 함수.
         {
             Destroy(targetFood);
-            hunger = Mathf.Clamp(hunger + hungerFactor * 2, 0, maxHunger); //현재 약 60.
+            hunger = Mathf.Clamp(hunger + hungerFactor * 2, 0, 1.2f*maxHunger); //현재 약 60.
         }
         IEnumerator EatFoodCoroutine() //2초 마다 먹이를 먹어야하는지 판단하는 코루틴.
         {
