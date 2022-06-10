@@ -441,18 +441,18 @@ namespace Polyperfect.Common
             if (gameObject.CompareTag("Lion"))
             {
                 reproduceDuration = DayNightSystem.instance.fullDayLength * 2.7f;
-                duration = 1.6f;
+                duration = 1.7f;
             }
             if(gameObject.CompareTag("Bear"))
             {
                 reproduceDuration = DayNightSystem.instance.fullDayLength * 2.4f;
                 duration = 1.9f;
             }
-            if (gameObject.CompareTag("Cat")) duration = 1.8f;
-            if (gameObject.CompareTag("Boar")) duration = 2.1f;
+            if (gameObject.CompareTag("Cat")) duration = 1.9f;
+            if (gameObject.CompareTag("Boar")) duration = 2.3f;
             if (gameObject.CompareTag("Wolf"))
             {
-                duration = 10.0f;
+                duration = 10.3f;
                 reproduceDuration = DayNightSystem.instance.fullDayLength;
             }
             weatherFactor = 1.0f;
