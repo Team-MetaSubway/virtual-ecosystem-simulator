@@ -36,7 +36,7 @@ namespace Polyperfect.Animals
                 duration = 2.2f;
             }
             if (gameObject.CompareTag("Rabbit")) reproduceDuration = DayNightSystem.instance.fullDayLength * 0.5f;
-            if ( gameObject.CompareTag("Goose")) reproduceDuration = DayNightSystem.instance.fullDayLength * 0.57f;
+            if ( gameObject.CompareTag("Goose")) reproduceDuration = DayNightSystem.instance.fullDayLength * 0.55f;
             attackRange = characterController.radius;
             attackRangeSquare = attackRange * attackRange;
             animalType = AnimalType.Herbivore;
