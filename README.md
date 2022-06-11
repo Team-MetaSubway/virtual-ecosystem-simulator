@@ -18,7 +18,7 @@ Animals are driven by inference model based on reinforcement learning, and patte
 <br>
 
 ## Installation
-If you just need to play the simulator, please skip this section and check the **Pre-built exe** under the **Usage**.
+If you just need to play the simulator, please skip this section and check the **Pre-built** under the **Usage**.
 <br>
 ### Prerequisites
 
@@ -50,7 +50,7 @@ For the Installations below, **Represented versions in the Prerequisites are hig
 
 <br>
 
-### Pre-built executable
+### Pre-built
 **Pre-built Executable file for Windows x86/64, Mac and Linux**
 1. Clone this project, go to **build** folder.
 2. Run **ecosystem.exe**.
