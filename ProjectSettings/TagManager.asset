@@ -3,18 +3,34 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Animal
+  - Bear
+  - Beaver
+  - Env
+  - User
+  - DeadBody
+  - Rabbit
+  - Giraffe
+  - Elephant
+  - Boar
+  - Wolf
+  - Lion
+  - Deer
+  - Plant
+  - Goose
+  - Cat
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Terrain
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Animal
+  - Food
+  - Detector
+  - AttackBoundary
   - 
   - 
   - 

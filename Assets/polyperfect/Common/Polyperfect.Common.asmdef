@@ -1,0 +1,12 @@
+{
+    "name": "Polyperfect.Common",
+    "references": ["Unity.ML-Agents"],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
