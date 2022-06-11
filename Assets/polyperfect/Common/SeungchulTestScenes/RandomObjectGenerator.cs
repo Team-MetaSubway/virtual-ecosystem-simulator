@@ -326,8 +326,8 @@ public class RandomObjectGenerator : MonoBehaviour
     {
 		foreach (var animal in animalGameObjects)
 		{
-			
-			animal.GetComponent<Polyperfect.Common.Common_WanderScript>().RainImpact();
+			if(animal!=null)
+				animal.GetComponent<Polyperfect.Common.Common_WanderScript>().RainImpact();
 			
 		}
 	
@@ -340,8 +340,8 @@ public class RandomObjectGenerator : MonoBehaviour
 	{
 		foreach (var animal in animalGameObjects)
 		{
-
-			animal.GetComponent<Polyperfect.Common.Common_WanderScript>().RainUnimpact();
+			if (animal != null)
+				animal.GetComponent<Polyperfect.Common.Common_WanderScript>().RainUnimpact();
 
 		}
 	}
