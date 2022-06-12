@@ -13,6 +13,7 @@ public class ChangeCamera : MonoBehaviour
     private DigitalRuby.RainMaker.AA personCameraSetting;
 
     public bool change;
+    public bool isPerson = false;
 
     // Start is called before the first frame update
     void Start()
@@ -22,6 +23,7 @@ public class ChangeCamera : MonoBehaviour
         personCameraSetting = PersonCamera1.GetComponent<DigitalRuby.RainMaker.AA>();
         
         change = true;
+        isPerson = false;
         FreeCamera.SetActive(true);
         PersonCamera.SetActive(false);
     }
@@ -29,7 +31,7 @@ public class ChangeCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (PlayerableController.instance.isPlaying == true) return;
         if (Input.GetKeyDown(KeyCode.Z))
         {
        

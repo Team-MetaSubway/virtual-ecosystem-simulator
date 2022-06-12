@@ -542,6 +542,7 @@ namespace Polyperfect.Common
             }
             gameObject.layer = deadBodyLayer;
             gameObject.tag = "DeadBody";
+            if (gameObject.transform.Find("Free Camera") != null) PlayerableController.instance.UpdateManually();
         }
 
         public virtual void SetStart()
