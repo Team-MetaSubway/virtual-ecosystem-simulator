@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Linq;
 
 namespace DigitalRuby.RainMaker
 {
@@ -37,7 +38,7 @@ namespace DigitalRuby.RainMaker
         //
         private void UpdateMovement()
         {
-            
+            if (PlayerableController.instance.isPlaying == true) return;
             float speed = 15.0f * Time.deltaTime;
             if (Input.GetKey(KeyCode.LeftShift)){
                 speed *= 2;
@@ -80,6 +81,7 @@ namespace DigitalRuby.RainMaker
 
         private void UpdateMouseLook()
         {
+            if (PlayerableController.instance.isPlaying == true) return;
             /*
             if (Input.GetKeyDown(KeyCode.M))
             {
@@ -195,6 +197,7 @@ namespace DigitalRuby.RainMaker
         // Update is called once per frame
         private void Update()
         {
+            if (PlayerableController.instance.isPlaying == true) return;
             if (Input.GetKeyDown(KeyCode.Escape))
             {
                 Debug.Break();
@@ -267,6 +270,21 @@ namespace DigitalRuby.RainMaker
         {
             Rain(false);
         }
-
+        public GameObject GetClosestCarnivore()
+        {
+            Vector3 nowPosition = transform.position;
+            var listOfAnimals = Physics.OverlapSphere(nowPosition, 40f, LayerMask.GetMask("Animal"));
+            var closestAnimals = listOfAnimals.OrderBy(c => (c.transform.position - nowPosition).sqrMagnitude).ToArray();
+            GameObject target = null;
+            foreach(var animal in closestAnimals)
+            {
+                if(animal.gameObject!=null&&animal.gameObject.GetComponent<Polyperfect.Common.Common_WanderScript>().animalType == Polyperfect.Common.Common_WanderScript.AnimalType.Calnivore)
+                {
+                    target = animal.gameObject;
+                    break;
+                }
+            }
+            return target;
+        }
     }
 }
